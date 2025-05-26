@@ -1,0 +1,23 @@
+cat <<EOF > .gitignore
+# Binaries
+leforum
+
+# Dependency directories
+vendor/
+
+# Editor files
+*.swp
+*.log
+*.tmp
+
+# Docker
+.dockerignore
+Dockerfile
+
+# OS files
+.DS_Store
+
+# Go build
+*.exe
+*.out
+EOF
