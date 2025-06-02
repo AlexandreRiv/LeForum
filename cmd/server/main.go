@@ -1,18 +1,20 @@
 package main
 
 import (
-	"log"
+	"html/template"
 	"net/http"
 )
 
-func main() {
-	fs := http.FileServer(http.Dir("./web/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./web/templates/index.html")
-	})
-
-	log.Println("LeForum running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+func handler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
+	tmpl.Execute(w, nil)
 }
+
+func main() {
+	fs := http.FileServer(http.Dir("web/static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	http.HandleFunc("/", handler)
+
+	http.ListenAndServe(":3002", nil)
+}
+
