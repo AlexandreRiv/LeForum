@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark"{{end}}>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PhrasInachev - Le forum des phrases</title>
+    <!-- Google Fonts - Roboto Condensed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CDN Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        <!-- Config like css root -->
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#361134',
+                        secondary: '#B0228C',
+                        accent: '#EA3788',
+                        light: '#E56B70',
+                        pale: '#F391A0',
+                        dark: {
+                            primary: '#1F0A1E',
+                            secondary: '#8C1B70',
+                            accent: '#C1306E',
+                            light: '#B85459',
+                            pale: '#B66E79',
+                            bg: '#121212',
+                            surface: '#1E1E1E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Roboto Condensed"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .dark .dark-toggle .moon { display: block; }
+        .dark .dark-toggle .sun { display: none; }
+        .dark-toggle .moon { display: none; }
+        .dark-toggle .sun { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+<!-- Header -->
+<header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+        <h1 class="text-3xl font-semibold">For...</h1>
+        <nav class="flex items-center">
+            <ul class="flex space-x-4 mr-4">
+                <li><a href="/" class="hover:underline">Accueil</a></li>
+                <li><a href="#" class="hover:underline">Catégories</a></li>
+                <li><a href="#" class="hover:underline">Connexion</a></li>
+            </ul>
+            <a href="/toggle-theme" class="dark-toggle p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                <svg class="sun w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg class="moon w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </a>
+        </nav>
+    </div>
+</header>
+
+<!-- Main header before all the post -->
+<main class="container max-w-6xl mx-auto mt-8 px-4">
+    <!--  Welcome Banner -->
+    <div class="bg-secondary/10 dark:bg-dark-secondary/20 rounded-xl p-6 mb-8 text-center">
+        <h2 class="text-2xl font-bold text-primary dark:text-light mb-2">Bienvenue sur For...</h2>
+        <p class="text-gray-600 dark:text-gray-300">Le forum où les phrases inachevées trouvent leur...</p>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div class="flex gap-2">
+            <button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">Récentes</button>
+            <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">Populaires</button>
+            <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">Sans réponse</button>
+        </div>
+        <div class="w-full md:w-auto">
+            <input type="text" placeholder="Rechercher une question..." class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+        </div>
+    </div>
+
+    <!-- Liste des questions -->
+    <div class="space-y-4">
+        <!-- Question 1 -->
+        <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden transition-colors duration-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-accent dark:bg-dark-accent flex items-center justify-center text-white font-bold">JD</div> <!-- Initiales de la persone-->
+                        <div class="ml-3">
+                            <p class="font-medium text-gray-800 dark:text-gray-200">Jean Dupont</p> <!-- Nom et prenom-->
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Il y a 3 heures</p> <!-- Heure de la publication-->
+                        </div>
+                    </div>
+                    <div class="px-3 py-1 bg-secondary/10 dark:bg-dark-secondary/20 rounded-full text-secondary dark:text-light text-sm">Humour</div> <!-- catégorie -->
+                </div>
+                <h3 class="text-xl font-semibold text-primary dark:text-light mb-2">Pourquoi les développeurs préfèrent-ils le noir ?</h3> <!-- grands questions -->
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Parce que dans le noir, personne ne peut voir vos...</p> <!-- Explication de la personne (Clickable pour aller ver la page du post)-->
+                <div class="flex justify-between items-center">
+                    <div class="flex space-x-4 text-gray-500 dark:text-gray-400">
+                        <span class="flex items-center gap-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path></svg>24</span> <!-- nombre de like-->
+                        <span class="flex items-center gap-1"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"></path></svg>15</span> <!-- Nombres de commentaires -->
+                    </div>
+                    <a href="#" class="text-secondary dark:text-accent hover:underline">Voir plus</a> <!--  Clickable pour aller ver la page du post-->
+                </div>
+            </div>
+        </div>
+    <!-- Pagination -->
+    <div class="flex justify-center mt-8">
+        <nav class="inline-flex rounded-md shadow">
+            <a href="#" class="py-2 px-4 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-l-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10">Précédent</a> <!-- vers la page précedante -->
+            <a href="#" class="py-2 px-4 bg-primary text-white dark:bg-dark-primary border border-primary dark:border-dark-primary">1</a> <!-- Premiere page -->
+            <a href="#" class="py-2 px-4 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10">2</a> <!-- 2 deuxieme page-->
+            <a href="#" class="py-2 px-4 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-r-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10">Suivant</a> <!-- avancer d'une page-->
+        </nav>
+    </div>
+ </main>
+
+<footer class="text-center text-sm text-gray-500 dark:text-gray-400 mt-12 mb-4">
+    &copy; 2025 For.... Tous droits réservés.
+</footer>
+
+</body>
+</html>
