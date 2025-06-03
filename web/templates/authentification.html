@@ -1,0 +1,131 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" rel="stylesheet">
+    <style>
+        #loginTab:checked ~ .forms #loginForm {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        #registerTab:checked ~ .forms #registerForm {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        #loginTab:checked ~ .tabs .login-tab,
+        #registerTab:checked ~ .tabs .register-tab {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .forms > form {
+            display: none;
+            opacity: 0;
+        }
+
+        #loginTab:checked ~ .forms #loginForm,
+        #registerTab:checked ~ .forms #registerForm {
+            opacity: 1;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F391A0]/10 min-h-screen flex flex-col">
+<div class="flex-1 flex items-center justify-center px-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-8">
+        <input type="radio" name="tab" id="loginTab" checked class="hidden">
+        <input type="radio" name="tab" id="registerTab" class="hidden">
+
+        <!-- Toggle Buttons -->
+        <div class="tabs flex bg-[#F391A0]/10 rounded-lg p-1 mb-8">
+            <label for="loginTab" class="login-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300">
+                Connexion
+            </label>
+            <label for="registerTab" class="register-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300">
+                Inscription
+            </label>
+        </div>
+
+        <div class="forms">
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-4">
+                <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Connexion</h2>
+                <div>
+                    <input type="email" placeholder="Email" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
+                <div>
+                    <input type="password" placeholder="Mot de passe" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
+                <button type="submit" class="w-full bg-[#361134] text-white py-2 rounded-lg hover:bg-[#B0228C] transition-colors">
+                    Se connecter
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="hidden space-y-4">
+                <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
+                <div>
+                    <input type="text" placeholder="Nom complet" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
+                <div>
+                    <input type="email" placeholder="Email" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
+                <div>
+                    <input type="password" placeholder="Mot de passe" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
+                <div>
+                    <input type="password" placeholder="Confirmer le mot de passe" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
+                <button type="submit" class="w-full bg-[#361134] text-white py-2 rounded-lg hover:bg-[#B0228C] transition-colors">
+                    S'inscrire
+                </button>
+            </form>
+        </div>
+
+        <!-- Social Login -->
+        <div class="mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-[#EA3788]"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-[#361134]">Ou continuer avec</span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-3">
+                <a href="/auth/google"
+                   class="flex items-center justify-center gap-2 px-4 py-2 border border-[#EA3788] rounded-lg hover:bg-[#EA3788]/10 transition-colors">
+                    <i class="ri-google-fill text-xl text-[#E56B70]"></i>
+                    Google
+                </a>
+                <a href="/auth/github"
+                   class="flex items-center justify-center gap-2 px-4 py-2 border border-[#EA3788] rounded-lg hover:bg-[#EA3788]/10 transition-colors">
+                    <i class="ri-github-fill text-xl text-[#361134]"></i>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
