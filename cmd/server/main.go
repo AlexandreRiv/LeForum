@@ -2,6 +2,7 @@ package main
 
 import (
 	"LeForum/internal/auth"
+	"LeForum/internal/storage"
 	"html/template"
 	"log"
 	"net/http"
@@ -29,6 +30,10 @@ func init() {
 }
 
 func main() {
+	if err := storage.InitDB(); err != nil {
+        	log.Fatalf("Erreur lors de l'initialisation de la base de données: %v", err)
+        }
+
 	// Créer le multiplexeur
 	mux := http.NewServeMux()
 

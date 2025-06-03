@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	_ "github.com/go-sql-driver/mysql"
+	"LeForum/internal/storage"
 )
 
 // Configuration OAuth pour Google
@@ -67,12 +69,12 @@ func GetUsers() []LoggedUser {
 	return users
 }
 
-func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
+func GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	url := googleOauthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("state") != oauthStateString {
 		http.Error(w, "État invalide", http.StatusBadRequest)
 		return
@@ -109,14 +111,15 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Nouvel utilisateur Google connecté : %s\n", userInfo["email"])
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	storage.SaveUserIfNotExists(userInfo["email"].(string), userInfo["name"].(string))
 }
 
-func githubLoginHandler(w http.ResponseWriter, r *http.Request) {
+func GithubLoginHandler(w http.ResponseWriter, r *http.Request) {
 	url := githubOauthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func githubCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("state") != oauthStateString {
 		http.Error(w, "État invalide", http.StatusBadRequest)
 		return
@@ -170,6 +173,7 @@ func githubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Nouvel utilisateur GitHub connecté : %s\n", githubUser.Email)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	storage.SaveUserIfNotExists(githubUser.Email, githubUser.Name)
 }
 
 func getGithubEmails(client *http.Client) ([]string, error) {
@@ -199,7 +203,7 @@ func getGithubEmails(client *http.Client) ([]string, error) {
 	return nil, fmt.Errorf("no primary verified email found")
 }
 
-func adminHandler(w http.ResponseWriter, r *http.Request) {
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	users := GetUsers()
 	tmpl := template.Must(template.ParseFiles("web/templates/admin.html"))
 	err := tmpl.Execute(w, map[string]interface{}{
