@@ -1,128 +1,150 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" {{if .DarkMode}}class="dark" {{end}}>
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Catégories - Le Forum De</title>
+    <title>PhrasInachev - Le forum des phrases</title>
+    <!-- Google Fonts - Roboto Condensed -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
+    <!-- CDN Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#361134',
+                        secondary: '#B0228C',
+                        accent: '#EA3788',
+                        light: '#E56B70',
+                        pale: '#F391A0',
+                        dark: {
+                            primary: '#1F0A1E',
+                            secondary: '#8C1B70',
+                            accent: '#C1306E',
+                            light: '#B85459',
+                            pale: '#B66E79',
+                            bg: '#121212',
+                            surface: '#1E1E1E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Roboto Condensed"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Roboto Condensed', sans-serif;
+        .dark .dark-toggle .moon {
+            display: block;
         }
 
-        .bg-custom-primary {
-            background-color: #361134;
+        .dark .dark-toggle .sun {
+            display: none;
         }
 
-        .bg-custom-secondary {
-            background-color: #B0228C;
+        .dark-toggle .moon {
+            display: none;
         }
 
-        .bg-custom-accent {
-            background-color: #EA3788;
-        }
-
-        .bg-custom-light {
-            background-color: #E56B70;
-        }
-
-        .bg-custom-pale {
-            background-color: #F391A0;
-        }
-
-        .text-custom-primary {
-            color: #361134;
-        }
-
-        .text-custom-secondary {
-            color: #B0228C;
-        }
-
-        .text-custom-accent {
-            color: #EA3788;
-        }
-
-        .border-custom-primary {
-            border-color: #361134;
-        }
-
-        .border-custom-secondary {
-            border-color: #B0228C;
-        }
-
-        .hover\:bg-custom-accent:hover {
-            background-color: #EA3788;
-        }
-
-        .hover\:border-custom-accent:hover {
-            border-color: #EA3788;
+        .dark-toggle .sun {
+            display: block;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
 <!-- Header -->
-<header class="bg-custom-primary text-white shadow p-4">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Le Forum De</h1>
-        <nav class="space-x-4">
-            <a href="/" class="hover:underline">Accueil</a>
-            <a href="/categories" class="hover:underline font-bold underline">Catégories</a>
-            <a href="/login" class="hover:underline">Connexion</a>
+<header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+        <h1 class="text-3xl font-semibold">PhrasInachev</h1>
+        <nav class="flex items-center">
+            <ul class="flex space-x-4">
+                <li><a href="/" class="hover:underline">Accueil</a></li>
+                <li><a href="/categories" class="hover:underline font-bold underline">Catégories</a></li>
+                <li><a href="#" class="hover:underline">Connexion</a></li>
+            </ul>
         </nav>
     </div>
 </header>
 
 <!-- Breadcrumb -->
 <div class="max-w-6xl mx-auto px-4 py-2 text-sm">
-    <a href="/" class="text-custom-accent hover:underline">Accueil</a> &gt;
-    <span class="text-gray-600">Catégories</span>
+    <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+    <span class="text-gray-600 dark:text-gray-400">Catégories</span>
 </div>
 
 <!-- Main section -->
 <main class="max-w-6xl mx-auto p-4">
-    <h1 class="text-2xl font-bold text-custom-primary mb-6">Catégories du forum</h1>
+    <h1 class="text-2xl font-bold text-primary dark:text-light mb-6">Catégories du forum</h1>
 
     <!-- Category -->
     <div class="mb-8">
-        <div class="bg-custom-secondary text-white p-3 rounded-t-lg">
+        <div class="bg-secondary dark:bg-dark-secondary text-white p-3 rounded-t-lg">
             <h2 class="text-xl font-bold">Situations insolites</h2>
         </div>
 
         <!-- Category content -->
-        <div class="bg-white border-b border-gray-200 rounded-b-lg">
+        <div class="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-gray-700 rounded-b-lg transition-colors duration-200">
             <div class="p-4">
-                <p class="text-gray-600 mb-4">Ces moments étranges qui se produisent dans notre vie quotidienne</p>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Ces moments étranges qui se produisent dans notre vie
+                    quotidienne</p>
 
                 <!-- Post -->
-                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 mb-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <a href="/post" class="text-custom-secondary hover:text-custom-accent font-medium">Quand je vais
-                            au supermarché je</a>
-                        <span class="text-xs text-gray-500">28/05/2024</span>
-                    </div>
-                    <div class="flex items-center text-sm text-gray-600">
-                        <div class="bg-custom-pale rounded-full w-6 h-6 flex items-center justify-center mr-2">
-                            <span class="text-xs font-bold text-custom-primary">h7</span>
+                <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden transition-colors duration-200 mb-3">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 rounded-full bg-pale dark:bg-dark-pale flex items-center justify-center text-primary dark:text-white font-bold">
+                                    h7
+                                </div>
+                                <div class="ml-3">
+                                    <p class="font-medium text-gray-800 dark:text-gray-200">henriette7</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">28/05/2024</p>
+                                </div>
+                            </div>
+                            <div class="px-3 py-1 bg-secondary/10 dark:bg-dark-secondary/20 rounded-full text-secondary dark:text-light text-sm">
+                                Insolite
+                            </div>
                         </div>
-                        <span>henriette7</span>
-                        <span class="mx-2">•</span>
-                        <span>3 réponses</span>
+                        <h3 class="text-xl font-semibold text-primary dark:text-light mb-2">Quand je vais au supermarché
+                            je</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">Salut à tous ! J'adore quand je vais au
+                            supermarché et que soudainement je...</p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-4 text-gray-500 dark:text-gray-400">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
+                                    </svg>32
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                              d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
+                                              clip-rule="evenodd"></path>
+                                    </svg>3
+                                </span>
+                            </div>
+                            <a href="/post" class="text-secondary dark:text-accent hover:underline">Voir plus</a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Category stats -->
                 <div class="flex justify-end mt-4 text-sm">
                     <div class="text-center mr-6">
-                        <div class="text-gray-700 font-medium">4</div>
-                        <div class="text-xs text-gray-500">messages</div>
+                        <div class="text-gray-700 dark:text-gray-300 font-medium">4</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">messages</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-gray-700 font-medium">1</div>
-                        <div class="text-xs text-gray-500">sujet</div>
+                        <div class="text-gray-700 dark:text-gray-300 font-medium">1</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">sujet</div>
                     </div>
                 </div>
             </div>
@@ -131,15 +153,15 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-custom-primary text-gray-300 py-6">
+<footer class="bg-primary dark:bg-dark-primary text-gray-300 py-6 mt-12">
     <div class="max-w-6xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between">
             <div class="mb-4 md:mb-0">
-                <h3 class="text-lg font-semibold mb-2 text-custom-pale">Le Forum de</h3>
+                <h3 class="text-lg font-semibold mb-2 text-pale dark:text-dark-pale">PhrasInachev</h3>
                 <p class="text-sm">Le forum où on ne finit jamais nos</p>
             </div>
             <div class="text-sm">
-                <div>&copy; 2025 Le Forum de. Tous droits</div>
+                <div>&copy; 2025 PhrasInachev. Tous droits</div>
                 <div class="mt-2">
                     <a href="/mentions-legales" class="hover:text-white">Mentions</a> |
                     <a href="/confidentialite" class="hover:text-white">Politique de</a>
@@ -148,5 +170,6 @@
         </div>
     </div>
 </footer>
+
 </body>
 </html>
