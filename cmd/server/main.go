@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"github.com/joho/godotenv"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,6 +18,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Pas de fichier .env chargé")
 	}
 }
 

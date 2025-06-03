@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
@@ -15,26 +16,26 @@ import (
 
 // Configuration OAuth pour Google
 var googleOauthConfig = &oauth2.Config{
-	ClientID:     "47465948270-8u1i4r4jlfhsnjcqusjfkk2cjsu57nef.apps.googleusercontent.com",
-	ClientSecret: "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",
-	RedirectURL:  "http://localhost:3002/auth/google/callback",
-	Scopes: []string{
-		"https://www.googleapis.com/auth/userinfo.email",
-		"https://www.googleapis.com/auth/userinfo.profile",
-	},
-	Endpoint: google.Endpoint,
+    ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+    ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+    RedirectURL:  "https://forum.ynov.zeteox.fr/auth/google/callback",
+    Scopes: []string{
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+    },
+    Endpoint: google.Endpoint,
 }
 
 // Configuration OAuth pour GitHub
 var githubOauthConfig = &oauth2.Config{
-	ClientID:     "Ov23liSzicwlo2PrVNtL",
-	ClientSecret: "82c9b976c0f73ea80b31e4a44f7265bed983a75d",
-	RedirectURL:  "http://localhost:3002/auth/github/callback",
-	Scopes: []string{
-		"user:email",
-		"read:user",
-	},
-	Endpoint: github.Endpoint,
+    ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+    ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+    RedirectURL:  "https://forum.ynov.zeteox.fr/auth/github/callback",
+    Scopes: []string{
+        "user:email",
+        "read:user",
+    },
+    Endpoint: github.Endpoint,
 }
 
 var oauthStateString = "random"
