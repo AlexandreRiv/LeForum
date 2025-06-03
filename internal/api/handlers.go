@@ -10,6 +10,16 @@ type PageData struct {
 	DarkMode bool
 }
 
+func PostHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("web/templates/post_page.html"))
+	tmpl.Execute(w, nil)
+}
+
+func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("web/templates/categories.html"))
+	tmpl.Execute(w, nil)
+}
+
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// check if the dark mode cookie exists
 	darkMode := false
