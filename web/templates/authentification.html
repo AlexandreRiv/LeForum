@@ -4,6 +4,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" rel="stylesheet">
+
+    <!-- Add dark mode config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#361134',
+                        secondary: '#B0228C',
+                        accent: '#EA3788',
+                        light: '#E56B70',
+                        pale: '#F391A0',
+                        dark: {
+                            primary: '#1F0A1E',
+                            secondary: '#8C1B70',
+                            accent: '#C1306E',
+                            light: '#B85459',
+                            pale: '#B66E79',
+                            bg: '#121212',
+                            surface: '#1E1E1E'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Dark mode toggle styles */
+        .dark .dark-toggle .moon { display: block; }
+        .dark .dark-toggle .sun { display: none; }
+        .dark-toggle .moon { display: none; }
+        .dark-toggle .sun { display: block; }
+        /* Your other styles */
+    </style>
+
     <style>
         #loginTab:checked ~ .forms #loginForm {
             display: block;
@@ -54,7 +91,8 @@
         }
     </style>
 </head>
-<body class="bg-[#F391A0]/10 min-h-screen flex flex-col">
+<body class="bg-[#F391A0]/10 dark:bg-dark-bg min-h-screen flex flex-col transition-colors duration-200">
+{{template "header" .}}
 <div class="flex-1 flex items-center justify-center px-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-8">
 
