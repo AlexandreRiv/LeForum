@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"LeForum/internal/storage"
 )
 
 type Handler struct {
@@ -44,6 +45,18 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         log.Printf("Erreur rendering template: %v\n", err)
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
     }
+
+    if r.Method == "POST" {
+        switch r.FormValue("action") {
+        case "register":
+            h.handleRegister(w, r)
+        case "login":
+            h.handleLogin(w, r)
+        default:
+            http.Error(w, "Invalid action", http.StatusBadRequest)
+        }
+        return
+    }
 }
 
 func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +87,64 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
         log.Printf("Erreur rendering user template: %v\n", err)
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
     }
+}
+
+func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
+    email := r.FormValue("email")
+    username := r.FormValue("username")
+    password := r.FormValue("password")
+    confirmPassword := r.FormValue("confirm-password")
+
+    if password != confirmPassword {
+        http.Error(w, "Passwords don't match", http.StatusBadRequest)
+        return
+    }
+
+    hashedPassword, err := HashPassword(password)
+    if err != nil {
+        http.Error(w, "Internal server error", http.StatusInternalServerError)
+        return
+    }
+
+    err = storage.CreateUser(username, email, hashedPassword)
+    if err != nil {
+        http.Error(w, "Could not create user", http.StatusInternalServerError)
+        return
+    }
+
+    // Create session and redirect
+    user := LoggedUser{
+        Email: email,
+        Name: username,
+        LoginTime: time.Now(),
+    }
+    CreateSession(w, user)
+    http.Redirect(w, r, "/users", http.StatusSeeOther)
+}
+
+func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
+    email := r.FormValue("email")
+    password := r.FormValue("password")
+
+    user, err := storage.GetUserByEmail(email)
+    if err != nil {
+        http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+        return
+    }
+
+    if !CheckPassword(password, user.Password) {
+        http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+        return
+    }
+
+    // Create session and redirect
+    loggedUser := LoggedUser{
+        Email: user.Email,
+        Name: user.Username,
+        LoginTime: time.Now(),
+    }
+    CreateSession(w, loggedUser)
+    http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {

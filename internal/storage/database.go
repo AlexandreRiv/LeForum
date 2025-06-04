@@ -41,3 +41,27 @@ func SaveUserIfNotExists(email, username string) error {
     }
     return nil
 }
+
+func CreateUser(username, email, password string) error {
+    _, err := DB.Exec(
+        "INSERT INTO users (username, mail, password, darkmode) VALUES (?, ?, ?, ?)",
+        username, email, password, 0,
+    )
+    return err
+}
+
+func GetUserByEmail(email string) (*User, error) {
+    user := &User{}
+    err := DB.QueryRow(
+        "SELECT id, username, mail, password FROM users WHERE mail = ?",
+        email,
+    ).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+    return user, err
+}
+
+type User struct {
+    ID       int
+    Username string
+    Email    string
+    Password string
+}
