@@ -1,43 +1,43 @@
 package auth
 
 import (
+	"LeForum/internal/storage"
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
+	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
 	"html/template"
 	"net/http"
+	"os"
 	"sync"
 	"time"
-	_ "github.com/go-sql-driver/mysql"
-	"LeForum/internal/storage"
 )
 
 // Configuration OAuth pour Google
 var googleOauthConfig = &oauth2.Config{
-    ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
-    ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-    RedirectURL:  "https://forum.ynov.zeteox.fr/auth/google/callback",
-    Scopes: []string{
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-    },
-    Endpoint: google.Endpoint,
+	ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+	ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+	RedirectURL:  "https://forum.ynov.zeteox.fr/auth/google/callback",
+	Scopes: []string{
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+	},
+	Endpoint: google.Endpoint,
 }
 
 // Configuration OAuth pour GitHub
 var githubOauthConfig = &oauth2.Config{
-    ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
-    ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
-    RedirectURL:  "https://forum.ynov.zeteox.fr/auth/github/callback",
-    Scopes: []string{
-        "user:email",
-        "read:user",
-    },
-    Endpoint: github.Endpoint,
+	ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+	ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+	RedirectURL:  "https://forum.ynov.zeteox.fr/auth/github/callback",
+	Scopes: []string{
+		"user:email",
+		"read:user",
+	},
+	Endpoint: github.Endpoint,
 }
 
 var oauthStateString = "random"
@@ -46,7 +46,6 @@ var oauthStateString = "random"
 type LoggedUser struct {
 	Email     string    `json:"email"`
 	Name      string    `json:"name"`
-	Picture   string    `json:"picture"`
 	LoginTime time.Time `json:"login_time"`
 }
 
@@ -101,10 +100,9 @@ func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := LoggedUser{
-    	   Email:   userInfo["email"].(string),
-           Name:    userInfo["name"].(string),
-           Picture: userInfo["picture"].(string),
-           LoginTime: time.Now(),
+		Email:     userInfo["email"].(string),
+		Name:      userInfo["name"].(string),
+		LoginTime: time.Now(),
 	}
 
 	err = CreateSession(w, user)
@@ -167,10 +165,9 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := LoggedUser{
-          Email:     githubUser.Email,
-          Name:      githubUser.Name,
-          Picture:   githubUser.AvatarURL,
-          LoginTime: time.Now(),
+		Email:     githubUser.Email,
+		Name:      githubUser.Name,
+		LoginTime: time.Now(),
 	}
 
 	err = CreateSession(w, user)

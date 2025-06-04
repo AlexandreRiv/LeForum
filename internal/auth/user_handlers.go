@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"LeForum/internal/storage"
 	"log"
 	"net/http"
 	"time"
-	"LeForum/internal/storage"
 )
 
 func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +20,24 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	manager.mu.RLock()
+	user, exists := manager.users[session.UserEmail]
+	manager.mu.RUnlock()
+
+	if !exists {
+		user = LoggedUser{
+			Email: session.UserEmail,
+			Name:  session.UserEmail,
+		}
+	}
+
 	data := struct {
+		Name   string
 		Email  string
 		Expiry time.Time
 	}{
-		Email:  session.UserEmail,
+		Name:   user.Name,
+		Email:  user.Email,
 		Expiry: session.ExpiresAt,
 	}
 
