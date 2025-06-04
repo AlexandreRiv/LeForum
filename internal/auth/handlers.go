@@ -39,13 +39,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    log.Println("Rendering authentification.html template")
-    err = h.templates.ExecuteTemplate(w, "authentification.html", nil)
-    if err != nil {
-        log.Printf("Erreur rendering template: %v\n", err)
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-    }
-
     if r.Method == "POST" {
         switch r.FormValue("action") {
         case "register":
@@ -56,6 +49,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
             http.Error(w, "Invalid action", http.StatusBadRequest)
         }
         return
+    }
+
+    log.Println("Rendering authentification.html template")
+    err = h.templates.ExecuteTemplate(w, "authentification.html", nil)
+    if err != nil {
+        log.Printf("Erreur rendering template: %v\n", err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
     }
 }
 
@@ -108,6 +108,7 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
     err = storage.CreateUser(username, email, hashedPassword)
     if err != nil {
+	log.Printf("Erreur lors de la création de l'utilisateur: %v", err)
         http.Error(w, "Could not create user", http.StatusInternalServerError)
         return
     }
@@ -128,22 +129,32 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
     user, err := storage.GetUserByEmail(email)
     if err != nil {
-        http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+        log.Printf("Login failed for email %s: %v", email, err)
+        w.WriteHeader(http.StatusUnauthorized)
+        w.Write([]byte("Invalid credentials"))
         return
     }
 
     if !CheckPassword(password, user.Password) {
-        http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+        log.Printf("Invalid password for email %s", email)
+        w.WriteHeader(http.StatusUnauthorized)
+        w.Write([]byte("Invalid credentials"))
         return
     }
 
-    // Create session and redirect
     loggedUser := LoggedUser{
         Email: user.Email,
-        Name: user.Username,
+        Name:  user.Username,
         LoginTime: time.Now(),
     }
-    CreateSession(w, loggedUser)
+
+    if err := CreateSession(w, loggedUser); err != nil {
+        log.Printf("Failed to create session for %s: %v", email, err)
+        w.WriteHeader(http.StatusInternalServerError)
+        w.Write([]byte("Internal server error"))
+        return
+    }
+
     http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
