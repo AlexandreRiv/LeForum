@@ -79,12 +79,7 @@ func (h *Handler) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		CurrentPage: "auth",
 	}
 
-	tmpl := template.Must(template.ParseFiles(
-		"web/templates/authentification.html",
-		"web/templates/components/header.html",
-	))
-
-	if err := tmpl.Execute(w, data); err != nil {
+	if err := h.templates.ExecuteTemplate(w, "authentification", data); err != nil {
 		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
