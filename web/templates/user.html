@@ -2,12 +2,33 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Profil utilisateur</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
-    <h1>Bienvenue !</h1>
-    <p>Email connecté : {{ .Email }}</p>
-    <p>Session expire le : {{ .Expiry }}</p>
-    <a href="/logout">Déconnexion</a>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="bg-white shadow-lg rounded-lg max-w-md w-full p-6">
+    <!-- Image de profil -->
+    <div class="flex justify-center mb-6">
+        <img src="{{ .Picture }}" alt="Image de profil" class="w-24 h-24 rounded-full shadow-md">
+    </div>
+
+    <!-- Informations utilisateur -->
+    <div class="text-center">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Bienvenue, {{ .Name }} !</h1>
+        <p class="text-gray-600 mb-4">Email connecté : <span class="font-medium">{{ .Email }}</span></p>
+        <p class="text-gray-600 mb-4">Session expire le : <span class="font-medium">{{ .Expiry }}</span></p>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="flex justify-center space-x-4 mt-6">
+        <a href="/logout" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition">
+            Déconnexion
+        </a>
+        <a href="/edit-profile" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition">
+            Modifier le profil
+        </a>
+    </div>
+</div>
 </body>
 </html>
