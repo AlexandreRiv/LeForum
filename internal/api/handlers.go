@@ -75,30 +75,3 @@ func boolToString(b bool) string {
 	}
 	return "false"
 }
-
-// internal/api/handlers.go
-
-func getDarkModeFromCookie(r *http.Request) bool {
-	cookie, err := r.Cookie("darkMode")
-	if err == nil && cookie.Value == "true" {
-		return true
-	}
-	return false
-}
-
-func AuthHandler(w http.ResponseWriter, r *http.Request) {
-	data := PageData{
-		DarkMode:    getDarkModeFromCookie(r),
-		CurrentPage: "auth",
-	}
-
-	tmpl := template.Must(template.ParseFiles(
-		"web/templates/authentification.html",
-		"web/templates/components/header.html",
-	))
-
-	if err := tmpl.Execute(w, data); err != nil {
-		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-}

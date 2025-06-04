@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"LeForum/internal/api"
 	"html/template"
 	"log"
 	"net/http"
@@ -68,4 +69,29 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/auth/github/callback", GithubCallbackHandler)
 	mux.HandleFunc("/admin", AdminHandler)
 	mux.HandleFunc("/logout", h.LogoutHandler)
+}
+
+func (h *Handler) HandleAuth(w http.ResponseWriter, r *http.Request) {
+	data := api.PageData{
+		DarkMode:    getDarkModeFromCookie(r),
+		CurrentPage: "auth",
+	}
+
+	tmpl := template.Must(template.ParseFiles(
+		"web/templates/authentification.html",
+		"web/templates/components/header.html",
+	))
+
+	if err := tmpl.Execute(w, data); err != nil {
+		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func getDarkModeFromCookie(r *http.Request) bool {
+	cookie, err := r.Cookie("darkMode")
+	if err == nil && cookie.Value == "true" {
+		return true
+	}
+	return false
 }
