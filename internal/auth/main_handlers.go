@@ -54,7 +54,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"CurrentPage": "auth",
 	}
 
-	err = h.templates.ExecuteTemplate(w, "authentification.html", data)
+	err = h.templates.ExecuteTemplate(w, "authentification", data)
 	if err != nil {
 		log.Printf("Erreur rendering template: %v\n", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
