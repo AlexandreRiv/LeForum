@@ -102,10 +102,65 @@
             <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
                 Sans réponse
             </button>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')"
+                    class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors cursor-pointer">
+                Créer un post
+            </button>
         </div>
         <div class="w-full md:w-auto">
             <input type="text" placeholder="Rechercher une question..."
                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+        </div>
+    </div>
+
+    <!-- Modal pour création de post - Utilisant un peu de JavaScript inline -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white dark:bg-dark-surface rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-primary dark:text-light">Créer un post</h3>
+                    <button onclick="document.getElementById('modal').classList.add('hidden')" class="cursor-pointer">
+                        <svg class="w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form>
+                    <div class="mb-4">
+                        <label for="title"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
+                        <input type="text" id="title"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200"
+                               placeholder="Entrez le titre de votre post...">
+                    </div>
+                    <div class="mb-4">
+                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
+                        <select id="category"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                            <option>Situations insolites</option>
+                            <option>Insolite</option>
+                            <option>Réflexions</option>
+                            <option>Questions</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu</label>
+                        <textarea id="content" rows="5"
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200"
+                                  placeholder="Écrivez votre post ici..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="document.getElementById('modal').classList.add('hidden')"
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">Annuler</button>
+                        <button type="submit"
+                                class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
+                            Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
