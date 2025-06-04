@@ -158,6 +158,33 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
+func (h *Handler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    // Get the session cookie
+    cookie, err := r.Cookie("session_id")
+    if err == nil {
+        // Delete session from database
+        _, err = storage.DB.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
+        if err != nil {
+            log.Printf("Error deleting session: %v", err)
+        }
+    }
+
+    // Delete the cookie by setting an expired one
+    expiredCookie := &http.Cookie{
+        Name:     "session_id",
+        Value:    "",
+        Path:     "/",
+        HttpOnly: true,
+        Secure:   true,
+        Domain:   "forum.ynov.zeteox.fr",
+        Expires:  time.Now().Add(-24 * time.Hour),
+    }
+    http.SetCookie(w, expiredCookie)
+
+    // Redirect to auth page
+    http.Redirect(w, r, "/auth", http.StatusSeeOther)
+}
+
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.Handle("/auth", h)
 	mux.HandleFunc("/users", h.UserPageHandler)
@@ -166,4 +193,5 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/auth/github", GithubLoginHandler)
 	mux.HandleFunc("/auth/github/callback", GithubCallbackHandler)
 	mux.HandleFunc("/admin", AdminHandler)
+	mux.HandleFunc("/logout", h.LogoutHandler)
 }
