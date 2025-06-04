@@ -24,10 +24,14 @@ func generateSessionID() string {
 }
 
 func CreateSession(w http.ResponseWriter, user LoggedUser) error {
+	if user.Email == "" {
+		return fmt.Errorf("email cannot be empty")
+	}
+
 	sessionID := generateSessionID()
 	expiresAt := time.Now().Add(5 * time.Hour)
 
-	// Insert session into database with error checking
+	// Insert session into database
 	result, err := storage.DB.Exec(
 		"INSERT INTO sessions (id, user_email, expires_at) VALUES (?, ?, ?)",
 		sessionID,
@@ -35,15 +39,15 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 		expiresAt,
 	)
 	if err != nil {
-		log.Printf("Erreur insertion session DB: %v", err)
-		return err
+		log.Printf("Database insertion error: %v", err)
+		return fmt.Errorf("database error: %v", err)
 	}
 
 	// Verify insertion
 	rows, err := result.RowsAffected()
 	if err != nil || rows != 1 {
-		log.Printf("Session non insérée correctement: %v", err)
-		return fmt.Errorf("session non créée")
+		log.Printf("Session insertion verification failed: %v", err)
+		return fmt.Errorf("session creation failed")
 	}
 
 	// Store user in manager
@@ -51,18 +55,20 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 	manager.users[user.Email] = user
 	manager.mu.Unlock()
 
-	// Set cookie
+	// Set cookie with strict settings
 	cookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
 		Path:     "/",
+		Domain:   "forum.ynov.zeteox.fr",
 		HttpOnly: true,
 		Secure:   true,
-		Domain:   "forum.ynov.zeteox.fr",
+		SameSite: http.SameSiteLaxMode,
 		Expires:  expiresAt,
 	}
 	http.SetCookie(w, cookie)
 
+	log.Printf("Session created successfully for user: %s", user.Email)
 	return nil
 }
 
