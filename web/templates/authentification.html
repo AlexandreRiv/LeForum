@@ -116,6 +116,7 @@
                            name="username"
                            placeholder="Nom complet"
                            required
+                           value="{{.RegisterUsername}}"
                            class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
                 </div>
 
@@ -124,7 +125,7 @@
                            name="email"
                            placeholder="Email"
                            required
-                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                           value="{{.RegisterEmail}}"
                            class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
                     {{if .RegisterEmailError}}
                     <p class="mt-1 text-sm text-red-600">{{.RegisterEmailError}}</p>
