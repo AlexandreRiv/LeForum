@@ -4,6 +4,7 @@ import (
 	"LeForum/internal/storage"
 	"log"
 	"net/http"
+	"regexp"
 	"time"
 )
 
@@ -119,6 +120,16 @@ func (h *Handler) handleCheckEmail(w http.ResponseWriter, r *http.Request) {
 		"RegisterTab":      true,
 		"RegisterEmail":    email,
 		"RegisterUsername": username,
+	}
+
+	// Regex to validate email format
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	isValidEmail := regexp.MustCompile(emailRegex).MatchString(email)
+
+	if !isValidEmail {
+		data["RegisterEmailError"] = "L'email n'est pas valide"
+		h.templates.ExecuteTemplate(w, "authentification.html", data)
+		return
 	}
 
 	// Check if the email exists
