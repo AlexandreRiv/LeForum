@@ -64,7 +64,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"CurrentPage": "auth",
 	}
 
-	err = h.templates.ExecuteTemplate(w, "authentification", data)
+	err = h.templates.ExecuteTemplate(w, "authentification.html", data)
 	if err != nil {
 		log.Printf("Erreur rendering template: %v\n", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -89,7 +89,7 @@ func (h *Handler) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		CurrentPage: "auth",
 	}
 
-	if err := h.templates.ExecuteTemplate(w, "authentification", data); err != nil {
+	if err := h.templates.ExecuteTemplate(w, "authentification.html", data); err != nil {
 		http.Error(w, "Error rendering template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
