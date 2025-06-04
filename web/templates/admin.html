@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Administration</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100">
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-6">Utilisateurs connectés</h1>
+    <div class="bg-white shadow rounded-lg">
+        <table class="min-w-full">
+            <thead>
+            <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left">Email</th>
+                <th class="px-6 py-3 text-left">Nom</th>
+                <th class="px-6 py-3 text-left">Connexion</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range .Users}}
+            <tr class="border-t">
+                <td class="px-6 py-4">{{.Email}}</td>
+                <td class="px-6 py-4">{{.Name}}</td>
+                <td class="px-6 py-4">{{.LoginTime.Format "2006-01-02 15:04:05"}}</td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
