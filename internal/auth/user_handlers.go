@@ -32,13 +32,17 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Name   string
-		Email  string
-		Expiry time.Time
+		Name        string
+		Email       string
+		Expiry      time.Time
+		DarkMode    bool
+		CurrentPage string
 	}{
-		Name:   user.Name,
-		Email:  user.Email,
-		Expiry: session.ExpiresAt,
+		Name:        user.Name,
+		Email:       user.Email,
+		Expiry:      session.ExpiresAt,
+		DarkMode:    getDarkModeFromCookie(r),
+		CurrentPage: "profile",
 	}
 
 	err = h.templates.ExecuteTemplate(w, "user.html", data)
