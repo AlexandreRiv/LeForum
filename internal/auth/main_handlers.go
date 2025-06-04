@@ -45,7 +45,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.templates.ExecuteTemplate(w, "authentification.html", nil)
+	// Get tab from URL parameter, default to login
+	tab := r.URL.Query().Get("tab")
+	data := map[string]interface{}{
+		"RegisterTab": tab == "register",
+	}
+
+	err = h.templates.ExecuteTemplate(w, "authentification.html", data)
 	if err != nil {
 		log.Printf("Erreur rendering template: %v\n", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

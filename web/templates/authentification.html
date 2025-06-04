@@ -63,12 +63,12 @@
 
         <!-- Toggle Buttons -->
         <div class="tabs flex bg-[#F391A0]/10 rounded-lg p-1 mb-8">
-            <label for="loginTab" class="login-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300">
+            <a href="/auth?tab=login" class="login-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if not .RegisterTab}}bg-white shadow{{end}}">
                 Connexion
-            </label>
-            <label for="registerTab" class="register-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300">
+            </a>
+            <a href="/auth?tab=register" class="register-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if .RegisterTab}}bg-white shadow{{end}}">
                 Inscription
-            </label>
+            </a>
         </div>
 
         <div class="forms">
