@@ -149,14 +149,16 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := githubOauthConfig.Exchange(context.Background(), r.FormValue("code"))
 	if err != nil {
-		http.Error(w, "Impossible d'échanger le code : "+err.Error(), http.StatusInternalServerError)
+		log.Printf("GitHub OAuth exchange error: %v", err)
+		http.Error(w, "Impossible d'échanger le code", http.StatusInternalServerError)
 		return
 	}
 
 	client := githubOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://api.github.com/user")
 	if err != nil {
-		http.Error(w, "Impossible de récupérer les infos utilisateur : "+err.Error(), http.StatusInternalServerError)
+		log.Printf("GitHub API error: %v", err)
+		http.Error(w, "Impossible de récupérer les infos utilisateur", http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
@@ -169,19 +171,45 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&githubUser); err != nil {
-		http.Error(w, "Erreur de décodage: "+err.Error(), http.StatusInternalServerError)
+		log.Printf("JSON decode error: %v", err)
+		http.Error(w, "Erreur de décodage", http.StatusInternalServerError)
 		return
 	}
 
+	// Get email if not provided in main profile
 	if githubUser.Email == "" {
 		emails, err := getGithubEmails(client)
-		if err == nil && len(emails) > 0 {
+		if err != nil {
+			log.Printf("GitHub emails error: %v", err)
+			http.Error(w, "Impossible de récupérer l'email", http.StatusInternalServerError)
+			return
+		}
+		if len(emails) > 0 {
 			githubUser.Email = emails[0]
+		} else {
+			log.Printf("No email found for GitHub user")
+			http.Error(w, "Aucun email trouvé", http.StatusInternalServerError)
+			return
 		}
 	}
 
+	// Use login name if no name provided
 	if githubUser.Name == "" {
 		githubUser.Name = githubUser.Login
+	}
+
+	// Verify we have required data
+	if githubUser.Email == "" {
+		log.Printf("No email available for GitHub user")
+		http.Error(w, "Email requis", http.StatusInternalServerError)
+		return
+	}
+
+	// Save user first
+	if err := storage.SaveUserIfNotExists(githubUser.Email, githubUser.Name); err != nil {
+		log.Printf("Error saving user: %v", err)
+		http.Error(w, "Erreur sauvegarde utilisateur", http.StatusInternalServerError)
+		return
 	}
 
 	user := LoggedUser{
@@ -190,14 +218,19 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		LoginTime: time.Now(),
 	}
 
-	err = CreateSession(w, user)
-	if err != nil {
-		http.Error(w, "Error creating session", http.StatusInternalServerError)
+	// Create session
+	if err := CreateSession(w, user); err != nil {
+		log.Printf("Session creation error: %v", err)
+		http.Error(w, "Erreur création session", http.StatusInternalServerError)
 		return
 	}
 
-	storage.SaveUserIfNotExists(user.Email, user.Name)
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	// Store in manager
+	manager.mu.Lock()
+	manager.users[user.Email] = user
+	manager.mu.Unlock()
+
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
 func getGithubEmails(client *http.Client) ([]string, error) {
