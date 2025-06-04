@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Profil utilisateur</title>
+</head>
+<body>
+    <h1>Bienvenue !</h1>
+    <p>Email connecté : {{ .Email }}</p>
+    <p>Session expire le : {{ .Expiry }}</p>
+    <a href="/auth">Déconnexion</a>
+</body>
+</html>

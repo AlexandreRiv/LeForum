@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 	"github.com/joho/godotenv"
 )
 
@@ -47,6 +48,13 @@ func main() {
 	// Configuration de l'authentification
 	authHandler := auth.NewHandler()
 	authHandler.RegisterRoutes(mux)
+
+	go func() {
+          ticker := time.NewTicker(1 * time.Hour)
+          for range ticker.C {
+            auth.CleanExpiredSessions()
+          }
+    	}()
 
 	// Démarrage du serveur
 	log.Println("Serveur démarré sur http://localhost:3002")

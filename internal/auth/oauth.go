@@ -100,18 +100,22 @@ func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	manager.mu.Lock()
-	manager.users[userInfo["email"].(string)] = LoggedUser{
-		Email:     userInfo["email"].(string),
-		Name:      userInfo["name"].(string),
-		Picture:   userInfo["picture"].(string),
-		LoginTime: time.Now(),
+	user := LoggedUser{
+    	   Email:   userInfo["email"].(string),
+           Name:    userInfo["name"].(string),
+           Picture: userInfo["picture"].(string),
+           LoginTime: time.Now(),
 	}
-	manager.mu.Unlock()
 
-	fmt.Printf("Nouvel utilisateur Google connecté : %s\n", userInfo["email"])
+	err = CreateSession(w, user)
+
+	if err != nil {
+		http.Error(w, "Error creating session", http.StatusInternalServerError)
+		return
+	}
+
+	storage.SaveUserIfNotExists(user.Email, user.Name)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	storage.SaveUserIfNotExists(userInfo["email"].(string), userInfo["name"].(string))
 }
 
 func GithubLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -162,18 +166,21 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		githubUser.Name = githubUser.Login
 	}
 
-	manager.mu.Lock()
-	manager.users[githubUser.Email] = LoggedUser{
-		Email:     githubUser.Email,
-		Name:      githubUser.Name,
-		Picture:   githubUser.AvatarURL,
-		LoginTime: time.Now(),
+	user := LoggedUser{
+          Email:     githubUser.Email,
+          Name:      githubUser.Name,
+          Picture:   githubUser.AvatarURL,
+          LoginTime: time.Now(),
 	}
-	manager.mu.Unlock()
 
-	fmt.Printf("Nouvel utilisateur GitHub connecté : %s\n", githubUser.Email)
+	err = CreateSession(w, user)
+	if err != nil {
+		http.Error(w, "Error creating session", http.StatusInternalServerError)
+		return
+	}
+
+	storage.SaveUserIfNotExists(user.Email, user.Name)
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	storage.SaveUserIfNotExists(githubUser.Email, githubUser.Name)
 }
 
 func getGithubEmails(client *http.Client) ([]string, error) {
