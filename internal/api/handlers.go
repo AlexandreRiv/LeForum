@@ -24,7 +24,7 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// check if the dark mode cookie exists
 	darkMode := false
-	cookie, _ := r.Cookie("darkMode") // On ignore l'erreur ici
+	cookie, _ := r.Cookie("darkMode")
 	if cookie != nil && cookie.Value == "true" {
 		darkMode = true
 	}
@@ -34,7 +34,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl := template.Must(template.ParseFiles("web/templates/home_page.html"))
-	err := tmpl.Execute(w, data) // Nouvelle variable err pour le template
+	template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
+	err := tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Erreur d'affichage du template: "+err.Error(), http.StatusInternalServerError)
 		return
