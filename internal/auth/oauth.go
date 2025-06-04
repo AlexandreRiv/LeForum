@@ -230,7 +230,7 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	manager.users[user.Email] = user
 	manager.mu.Unlock()
 
-	http.Redirect(w, r, "/users", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func getGithubEmails(client *http.Client) ([]string, error) {
