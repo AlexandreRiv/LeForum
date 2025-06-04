@@ -110,7 +110,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) handleCheckEmail(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	data := make(map[string]interface{})
-	data["RegisterTab"] = true // Keep registration form visible
+	data["RegisterTab"] = true
 
 	// Check if the email exists
 	_, err := storage.GetUserByEmail(email)
