@@ -12,12 +12,22 @@ type Handler struct {
 }
 
 func NewHandler() *Handler {
-	tmpl, err := template.ParseGlob("web/templates/**/*.html")
+	// Chargement explicite de tous les templates nécessaires
+	tmpl := template.New("")
+
+	// Charger d'abord les templates de base
+	baseTemplates, err := tmpl.ParseGlob("web/templates/*.html")
 	if err != nil {
-		log.Fatalf("Erreur de chargement des templates: %v", err)
+		log.Fatalf("Erreur de chargement des templates de base: %v", err)
 	}
 
-	return &Handler{templates: tmpl}
+	// Charger les templates de composants
+	_, err = baseTemplates.ParseGlob("web/templates/components/*.html")
+	if err != nil {
+		log.Fatalf("Erreur de chargement des templates de composants: %v", err)
+	}
+
+	return &Handler{templates: baseTemplates}
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
