@@ -125,10 +125,8 @@ func (h *Handler) handleCheckEmail(w http.ResponseWriter, r *http.Request) {
 	_, err := storage.GetUserByEmail(email)
 	if err == nil {
 		data["RegisterEmailError"] = "Cet email est déjà utilisé"
-		http.Redirect(w, r, "/auth?tab=register", http.StatusSeeOther)
-		return
 	}
 
-	// Always maintain the register tab state
-	http.Redirect(w, r, "/auth?tab=register", http.StatusSeeOther)
+	// Render the template with the register tab active
+	h.templates.ExecuteTemplate(w, "authentification.html", data)
 }

@@ -34,8 +34,7 @@
         }
 
         .forms > form {
-            display: none;
-            opacity: 0;
+            animation: slideIn 0.3s ease-out;
         }
 
         #loginTab:checked ~ .forms #loginForm,
@@ -58,8 +57,6 @@
 <body class="bg-[#F391A0]/10 min-h-screen flex flex-col">
 <div class="flex-1 flex items-center justify-center px-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-8">
-        <input type="radio" name="tab" id="loginTab" checked class="hidden">
-        <input type="radio" name="tab" id="registerTab" class="hidden">
 
         <!-- Toggle Buttons -->
         <div class="tabs flex bg-[#F391A0]/10 rounded-lg p-1 mb-8">
@@ -73,7 +70,7 @@
 
         <div class="forms">
             <!-- Login Form -->
-            <form id="loginForm" action="/auth" method="POST" class="space-y-4">
+            <form id="loginForm" action="/auth" method="POST" class="space-y-4" {{if .RegisterTab}}style="display:none"{{end}}>
                 <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Connexion</h2>
                 <input type="hidden" name="action" value="login">
 
@@ -107,8 +104,8 @@
 
 
             <!-- Register Form -->
-            <form id="registerForm" action="/auth/check-email" method="POST" class="space-y-4">
-                <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
+            <form id="registerForm" action="/auth/check-email" method="POST" class="space-y-4" {{if not .RegisterTab}}style="display:none"{{end}}>
+            <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
                 <input type="hidden" name="action" value="register">
 
                 <div>
