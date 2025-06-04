@@ -115,9 +115,6 @@ func (h *Handler) handleCheckEmail(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	username := r.FormValue("username")
-	password := r.FormValue("password")
-	confirmPassword := r.FormValue("confirm-password")
-
 	data := map[string]interface{}{
 		"RegisterTab":      true,
 		"RegisterEmail":    email,
@@ -128,41 +125,8 @@ func (h *Handler) handleCheckEmail(w http.ResponseWriter, r *http.Request) {
 	_, err := storage.GetUserByEmail(email)
 	if err == nil {
 		data["RegisterEmailError"] = "Cet email est déjà utilisé"
-		h.templates.ExecuteTemplate(w, "authentification.html", data)
-		return
 	}
 
-	// If we have all registration data, proceed with registration
-	if username != "" && password != "" && confirmPassword != "" {
-		if password != confirmPassword {
-			data["RegisterPasswordError"] = "Les mots de passe ne correspondent pas"
-			h.templates.ExecuteTemplate(w, "authentification.html", data)
-			return
-		}
-
-		hashedPassword, err := HashPassword(password)
-		if err != nil {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		err = storage.CreateUser(username, email, hashedPassword)
-		if err != nil {
-			log.Printf("Erreur lors de la création de l'utilisateur: %v", err)
-			http.Error(w, "Could not create user", http.StatusInternalServerError)
-			return
-		}
-
-		user := LoggedUser{
-			Email:     email,
-			Name:      username,
-			LoginTime: time.Now(),
-		}
-		CreateSession(w, user)
-		http.Redirect(w, r, "/users", http.StatusSeeOther)
-		return
-	}
-
-	// Just checking email - render form with validation result
+	// Always render the form to maintain state
 	h.templates.ExecuteTemplate(w, "authentification.html", data)
 }
