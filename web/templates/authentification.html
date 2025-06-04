@@ -29,8 +29,7 @@
         .dark-toggle .sun {
             display: block;
         }
-    </style>
-    <style>
+
         #loginTab:checked ~ .forms #loginForm {
             display: block;
             animation: slideIn 0.3s ease-out;
@@ -47,25 +46,10 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        #registerTab:checked ~ .forms #registerForm,
-        .register-tab[data-active="true"] ~ .forms #registerForm {
-            display: block;
-        }
-
-        /* Pour garder le tab d'inscription actif */
-        #registerTab:checked ~ .tabs .register-tab,
-        .register-tab[data-active="true"] {
-            background-color: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .forms > form {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        #loginTab:checked ~ .forms #loginForm,
-        #registerTab:checked ~ .forms #registerForm {
-            opacity: 1;
+        .dark #loginTab:checked ~ .tabs .login-tab,
+        .dark #registerTab:checked ~ .tabs .register-tab {
+            background-color: var(--dark-surface);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         @keyframes slideIn {
@@ -81,24 +65,47 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
-{{template "header" .}}
-<div class="flex-1 flex items-center justify-center px-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-8">
 
+<!-- Header -->
+<header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+        <h1 class="text-3xl font-semibold">PhrasInachev</h1>
+        <nav class="flex items-center">
+            <ul class="flex space-x-4 mr-4">
+                <li><a href="/" class="hover:underline">Accueil</a></li>
+                <li><a href="/categories" class="hover:underline">Catégories</a></li>
+                <li><a href="/auth" class="hover:underline font-bold underline">Connexion</a></li>
+            </ul>
+            <a href="/toggle-theme"
+               class="dark-toggle p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                <svg class="sun w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg class="moon w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </a>
+        </nav>
+    </div>
+</header>
+
+<!-- Main content -->
+<main class="container max-w-6xl mx-auto mt-8 px-4 min-h-[calc(100vh-200px)] flex items-center justify-center">
+    <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden w-full max-w-md transition-colors duration-200">
         <!-- Toggle Buttons -->
-        <div class="tabs flex bg-[#F391A0]/10 rounded-lg p-1 mb-8">
-            <a href="/auth?tab=login" class="login-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if not .RegisterTab}}bg-white shadow{{end}}">
+        <div class="tabs flex bg-secondary/10 dark:bg-dark-secondary/20 rounded-t-xl p-1">
+            <a href="/auth?tab=login" class="login-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if not .RegisterTab}}bg-white dark:bg-dark-surface shadow{{end}}">
                 Connexion
             </a>
-            <a href="/auth?tab=register" class="register-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if .RegisterTab}}bg-white shadow{{end}}">
+            <a href="/auth?tab=register" class="register-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if .RegisterTab}}bg-white dark:bg-dark-surface shadow{{end}}">
                 Inscription
             </a>
         </div>
 
-        <div class="forms">
+        <div class="forms p-6">
             <!-- Login Form -->
             <form id="loginForm" action="/auth" method="POST" class="space-y-4" {{if .RegisterTab}}style="display:none"{{end}}>
-                <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Connexion</h2>
+                <h2 class="text-2xl font-bold text-primary dark:text-light mb-6 text-center">Connexion</h2>
                 <input type="hidden" name="action" value="login">
 
                 <div>
@@ -106,9 +113,9 @@
                            name="email"
                            placeholder="Email"
                            required
-                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                     {{if .EmailError}}
-                    <p class="mt-1 text-sm text-red-600">{{.EmailError}}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.EmailError}}</p>
                     {{end}}
                 </div>
 
@@ -117,31 +124,30 @@
                            name="password"
                            placeholder="Mot de passe"
                            required
-                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                     {{if .PasswordError}}
-                    <p class="mt-1 text-sm text-red-600">{{.PasswordError}}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.PasswordError}}</p>
                     {{end}}
                 </div>
 
                 <button type="submit"
-                        class="w-full bg-[#361134] text-white py-2 rounded-lg hover:bg-[#B0228C] transition-colors">
+                        class="w-full bg-primary text-white dark:bg-dark-primary py-2 rounded-md hover:bg-opacity-90 transition-colors">
                     Se connecter
                 </button>
             </form>
 
-
             <!-- Register Form -->
             <form id="registerForm" action="/auth" method="POST" class="space-y-4" {{if not .RegisterTab}}style="display:none"{{end}}>
-                <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
+                <h2 class="text-2xl font-bold text-primary dark:text-light mb-6 text-center">Inscription</h2>
                 <input type="hidden" name="action" value="register">
 
                 <div>
                     <input type="text"
                            name="username"
-                           placeholder="Nom complet"
+                           placeholder="Nom d'utilisateur"
                            required
                            value="{{.RegisterUsername}}"
-                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                 </div>
 
                 <div>
@@ -151,10 +157,10 @@
                            required
                            value="{{.RegisterEmail}}"
                            onchange="this.form.elements['checkEmail'].value='true'; this.form.submit();"
-                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                     <input type="hidden" name="checkEmail" value="false">
                     {{if .RegisterEmailError}}
-                    <p class="mt-1 text-sm text-red-600">{{.RegisterEmailError}}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.RegisterEmailError}}</p>
                     {{end}}
                 </div>
 
@@ -163,9 +169,9 @@
                            name="password"
                            placeholder="Mot de passe"
                            required
-                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                     {{if .RegisterPasswordError}}
-                    <p class="mt-1 text-sm text-red-600">{{.RegisterPasswordError}}</p>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.RegisterPasswordError}}</p>
                     {{end}}
                 </div>
 
@@ -174,10 +180,10 @@
                            name="confirm-password"
                            placeholder="Confirmer le mot de passe"
                            required
-                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                 </div>
 
-                <button type="submit" class="w-full bg-[#361134] text-white py-2 rounded-lg hover:bg-[#B0228C] transition-colors">
+                <button type="submit" class="w-full bg-accent text-white dark:bg-dark-accent py-2 rounded-md hover:bg-opacity-90 transition-colors">
                     S'inscrire
                 </button>
             </form>
@@ -186,27 +192,55 @@
             <div class="mt-6">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-[#EA3788]"></div>
+                        <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-[#361134]">Ou continuer avec</span>
+                        <span class="px-2 bg-white text-gray-600 dark:bg-dark-surface dark:text-gray-400">Ou continuer avec</span>
                     </div>
                 </div>
 
                 <div class="mt-6 grid grid-cols-2 gap-3">
                     <a href="/auth/google"
-                       class="flex items-center justify-center gap-2 px-4 py-2 border border-[#EA3788] rounded-lg hover:bg-[#EA3788]/10 transition-colors">
-                        <i class="ri-google-fill text-xl text-[#E56B70]"></i>
+                       class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-colors">
+                        <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        </svg>
                         Google
                     </a>
                     <a href="/auth/github"
-                       class="flex items-center justify-center gap-2 px-4 py-2 border border-[#EA3788] rounded-lg hover:bg-[#EA3788]/10 transition-colors">
-                        <i class="ri-github-fill text-xl text-[#361134]"></i>
+                       class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/>
+                        </svg>
                         GitHub
                     </a>
                 </div>
             </div>
         </div>
     </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-primary dark:bg-dark-primary text-gray-300 py-6 mt-12">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-lg font-semibold mb-2 text-pale dark:text-dark-pale">PhrasInachev</h3>
+                <p class="text-sm">Le forum où on ne finit jamais nos</p>
+            </div>
+            <div class="text-sm">
+                <div>&copy; 2025 PhrasInachev. Tous droits</div>
+                <div class="mt-2">
+                    <a href="/mentions-legales" class="hover:text-white">Mentions</a> |
+                    <a href="/confidentialite" class="hover:text-white">Politique de</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>
