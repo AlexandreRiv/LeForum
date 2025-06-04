@@ -12,13 +12,28 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	confirmPassword := r.FormValue("confirm-password")
+	checkEmail := r.FormValue("checkEmail") == "true"
 
 	data := make(map[string]interface{})
 
-	// Vérifier si l'email existe déjà
+	if checkEmail {
+		_, err := storage.GetUserByEmail(email)
+		if err == nil {
+			// Email already exists
+			data["RegisterEmailError"] = "Cet email est déjà utilisé"
+			data["RegisterEmail"] = email
+			h.templates.ExecuteTemplate(w, "authentification.html", data)
+			return
+		}
+		// Email is available, reload the form without error
+		data["RegisterEmail"] = email
+		h.templates.ExecuteTemplate(w, "authentification.html", data)
+		return
+	}
+
+	// Regular registration process
 	_, err := storage.GetUserByEmail(email)
 	if err == nil {
-		// L'email existe déjà
 		data["RegisterEmailError"] = "Cet email est déjà utilisé"
 		h.templates.ExecuteTemplate(w, "authentification.html", data)
 		return
