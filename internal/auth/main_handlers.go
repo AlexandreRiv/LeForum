@@ -12,7 +12,7 @@ type Handler struct {
 }
 
 func NewHandler() *Handler {
-	tmpl, err := template.ParseGlob("web/templates/*.html")
+	tmpl, err := template.ParseGlob("web/templates/**/*.html")
 	if err != nil {
 		log.Fatalf("Erreur de chargement des templates: %v", err)
 	}
@@ -50,6 +50,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tab := r.URL.Query().Get("tab")
 	data := map[string]interface{}{
 		"RegisterTab": tab == "register",
+		"DarkMode":    getDarkModeFromCookie(r),
+		"CurrentPage": "auth",
 	}
 
 	err = h.templates.ExecuteTemplate(w, "authentification.html", data)
