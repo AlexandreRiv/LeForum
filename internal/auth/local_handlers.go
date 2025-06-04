@@ -13,6 +13,17 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	confirmPassword := r.FormValue("confirm-password")
 
+	data := make(map[string]interface{})
+
+	// Vérifier si l'email existe déjà
+	_, err := storage.GetUserByEmail(email)
+	if err == nil {
+		// L'email existe déjà
+		data["RegisterEmailError"] = "Cet email est déjà utilisé"
+		h.templates.ExecuteTemplate(w, "authentification.html", data)
+		return
+	}
+
 	if password != confirmPassword {
 		http.Error(w, "Passwords don't match", http.StatusBadRequest)
 		return

@@ -96,33 +96,36 @@
 
             <!-- Register Form -->
             <form id="registerForm" action="/auth" method="POST" class="hidden space-y-4">
-    <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
-    <input type="hidden" name="action" value="register">
+                <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
+                <input type="hidden" name="action" value="register">
 
-    <div>
-        <input type="text" name="username" placeholder="Nom complet" required
-               class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
-    </div>
+                <div>
+                    <input type="text" name="username" placeholder="Nom complet" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
 
-    <div>
-        <input type="email" name="email" placeholder="Email" required
-               class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
-    </div>
+                <div>
+                    <input type="email" name="email" placeholder="Email" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                    {{if .RegisterEmailError}}
+                    <p class="mt-1 text-sm text-red-600">{{.RegisterEmailError}}</p>
+                    {{end}}
+                </div>
 
-    <div>
-        <input type="password" name="password" placeholder="Mot de passe" required
-               class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
-    </div>
+                <div>
+                    <input type="password" name="password" placeholder="Mot de passe" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
 
-    <div>
-        <input type="password" name="confirm-password" placeholder="Confirmer le mot de passe" required
-               class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
-    </div>
+                <div>
+                    <input type="password" name="confirm-password" placeholder="Confirmer le mot de passe" required
+                           class="w-full px-4 py-2 border border-[#E56B70] rounded-lg focus:ring-2 focus:ring-[#361134] focus:border-transparent">
+                </div>
 
-    <button type="submit" class="w-full bg-[#361134] text-white py-2 rounded-lg hover:bg-[#B0228C] transition-colors">
-        S'inscrire
-    </button>
-</form>
+                <button type="submit" class="w-full bg-[#361134] text-white py-2 rounded-lg hover:bg-[#B0228C] transition-colors">
+                    S'inscrire
+                </button>
+            </form>
 
         <!-- Social Login -->
         <div class="mt-6">
