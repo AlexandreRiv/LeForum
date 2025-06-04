@@ -44,18 +44,20 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
+	data := make(map[string]interface{})
+
 	user, err := storage.GetUserByEmail(email)
 	if err != nil {
 		log.Printf("Login failed for email %s: %v", email, err)
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Invalid credentials"))
+		data["EmailError"] = "Email invalide"
+		h.templates.ExecuteTemplate(w, "authentification.html", data)
 		return
 	}
 
 	if !CheckPassword(password, user.Password) {
 		log.Printf("Invalid password for email %s", email)
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Invalid credentials"))
+		data["PasswordError"] = "Mot de passe incorrect"
+		h.templates.ExecuteTemplate(w, "authentification.html", data)
 		return
 	}
 
@@ -67,8 +69,7 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	if err := CreateSession(w, loggedUser); err != nil {
 		log.Printf("Failed to create session for %s: %v", email, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
