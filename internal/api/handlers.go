@@ -2,76 +2,71 @@ package api
 
 import (
 	"html/template"
+	"log"
 	"net/http"
-	"time"
 )
 
-type PageData struct {
-	DarkMode    bool
-	CurrentPage string
-}
+// Récupère les templates pour le rendu des pages
+var templates = template.Must(template.ParseGlob("web/templates/*.html"))
 
-func PostHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("web/templates/post_page.html"))
-	tmpl.Execute(w, nil)
-}
-
-func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("web/templates/categories.html"))
-	tmpl.Execute(w, nil)
-}
-
+// Handler principal pour la page d'accueil
 func Handler(w http.ResponseWriter, r *http.Request) {
-	// check if the dark mode cookie exists
-	darkMode := false
-	cookie, err := r.Cookie("darkMode")
-	if err == nil && cookie.Value == "true" {
-		darkMode = true
-	}
-
-	data := PageData{
-		DarkMode: darkMode,
-	}
-
-	tmpl := template.Must(template.ParseFiles("web/templates/home_page.html"))
-	tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Erreur d'affichage du template: "+err.Error(), http.StatusInternalServerError)
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
 		return
 	}
-}
 
-func ToggleThemeHandler(w http.ResponseWriter, r *http.Request) {
-	// read the cookie to check the current theme
-	darkMode := false
-	cookie, err := r.Cookie("darkMode")
-	if err == nil && cookie.Value == "true" {
-		darkMode = true
+	darkMode := getDarkModeFromCookie(r)
+
+	data := struct {
+		DarkMode    bool
+		CurrentPage string
+	}{
+		DarkMode:    darkMode,
+		CurrentPage: "home",
 	}
 
-	// reverse the theme
-	darkMode = !darkMode
+	err := templates.ExecuteTemplate(w, "home_page.html", data)
+	if err != nil {
+		log.Printf("Erreur d'affichage du template: %v", err)
+		http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+	}
+}
 
-	// set the cookie to 1 year for the expiration
-	expiration := time.Now().Add(365 * 24 * time.Hour)
-	http.SetCookie(w, &http.Cookie{
-		Name:    "darkMode",
-		Value:   boolToString(darkMode),
-		Expires: expiration,
-		Path:    "/",
-	})
+// Récupère la préférence de mode sombre depuis le cookie
+func getDarkModeFromCookie(r *http.Request) bool {
+	cookie, err := r.Cookie("dark_mode")
+	if err != nil {
+		// Le cookie n'existe pas, retourner la valeur par défaut (false)
+		return false
+	}
+	return cookie.Value == "true"
+}
 
-	// redirect to the referer page
+// Bascule entre le mode clair et le mode sombre
+func ToggleThemeHandler(w http.ResponseWriter, r *http.Request) {
+	darkMode := !getDarkModeFromCookie(r)
+
+	value := "false"
+	if darkMode {
+		value = "true"
+	}
+
+	cookie := &http.Cookie{
+		Name:     "dark_mode",
+		Value:    value,
+		Path:     "/",
+		MaxAge:   365 * 24 * 60 * 60, // 1 an
+		HttpOnly: false,
+	}
+
+	http.SetCookie(w, cookie)
+
+	// Rediriger vers la page précédente
 	referer := r.Header.Get("Referer")
 	if referer == "" {
 		referer = "/"
 	}
-	http.Redirect(w, r, referer, http.StatusSeeOther)
-}
 
-func boolToString(b bool) string {
-	if b {
-		return "true"
-	}
-	return "false"
+	http.Redirect(w, r, referer, http.StatusSeeOther)
 }
