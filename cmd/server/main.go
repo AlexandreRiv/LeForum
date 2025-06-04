@@ -46,7 +46,6 @@ func main() {
 
 	// Routes principales
 	mux.HandleFunc("/", api.Handler)
-	mux.HandleFunc("/auth", api.AuthHandler)
 	mux.HandleFunc("/toggle-theme", api.ToggleThemeHandler)
 
 	// Authentification
