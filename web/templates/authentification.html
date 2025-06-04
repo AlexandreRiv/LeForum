@@ -104,7 +104,7 @@
 
 
             <!-- Register Form -->
-            <form id="registerForm" action="/auth/check-email" method="POST" class="space-y-4" {{if not .RegisterTab}}style="display:none"{{end}}>
+            <form id="registerForm" action="/auth" method="POST" class="space-y-4" {{if not .RegisterTab}}style="display:none"{{end}}>
             <h2 class="text-2xl font-bold text-[#361134] mb-6 text-center">Inscription</h2>
                 <input type="hidden" name="action" value="register">
 
