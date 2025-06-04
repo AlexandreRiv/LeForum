@@ -45,7 +45,7 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Routes principales
-	mux.HandleFunc("/", indexHandler)
+	mux.HandleFunc("/", api.Handler)
 	mux.HandleFunc("/toggle-theme", api.ToggleThemeHandler)
 
 	// Authentification
