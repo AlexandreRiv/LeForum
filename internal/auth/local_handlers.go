@@ -14,24 +14,28 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	confirmPassword := r.FormValue("confirm-password")
 	checkEmail := r.FormValue("checkEmail") == "true"
 
-	data := make(map[string]interface{})
+	data := map[string]interface{}{
+		"RegisterEmail":    email,
+		"RegisterUsername": username,
+	}
 
+	// Force le formulaire d'inscription à rester ouvert
+	data["RegisterTab"] = true
+
+	// Vérifie si c'est juste une vérification d'email
 	if checkEmail {
 		_, err := storage.GetUserByEmail(email)
 		if err == nil {
-			// Email already exists
 			data["RegisterEmailError"] = "Cet email est déjà utilisé"
-			data["RegisterEmail"] = email
 			h.templates.ExecuteTemplate(w, "authentification.html", data)
 			return
 		}
-		// Email is available, reload the form without error
-		data["RegisterEmail"] = email
+		// Email disponible, recharge le formulaire sans erreur
 		h.templates.ExecuteTemplate(w, "authentification.html", data)
 		return
 	}
 
-	// Regular registration process
+	// Processus d'inscription normal
 	_, err := storage.GetUserByEmail(email)
 	if err == nil {
 		data["RegisterEmailError"] = "Cet email est déjà utilisé"
@@ -40,7 +44,8 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if password != confirmPassword {
-		http.Error(w, "Passwords don't match", http.StatusBadRequest)
+		data["RegisterPasswordError"] = "Les mots de passe ne correspondent pas"
+		h.templates.ExecuteTemplate(w, "authentification.html", data)
 		return
 	}
 
