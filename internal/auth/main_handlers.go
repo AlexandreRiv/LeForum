@@ -54,6 +54,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.Handle("/auth", h)
+	mux.HandleFunc("/auth/check-email", h.handleCheckEmail)
 	mux.HandleFunc("/users", h.UserPageHandler)
 	mux.HandleFunc("/auth/google", GoogleLoginHandler)
 	mux.HandleFunc("/auth/google/callback", GoogleCallbackHandler)

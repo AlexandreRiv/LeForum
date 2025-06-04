@@ -106,3 +106,18 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
+
+func (h *Handler) handleCheckEmail(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	data := make(map[string]interface{})
+	data["RegisterTab"] = true // Keep registration form visible
+
+	// Check if the email exists
+	_, err := storage.GetUserByEmail(email)
+	if err == nil {
+		data["RegisterEmailError"] = "Cet email est déjà utilisé"
+	}
+
+	// Render the form with the error message
+	h.templates.ExecuteTemplate(w, "authentification.html", data)
+}
