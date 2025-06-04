@@ -10,6 +10,7 @@ import (
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/google"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -81,39 +82,58 @@ func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := googleOauthConfig.Exchange(context.Background(), r.FormValue("code"))
 	if err != nil {
-		http.Error(w, "Impossible d'échanger le code : "+err.Error(), http.StatusInternalServerError)
+		log.Printf("Erreur échange code: %v", err)
+		http.Error(w, "Impossible d'échanger le code", http.StatusInternalServerError)
 		return
 	}
 
 	client := googleOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		http.Error(w, "Impossible de récupérer les infos utilisateur : "+err.Error(), http.StatusInternalServerError)
+		log.Printf("Erreur récupération infos: %v", err)
+		http.Error(w, "Impossible de récupérer les infos utilisateur", http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
 
 	var userInfo map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
-		http.Error(w, "Erreur de décodage: "+err.Error(), http.StatusInternalServerError)
+		log.Printf("Erreur décodage JSON: %v", err)
+		http.Error(w, "Erreur de décodage", http.StatusInternalServerError)
+		return
+	}
+
+	email := userInfo["email"].(string)
+	name := userInfo["name"].(string)
+
+	// Save user if not exists
+	err = storage.SaveUserIfNotExists(email, name)
+	if err != nil {
+		log.Printf("Erreur sauvegarde utilisateur: %v", err)
+		http.Error(w, "Erreur sauvegarde utilisateur", http.StatusInternalServerError)
 		return
 	}
 
 	user := LoggedUser{
-		Email:     userInfo["email"].(string),
-		Name:      userInfo["name"].(string),
+		Email:     email,
+		Name:      name,
 		LoginTime: time.Now(),
 	}
 
+	// Create session with error handling
 	err = CreateSession(w, user)
-
 	if err != nil {
-		http.Error(w, "Error creating session", http.StatusInternalServerError)
+		log.Printf("Erreur création session: %v", err)
+		http.Error(w, "Erreur création session", http.StatusInternalServerError)
 		return
 	}
 
-	storage.SaveUserIfNotExists(user.Email, user.Name)
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	// Store user in manager
+	manager.mu.Lock()
+	manager.users[email] = user
+	manager.mu.Unlock()
+
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
 func GithubLoginHandler(w http.ResponseWriter, r *http.Request) {

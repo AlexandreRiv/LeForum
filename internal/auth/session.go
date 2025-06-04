@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -26,14 +27,23 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 	sessionID := generateSessionID()
 	expiresAt := time.Now().Add(5 * time.Hour)
 
-	_, err := storage.DB.Exec(
+	// Insert session into database with error checking
+	result, err := storage.DB.Exec(
 		"INSERT INTO sessions (id, user_email, expires_at) VALUES (?, ?, ?)",
 		sessionID,
 		user.Email,
 		expiresAt,
 	)
 	if err != nil {
+		log.Printf("Erreur insertion session DB: %v", err)
 		return err
+	}
+
+	// Verify insertion
+	rows, err := result.RowsAffected()
+	if err != nil || rows != 1 {
+		log.Printf("Session non insérée correctement: %v", err)
+		return fmt.Errorf("session non créée")
 	}
 
 	// Store user in manager
@@ -41,6 +51,7 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 	manager.users[user.Email] = user
 	manager.mu.Unlock()
 
+	// Set cookie
 	cookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -51,6 +62,7 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 		Expires:  expiresAt,
 	}
 	http.SetCookie(w, cookie)
+
 	return nil
 }
 
