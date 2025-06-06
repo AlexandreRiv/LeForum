@@ -6,7 +6,12 @@
             <ul class="flex space-x-4 mr-4">
                 <li><a href="/" class="hover:underline {{if eq .CurrentPage "home"}}font-bold underline{{end}}">Accueil</a></li>
                 <li><a href="/categories" class="hover:underline {{if eq .CurrentPage "categories"}}font-bold underline{{end}}">Catégories</a></li>
-                <li><a href="/auth" class="hover:underline {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">Connexion</a></li>
+                {{if .User}}
+                    <li><a href="/users" class="hover:underline {{if eq .CurrentPage "profile"}}font-bold underline{{end}}">Mon Profil</a></li>
+                    <li><a href="/logout" class="hover:underline">Déconnexion</a></li>
+                {{else}}
+                    <li><a href="/auth" class="hover:underline {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">Connexion</a></li>
+                {{end}}
             </ul>
             <a href="/toggle-theme"
                class="dark-toggle p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">

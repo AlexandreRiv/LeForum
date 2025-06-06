@@ -33,19 +33,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
 
-<!-- Header -->
-<header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
-    <div class="flex justify-between items-center max-w-6xl mx-auto">
-        <h1 class="text-3xl font-semibold">PhrasInachev</h1>
-        <nav class="flex items-center">
-            <ul class="flex space-x-4">
-                <li><a href="/" class="hover:underline">Accueil</a></li>
-                <li><a href="/categories" class="hover:underline font-bold underline">Catégories</a></li>
-                <li><a href="#" class="hover:underline">Connexion</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
+{{template "header" .}}
 
 <!-- Breadcrumb -->
 <div class="max-w-6xl mx-auto px-4 py-2 text-sm">
