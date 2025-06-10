@@ -71,12 +71,29 @@
         nav a {
             display: flex;
             align-items: center;
-            gap: 0.25rem; /* Espacement uniforme entre icône et texte */
+            gap: 0.35rem;
             height: 100%;
+            position: relative;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            overflow: hidden;
         }
 
         nav .fi {
             font-size: 1.25rem;
+            transition: transform 0.2s ease;
+        }
+
+        /* Effet de survol style JVC */
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a:hover .fi {
+            transform: scale(1.15);
         }
 
         /* Assurer que le texte est centré verticalement avec l'icône */
@@ -84,6 +101,29 @@
             display: inline-flex;
             align-items: center;
             height: 100%;
+            position: relative;
+        }
+
+        /* Effet de trait qui apparaît par en-dessous */
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        nav a:hover::after {
+            width: 80%;
+        }
+
+        /* Style actif */
+        nav a.active {
+            font-weight: bold;
         }
 
         @media (max-width: 640px) {
@@ -92,36 +132,40 @@
             }
 
             nav ul {
-                gap: 1rem;
+                gap: 0.5rem;
+            }
+
+            nav a {
+                padding: 0.35rem;
             }
         }
     </style>
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <h1 class="text-3xl font-semibold">PhrasInachev</h1>
         <nav class="flex items-center">
-            <ul class="flex space-x-4 mr-4 items-center">
+            <ul class="flex space-x-2 mr-4 items-center">
                 <li>
-                    <a href="/" class="hover:underline flex items-center {{if eq .CurrentPage "home"}}font-bold underline{{end}}">
+                    <a href="/" class="hover:underline flex items-center {{if eq .CurrentPage "home"}}active{{end}}">
                     <i class="fi fi-rr-home"></i>
                     <span class="hidden sm:inline">Accueil</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/categories" class="hover:underline flex items-center {{if eq .CurrentPage "categories"}}font-bold underline{{end}}">
+                    <a href="/categories" class="hover:underline flex items-center {{if eq .CurrentPage "categories"}}active{{end}}">
                     <i class="fi fi-rr-apps"></i>
                     <span class="hidden sm:inline">Catégories</span>
                     </a>
                 </li>
                 {{if .User}}
                 <li>
-                    <a href="/users" class="hover:underline flex items-center {{if eq .CurrentPage "profile"}}font-bold underline{{end}}">
+                    <a href="/users" class="hover:underline flex items-center {{if eq .CurrentPage "profile"}}active{{end}}">
                     <i class="fi fi-rr-user"></i>
                     <span class="hidden sm:inline">Mon Profil</span>
                     </a>
                 </li>
                 {{else}}
                 <li>
-                    <a href="/auth" class="hover:underline flex items-center {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">
+                    <a href="/auth" class="hover:underline flex items-center {{if eq .CurrentPage "auth"}}active{{end}}">
                     <i class="fi fi-rr-user"></i>
                     <span class="hidden sm:inline">Connexion</span>
                     </a>
