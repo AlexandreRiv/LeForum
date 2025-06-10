@@ -139,12 +139,15 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		data.AllCategories[i] = cat.Name
 	}
 
-	// Mettre à jour le template pour utiliser les données dynamiques
-	tmpl := template.Must(template.New("categories.html").Funcs(funcMap).ParseFiles("web/templates/categories.html"))
+	// Créer un template de base avec les fonctions
+	tmpl := template.New("").Funcs(funcMap)
+
+	// Analyser tous les templates
+	template.Must(tmpl.ParseFiles("web/templates/categories.html"))
 	template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
 
 	// Passer les catégories à la vue
-	if err := tmpl.Execute(w, struct {
+	if err := tmpl.ExecuteTemplate(w, "categories.html", struct {
 		PageData
 		Categories []struct {
 			Name         string
