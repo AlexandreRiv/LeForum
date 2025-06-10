@@ -57,6 +57,33 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LikePostHandler(w http.ResponseWriter, r *http.Request) {
+	SQLLikeRequest := "INSERT INTO liked_posts VALUES ((SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?), ?, ?);"
+
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			http.Error(w, "Cookie 'session_id' non trouvé", http.StatusUnauthorized)
+			return
+		}
+		http.Error(w, "Erreur lors de la lecture du cookie", http.StatusBadRequest)
+		return
+	}
+
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "Id parameter is missing", http.StatusBadRequest)
+		return
+	}
+
+	_, err = storage.DB.Exec(
+		SQLLikeRequest,
+		cookie.Value,
+		id,
+		1,
+	)
+	if err != nil {
+		return
+	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
