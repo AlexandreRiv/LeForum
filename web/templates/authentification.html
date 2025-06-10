@@ -24,7 +24,6 @@
             --transition-speed: 0.5s;
         }
 
-        /* Animation pour la carte */
         .auth-card {
             transition: transform 0.5s ease, box-shadow 0.5s ease;
         }
@@ -34,7 +33,6 @@
             box-shadow: 0 20px 25px rgba(0,0,0,0.1);
         }
 
-        /* Animations pour les onglets */
         .tabs-container {
             position: relative;
             overflow: hidden;
@@ -140,7 +138,6 @@
             transform: translateX(100%);
         }
 
-        /* Animation pour les liens sociaux */
         .social-link {
             transition: all 0.3s ease;
             position: relative;
@@ -159,7 +156,6 @@
             transform: scale(1.2);
         }
 
-        /* Animations pour les labels et messages d'erreur */
         .form-appear > * {
             opacity: 0;
             transform: translateY(10px);
@@ -187,7 +183,7 @@
             <div class="tab-indicator"></div>
             <div class="tabs flex relative z-10">
                 <a href="/auth?tab=login"
-                   class="login-tab w-1/2 py-2.5 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 z-10 flex justify-center items-center gap-2">
+                   class="login-tab w-1/2 py-2.5 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 z-10 flex justify-center items-center gap-2 mt-2">
                     <i class="fi fi-rr-user text-primary dark:text-light"></i>
                     <span>Connexion</span>
                 </a>
