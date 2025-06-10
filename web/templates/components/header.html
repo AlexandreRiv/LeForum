@@ -52,7 +52,6 @@
                 <li><a href="/categories" class="hover:underline {{if eq .CurrentPage "categories"}}font-bold underline{{end}}">Catégories</a></li>
                 {{if .User}}
                 <li><a href="/users" class="hover:underline {{if eq .CurrentPage "profile"}}font-bold underline{{end}}">Mon Profil</a></li>
-                <li><a href="/logout" class="hover:underline">Déconnexion</a></li>
                 {{else}}
                 <li><a href="/auth" class="hover:underline {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">Connexion</a></li>
                 {{end}}
