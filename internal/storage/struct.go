@@ -8,4 +8,6 @@ type Post struct {
     Categories []string
     Likes      int
     Dislikes   int
+    Comments   int
+    CreatedAt  string
 }

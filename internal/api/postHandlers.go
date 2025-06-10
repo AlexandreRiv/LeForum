@@ -4,6 +4,7 @@ import (
 	"LeForum/internal/storage"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +15,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	SQLPostRequest := "INSERT INTO posts (title, content, id_user) VALUES (?, ?, (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?));"
+	SQLPostRequest := "INSERT INTO posts (title, content, id_user, created_at) VALUES (?, ?, (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?), ?);"
 	SQLAffectRequest := "INSERT INTO affectation VALUES ((SELECT id FROM posts WHERE title = ? AND content = ? AND id_user = (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?)), (SELECT id FROM categories WHERE name = ?));"
 
 	cookie, err := r.Cookie("session_id")
@@ -27,11 +28,14 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	createdAt := time.Now().Add(2 * time.Hour)
+
 	_, err = storage.DB.Exec(
 		SQLPostRequest,
 		r.FormValue("title"),
 		r.FormValue("content"),
 		cookie.Value,
+		createdAt,
 	)
 	if err != nil {
 		return
@@ -47,6 +51,18 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+	return
+}
+
+func LikePostHandler(w http.ResponseWriter, r *http.Request) {
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+	return
+}
+
+func DislikePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return

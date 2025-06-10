@@ -48,7 +48,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
 
     SQLCatRequest := "SELECT name FROM categories;"
-    SQLPostsRequest := "SELECT posts.id,posts.title,posts.content,users.username,SUM(CASE WHEN liked_posts.liked = 1 THEN 1 ELSE 0 END) AS likes,SUM(CASE WHEN liked_posts.liked = 0 THEN 1 ELSE 0 END) AS dislikes FROM posts INNER JOIN users ON posts.id_user = users.id LEFT JOIN liked_posts ON liked_posts.id_post = posts.id GROUP BY posts.id;"
+    SQLPostsRequest := "SELECT posts.id,posts.title,posts.content,users.username,SUM(CASE WHEN liked_posts.liked = 1 THEN 1 ELSE 0 END) AS likes,SUM(CASE WHEN liked_posts.liked = 0 THEN 1 ELSE 0 END) AS dislikes,COUNT(distinct comments.id) AS comments FROM posts INNER JOIN users ON posts.id_user = users.id LEFT JOIN liked_posts ON liked_posts.id_post = posts.id LEFT JOIN comments ON comments.id_post = posts.id GROUP BY posts.id;"
     SQLPostsCatRequest := "SELECT categories.name FROM categories INNER JOIN affectation ON affectation.id_category = categories.id INNER JOIN posts ON posts.id = affectation.id_post WHERE posts.id = ?;"
 
     rows, err := storage.DB.Query(SQLCatRequest)
@@ -76,7 +76,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
     for rows.Next() {
         var post storage.Post
-        if err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Username, &post.Likes, &post.Dislikes); err != nil {
+        if err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Username, &post.Likes, &post.Dislikes, &post.Comments); err != nil {
             http.Error(w, "Failed to scan post", http.StatusInternalServerError)
             return
         }
