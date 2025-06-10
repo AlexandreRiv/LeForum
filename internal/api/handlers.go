@@ -17,19 +17,9 @@ type PageData struct {
 	User          *auth.LoggedUser
 }
 
-var templateFuncs = template.FuncMap{
-	"ToLower": strings.ToLower,
-}
-
 func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get current user if logged in
 	user, _ := auth.GetCurrentUser(r)
-
-	// Définir les fonctions template
-	funcMap := template.FuncMap{
-		"ToLower": strings.ToLower,
-		"Mod":     func(i, j int) int { return i % j },
-	}
 
 	// Données de la page
 	data := PageData{
@@ -63,6 +53,7 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	// Liste pour stocker les catégories avec leurs posts
 	var categories []struct {
 		Name         string
+		NameLower    string // Nouveau champ pour stocker le nom en minuscules
 		Icon         string
 		GradientFrom string
 		GradientTo   string
@@ -122,12 +113,14 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		// Ajouter cette catégorie avec ses posts
 		categories = append(categories, struct {
 			Name         string
+			NameLower    string
 			Icon         string
 			GradientFrom string
 			GradientTo   string
 			Posts        []storage.Post
 		}{
 			Name:         categoryName,
+			NameLower:    strings.ToLower(categoryName), // Conversion en minuscules
 			Icon:         style.Icon,
 			GradientFrom: style.GradientFrom,
 			GradientTo:   style.GradientTo,
@@ -143,10 +136,8 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		data.AllCategories[i] = cat.Name
 	}
 
-	// Créer le template avec son nom exact et les fonctions avant le parsing
-	tmpl := template.New("categories.html").Funcs(funcMap)
-
-	// Parser le fichier principal
+	// Parser les templates
+	tmpl := template.New("categories.html")
 	tmpl, err = tmpl.ParseFiles("web/templates/categories.html")
 	if err != nil {
 		http.Error(w, "Erreur de chargement du template principal: "+err.Error(), http.StatusInternalServerError)
@@ -165,6 +156,7 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		PageData
 		Categories []struct {
 			Name         string
+			NameLower    string
 			Icon         string
 			GradientFrom string
 			GradientTo   string
