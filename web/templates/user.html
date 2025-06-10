@@ -114,15 +114,15 @@
                 <div class="p-4">
                     <div class="flex space-x-4 mb-6">
                         <div class="flex-1 bg-primary/10 dark:bg-dark-primary/20 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold text-primary dark:text-light">0</div>
+                            <div class="text-2xl font-bold text-primary dark:text-light">{{.PostNumber}}</div>
                             <div class="text-sm text-gray-600 dark:text-gray-400">Posts</div>
                         </div>
                         <div class="flex-1 bg-secondary/10 dark:bg-dark-secondary/20 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold text-secondary dark:text-light">0</div>
+                            <div class="text-2xl font-bold text-secondary dark:text-light">{{.ResponseNb}}</div>
                             <div class="text-sm text-gray-600 dark:text-gray-400">Réponses</div>
                         </div>
                         <div class="flex-1 bg-accent/10 dark:bg-dark-accent/20 rounded-lg p-4 text-center">
-                            <div class="text-2xl font-bold text-accent dark:text-light">0</div>
+                            <div class="text-2xl font-bold text-accent dark:text-light">{{.Likes}}</div>
                             <div class="text-sm text-gray-600 dark:text-gray-400">Mentions "J'aime"</div>
                         </div>
                     </div>
@@ -148,7 +148,7 @@
                 </div>
                 <div class="p-4">
                     <div class="text-center py-8">
-                        <p class="text-gray-600 dark:text-gray-400">Vous n'avez pas encore commencé de</p>
+                        <p class="text-gray-600 dark:text-gray-400">Vous n'avez pas encore commencé de...</p>
                         <a href="/" class="mt-2 inline-block px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
                             Créer un post
                         </a>
@@ -165,7 +165,7 @@
         <div class="flex flex-col md:flex-row justify-between">
             <div class="mb-4 md:mb-0">
                 <h3 class="text-lg font-semibold mb-2 text-pale dark:text-dark-pale">PhrasInachev</h3>
-                <p class="text-sm">Le forum où on ne finit jamais nos</p>
+                <p class="text-sm">Le forum où on ne finit jamais nos...</p>
             </div>
             <div class="text-sm">
                 <div>&copy; 2025 PhrasInachev. Tous droits</div>

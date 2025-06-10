@@ -13,7 +13,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	SQLRequest := "INSERT INTO posts (title, content, id_user) VALUES (?, ?, (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?));"
+	SQLPostRequest := "INSERT INTO posts (title, content, id_user) VALUES (?, ?, (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?));"
+	SQLAffectRequest := "INSERT INTO affectation VALUES ((SELECT id FROM posts WHERE title = ? AND content = ? AND id_user = (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?)), (SELECT id FROM categories WHERE name = ?));"
 
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
@@ -26,10 +27,21 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = storage.DB.Exec(
-		SQLRequest,
+		SQLPostRequest,
 		r.FormValue("title"),
 		r.FormValue("content"),
 		cookie.Value,
+	)
+	if err != nil {
+		return
+	}
+
+	_, err = storage.DB.Exec(
+		SQLAffectRequest,
+		r.FormValue("title"),
+		r.FormValue("content"),
+		cookie.Value,
+		r.FormValue("category"),
 	)
 	if err != nil {
 		return

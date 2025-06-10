@@ -38,6 +38,10 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
         DarkMode    bool
         CurrentPage string
         User        *LoggedUser
+        Likes       int
+        PostNumber  int
+        ResponseNb  int
+        Posts       []storage.Post
     }{
         Name:        user.Name,
         Email:       user.Email,
@@ -46,6 +50,27 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
         CurrentPage: "profile",
         User:        &user,
     }
+
+    SQLPostNbReq := "SELECT COUNT(*) FROM posts WHERE posts.id_user = (SELECT id FROM users WHERE mail = ?);"
+    SQLRespNbReq := "SELECT COUNT(*) FROM comments WHERE comments.id_user = (SELECT id FROM users WHERE mail = ?);"
+    SQLLikeNbReq := "SELECT COUNT(*) FROM liked_posts INNER JOIN posts ON liked_posts.id_post = posts.id WHERE liked_posts.liked = 1 AND posts.id_user = (SELECT id FROM users WHERE mail = ?);"
+
+    err = storage.DB.QueryRow(SQLPostNbReq, data.Email).Scan(&data.PostNumber)
+    if err != nil {
+        http.Error(w, "Failed to fetch post number", http.StatusInternalServerError)
+		return
+    }
+    err = storage.DB.QueryRow(SQLRespNbReq, data.Email).Scan(&data.ResponseNb)
+    if err != nil {
+        http.Error(w, "Failed to fetch responses number", http.StatusInternalServerError)
+		return
+    }
+    err = storage.DB.QueryRow(SQLLikeNbReq, data.Email).Scan(&data.Likes)
+    if err != nil {
+        http.Error(w, "Failed to fetch responses number", http.StatusInternalServerError)
+		return
+    }
+
 
     err = h.templates.ExecuteTemplate(w, "user.html", data)
     if err != nil {
