@@ -24,14 +24,14 @@
         }
 
         .dark-toggle i {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            display: flex;
+            display: inline-flex;
             justify-content: center;
+            align-items: center;
+        }
+
+        .dark-toggle div {
+            position: relative;
+            display: flex;
             align-items: center;
         }
 
@@ -110,14 +110,14 @@
                 </li>
                 {{end}}
             </ul>
-            <a href="/toggle-theme" class="dark-toggle flex items-center justify-center">
-                <div class="flex items-center">
-                    <i class="fi fi-rr-moon moon text-xl"></i>
-                    <span class="moon hidden sm:inline ml-1">Sombre</span>
+            <a href="/toggle-theme" class="dark-toggle">
+                <div class="moon flex items-center">
+                    <i class="fi fi-rr-moon text-xl"></i>
+                    <span class="hidden sm:inline ml-2">Sombre</span>
                 </div>
-                <div class="flex items-center">
-                    <i class="fi fi-rr-sun sun text-xl"></i>
-                    <span class="sun hidden sm:inline ml-1">Clair</span>
+                <div class="sun flex items-center">
+                    <i class="fi fi-rr-sun text-xl"></i>
+                    <span class="hidden sm:inline ml-2">Clair</span>
                 </div>
             </a>
         </nav>
