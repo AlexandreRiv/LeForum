@@ -43,17 +43,51 @@
             justify-content: center;
             line-height: 1;
         }
+
+        nav .fi {
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            nav .fi {
+                font-size: 1.5rem;
+            }
+
+            nav ul {
+                gap: 1rem;
+            }
+        }
     </style>
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <h1 class="text-3xl font-semibold">PhrasInachev</h1>
         <nav class="flex items-center">
             <ul class="flex space-x-4 mr-4">
-                <li><a href="/" class="hover:underline {{if eq .CurrentPage "home"}}font-bold underline{{end}}">Accueil</a></li>
-                <li><a href="/categories" class="hover:underline {{if eq .CurrentPage "categories"}}font-bold underline{{end}}">Catégories</a></li>
+                <li>
+                    <a href="/" class="hover:underline flex items-center {{if eq .CurrentPage "home"}}font-bold underline{{end}}">
+                    <i class="fi fi-rr-home mr-1"></i>
+                    <span class="hidden sm:inline">Accueil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/categories" class="hover:underline flex items-center {{if eq .CurrentPage "categories"}}font-bold underline{{end}}">
+                    <i class="fi fi-rr-apps mr-1"></i>
+                    <span class="hidden sm:inline">Catégories</span>
+                    </a>
+                </li>
                 {{if .User}}
-                <li><a href="/users" class="hover:underline {{if eq .CurrentPage "profile"}}font-bold underline{{end}}">Mon Profil</a></li>
+                <li>
+                    <a href="/users" class="hover:underline flex items-center {{if eq .CurrentPage "profile"}}font-bold underline{{end}}">
+                    <i class="fi fi-rr-user mr-1"></i>
+                    <span class="hidden sm:inline">Mon Profil</span>
+                    </a>
+                </li>
                 {{else}}
-                <li><a href="/auth" class="hover:underline {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">Connexion</a></li>
+                <li>
+                    <a href="/auth" class="hover:underline flex items-center {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">
+                    <i class="fi fi-rr-sign-in mr-1"></i>
+                    <span class="hidden sm:inline">Connexion</span>
+                    </a>
+                </li>
                 {{end}}
             </ul>
             <a href="/toggle-theme" class="dark-toggle flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700">
