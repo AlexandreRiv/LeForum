@@ -1,6 +1,7 @@
 {{define "header"}}
 <header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
     <style>
+        /* Styles existants pour le thème sombre/clair */
         .dark .dark-toggle .moon {
             display: block;
             color: white;
@@ -57,15 +58,32 @@
             color: white;
         }
 
+        /* Styles améliorés pour les icônes */
         .fi {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             line-height: 1;
+            vertical-align: middle;
+        }
+
+        /* Amélioration de l'alignement icône-texte */
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem; /* Espacement uniforme entre icône et texte */
+            height: 100%;
         }
 
         nav .fi {
             font-size: 1.25rem;
+        }
+
+        /* Assurer que le texte est centré verticalement avec l'icône */
+        nav a span {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
         }
 
         @media (max-width: 640px) {
@@ -84,27 +102,27 @@
             <ul class="flex space-x-4 mr-4 items-center">
                 <li>
                     <a href="/" class="hover:underline flex items-center {{if eq .CurrentPage "home"}}font-bold underline{{end}}">
-                    <i class="fi fi-rr-home mr-1"></i>
+                    <i class="fi fi-rr-home"></i>
                     <span class="hidden sm:inline">Accueil</span>
                     </a>
                 </li>
                 <li>
                     <a href="/categories" class="hover:underline flex items-center {{if eq .CurrentPage "categories"}}font-bold underline{{end}}">
-                    <i class="fi fi-rr-apps mr-1"></i>
+                    <i class="fi fi-rr-apps"></i>
                     <span class="hidden sm:inline">Catégories</span>
                     </a>
                 </li>
                 {{if .User}}
                 <li>
                     <a href="/users" class="hover:underline flex items-center {{if eq .CurrentPage "profile"}}font-bold underline{{end}}">
-                    <i class="fi fi-rr-user mr-1"></i>
+                    <i class="fi fi-rr-user"></i>
                     <span class="hidden sm:inline">Mon Profil</span>
                     </a>
                 </li>
                 {{else}}
                 <li>
                     <a href="/auth" class="hover:underline flex items-center {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">
-                    <i class="fi fi-rr-user mr-1"></i>
+                    <i class="fi fi-rr-user"></i>
                     <span class="hidden sm:inline">Connexion</span>
                     </a>
                 </li>
@@ -112,11 +130,11 @@
                 <li>
                     <a href="/toggle-theme" class="dark-toggle hover:underline flex items-center">
                         <div class="moon flex items-center">
-                            <i class="fi fi-rr-moon text-xl mr-1"></i>
+                            <i class="fi fi-rr-moon"></i>
                             <span class="hidden sm:inline">Sombre</span>
                         </div>
                         <div class="sun flex items-center">
-                            <i class="fi fi-rr-sun text-xl mr-1"></i>
+                            <i class="fi fi-rr-sun"></i>
                             <span class="hidden sm:inline">Clair</span>
                         </div>
                     </a>
