@@ -139,15 +139,26 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		data.AllCategories[i] = cat.Name
 	}
 
-	// Créer un template de base avec les fonctions
-	tmpl := template.New("").Funcs(funcMap)
+	// Dans la partie chargement des templates, modifiez comme suit :
+	// Créer un template principal avec le bon nom et les fonctions
+	tmpl := template.New("categories.html").Funcs(funcMap)
 
-	// Analyser tous les templates
-	template.Must(tmpl.ParseFiles("web/templates/categories.html"))
-	template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
+	// Parser le fichier principal (il est important de commencer par celui-ci)
+	tmpl, err = tmpl.ParseFiles("web/templates/categories.html")
+	if err != nil {
+		http.Error(w, "Erreur de chargement du template principal: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// Passer les catégories à la vue
-	if err := tmpl.ExecuteTemplate(w, "categories.html", struct {
+	// Parser les composants
+	_, err = tmpl.ParseGlob("web/templates/components/*.html")
+	if err != nil {
+		http.Error(w, "Erreur de chargement des templates de composants: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Exécuter le template
+	if err := tmpl.Execute(w, struct {
 		PageData
 		Categories []struct {
 			Name         string
