@@ -7,7 +7,8 @@ import (
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("web/templates/post_page.html"))	
+	tmpl := template.Must(template.ParseFiles("web/templates/post_page.html"))
+	template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
 
 	tmpl.Execute(w, nil)
 }
