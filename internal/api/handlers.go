@@ -17,6 +17,10 @@ type PageData struct {
 	User          *auth.LoggedUser
 }
 
+var templateFuncs = template.FuncMap{
+	"ToLower": strings.ToLower,
+}
+
 func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	// Get current user if logged in
 	user, _ := auth.GetCurrentUser(r)
@@ -139,19 +143,17 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		data.AllCategories[i] = cat.Name
 	}
 
-	// Dans la partie chargement des templates, modifiez comme suit :
-	// Créer un template principal avec le bon nom et les fonctions
 	tmpl := template.New("categories.html").Funcs(funcMap)
 
-	// Parser le fichier principal (il est important de commencer par celui-ci)
+	// Parser le fichier principal
 	tmpl, err = tmpl.ParseFiles("web/templates/categories.html")
 	if err != nil {
 		http.Error(w, "Erreur de chargement du template principal: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Parser les composants
-	_, err = tmpl.ParseGlob("web/templates/components/*.html")
+	// Parser les composants en s'assurant que les fonctions sont appliquées
+	tmpl, err = tmpl.ParseGlob("web/templates/components/*.html")
 	if err != nil {
 		http.Error(w, "Erreur de chargement des templates de composants: "+err.Error(), http.StatusInternalServerError)
 		return
