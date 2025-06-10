@@ -93,7 +93,11 @@ func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) 
 		r.FormValue("content"),
 		session.ID,
 		r.FormValue("category"),
+<<<<<<< Updated upstream
 		imageBytes,
+=======
+		r.FormValue("image"),
+>>>>>>> Stashed changes
 	)
 
 	if err != nil {
