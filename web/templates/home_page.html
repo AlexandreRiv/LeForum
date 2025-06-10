@@ -11,6 +11,11 @@
           rel="stylesheet">
     <!-- CDN Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Ajout de Flaticon -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -99,11 +104,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-bold text-primary dark:text-light">Créer un post</h3>
                     <button onclick="document.getElementById('modal').classList.add('hidden')" class="cursor-pointer">
-                        <svg class="w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+                        <i class="fi fi-rr-cross w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"></i>
                     </button>
                 </div>
                 <form method="POST" action="/createPost" >
@@ -119,7 +120,7 @@
                         <select id="category" name="category"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                             {{range .AllCategories}}
-                                <option>{{.}}</option>
+                            <option>{{.}}</option>
                             {{end}}
                         </select>
                     </div>
@@ -159,9 +160,9 @@
                         </div>
                     </div>
                     {{range .Categories}}
-                        <div class="px-3 py-1 bg-secondary/10 dark:bg-dark-secondary/20 rounded-full text-secondary dark:text-light text-sm">
-                            {{.}}
-                        </div>
+                    <div class="px-3 py-1 bg-secondary/10 dark:bg-dark-secondary/20 rounded-full text-secondary dark:text-light text-sm">
+                        {{.}}
+                    </div>
                     {{end}}
                 </div>
                 <h3 class="text-xl font-semibold text-primary dark:text-light mb-2">{{.Title}}</h3>
@@ -169,16 +170,10 @@
                 <div class="flex justify-between items-center">
                     <div class="flex space-x-4 text-gray-500 dark:text-gray-400">
                         <span class="flex items-center gap-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path>
-                            </svg>{{.Likes}}
+                            <i class="fi fi-rr-thumbs-up w-5 h-5"></i>{{.Likes}}
                         </span>
                         <span class="flex items-center gap-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                      d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                      clip-rule="evenodd"></path>
-                            </svg>3
+                            <i class="fi fi-rr-comments w-5 h-5"></i>3
                         </span>
                     </div>
                     <a href="/post" class="text-secondary dark:text-accent hover:underline">Voir plus</a>
@@ -186,7 +181,7 @@
             </div>
         </div>
     </div>
-    {{end}} 
+    {{end}}
 
     <!-- Pagination -->
     <div class="flex justify-center mt-8">
