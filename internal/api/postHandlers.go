@@ -5,8 +5,8 @@ import (
 	"LeForum/internal/storage"
 	"html/template"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
@@ -121,14 +121,4 @@ func LikePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
-<<<<<<< HEAD
 }
-
-func DislikePostHandler(w http.ResponseWriter, r *http.Request) {
-
-	http.Redirect(w, r, "/", http.StatusSeeOther)
-	return
-}
-=======
-}
->>>>>>> 78dba9e (Test)
