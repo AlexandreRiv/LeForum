@@ -17,23 +17,6 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
 
-    <style>
-        .dark .dark-toggle .moon {
-            display: block;
-        }
-
-        .dark .dark-toggle .sun {
-            display: none;
-        }
-
-        .dark-toggle .moon {
-            display: none;
-        }
-
-        .dark-toggle .sun {
-            display: block;
-        }
-    </style>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
 
@@ -85,10 +68,13 @@
                         <div class="flex justify-between items-center">
                             <div class="flex space-x-4 text-gray-500 dark:text-gray-400">
                                 <span class="flex items-center gap-1">
-                                    <i class="fi fi-rr-thumbs-up w-5 h-5"></i>32
+                                    <i class="fi fi-rr-heart w-5 h-5"></i>{{.Likes}}
                                 </span>
                                 <span class="flex items-center gap-1">
-                                    <i class="fi fi-rr-comments w-5 h-5"></i>3
+                                    <i class="fi fi-rr-thumbs-down w-5 h-5"></i>{{.Dislikes}}
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <i class="fi fi-rr-comment w-5 h-5"></i>3
                                 </span>
                             </div>
                             <a href="/post" class="text-secondary dark:text-accent hover:underline">Voir plus</a>

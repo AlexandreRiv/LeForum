@@ -1,5 +1,38 @@
 {{define "header"}}
 <header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
+    <style>
+        .dark .dark-toggle .moon {
+            display: block;
+        }
+
+        .dark .dark-toggle .sun {
+            display: none;
+        }
+
+        .dark-toggle .moon {
+            display: none;
+        }
+
+        .dark-toggle .sun {
+            display: block;
+        }
+
+        /* Amélioration du centrage des icônes */
+        .dark-toggle i {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Ajustement pour toutes les icônes */
+        .fi {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <h1 class="text-3xl font-semibold">PhrasInachev</h1>
         <nav class="flex items-center">
@@ -13,10 +46,9 @@
                 <li><a href="/auth" class="hover:underline {{if eq .CurrentPage "auth"}}font-bold underline{{end}}">Connexion</a></li>
                 {{end}}
             </ul>
-            <a href="/toggle-theme"
-               class="dark-toggle p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                <i class="sun fi fi-rr-sun w-5 h-5"></i>
-                <i class="moon fi fi-rr-moon w-5 h-5"></i>
+            <a href="/toggle-theme" class="dark-toggle flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700">
+                <i class="fi fi-rr-moon moon text-lg flex items-center justify-center"></i>
+                <i class="fi fi-rr-sun sun text-lg flex items-center justify-center"></i>
             </a>
         </nav>
     </div>

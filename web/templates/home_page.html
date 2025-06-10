@@ -11,56 +11,12 @@
           rel="stylesheet">
     <!-- CDN Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/tailwind.config.js"></script>
 
     <!-- Ajout de Flaticon -->
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#361134',
-                        secondary: '#B0228C',
-                        accent: '#EA3788',
-                        light: '#E56B70',
-                        pale: '#F391A0',
-                        dark: {
-                            primary: '#1F0A1E',
-                            secondary: '#8C1B70',
-                            accent: '#C1306E',
-                            light: '#B85459',
-                            pale: '#B66E79',
-                            bg: '#121212',
-                            surface: '#1E1E1E'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['"Roboto Condensed"', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .dark .dark-toggle .moon {
-            display: block;
-        }
-
-        .dark .dark-toggle .sun {
-            display: none;
-        }
-
-        .dark-toggle .moon {
-            display: none;
-        }
-
-        .dark-toggle .sun {
-            display: block;
-        }
-    </style>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
 
