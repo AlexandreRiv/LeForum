@@ -81,7 +81,7 @@
     <div class="flex justify-between items-center max-w-6xl mx-auto">
         <h1 class="text-3xl font-semibold">PhrasInachev</h1>
         <nav class="flex items-center">
-            <ul class="flex space-x-4 mr-4">
+            <ul class="flex space-x-4 mr-4 items-center">
                 <li>
                     <a href="/" class="hover:underline flex items-center {{if eq .CurrentPage "home"}}font-bold underline{{end}}">
                     <i class="fi fi-rr-home mr-1"></i>
@@ -109,17 +109,19 @@
                     </a>
                 </li>
                 {{end}}
+                <li>
+                    <a href="/toggle-theme" class="dark-toggle hover:underline flex items-center">
+                        <div class="moon flex items-center">
+                            <i class="fi fi-rr-moon text-xl mr-1"></i>
+                            <span class="hidden sm:inline">Sombre</span>
+                        </div>
+                        <div class="sun flex items-center">
+                            <i class="fi fi-rr-sun text-xl mr-1"></i>
+                            <span class="hidden sm:inline">Clair</span>
+                        </div>
+                    </a>
+                </li>
             </ul>
-            <a href="/toggle-theme" class="dark-toggle">
-                <div class="moon flex items-center">
-                    <i class="fi fi-rr-moon text-xl"></i>
-                    <span class="hidden sm:inline ml-2">Sombre</span>
-                </div>
-                <div class="sun flex items-center">
-                    <i class="fi fi-rr-sun text-xl"></i>
-                    <span class="hidden sm:inline ml-2">Clair</span>
-                </div>
-            </a>
         </nav>
     </div>
 </header>
