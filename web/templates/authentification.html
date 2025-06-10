@@ -17,39 +17,157 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
-
     <style>
         :root {
             --dark-surface: #1e1e2e;
+            --transition-speed: 0.5s;
         }
 
-        #loginTab:checked ~ .forms #loginForm {
-            display: block;
-            animation: slideIn 0.3s ease-out;
+        /* Animation pour la carte */
+        .auth-card {
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
         }
 
-        #registerTab:checked ~ .forms #registerForm {
-            display: block;
-            animation: slideIn 0.3s ease-out;
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
         }
 
-        #loginTab:checked ~ .tabs .login-tab,
-        #registerTab:checked ~ .tabs .register-tab {
+        /* Animations pour les onglets */
+        .tabs-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-indicator {
+            position: absolute;
+            height: 80%;
+            width: 48%;
             background-color: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 0.5rem;
+            transition: transform var(--transition-speed) cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 0;
+            top: 10%;
+            left: 1%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .dark #loginTab:checked ~ .tabs .login-tab,
-        .dark #registerTab:checked ~ .tabs .register-tab {
+        .dark .tab-indicator {
             background-color: var(--dark-surface);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        .register-active .tab-indicator {
+            transform: translateX(104%);
+        }
+
+        /* Animations pour les formulaires */
+        .forms-container {
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+        }
+
+        #loginForm, #registerForm {
+            position: absolute;
+            width: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity var(--transition-speed) ease;
+            top: 0;
+            left: 0;
+            padding: 1.5rem;
+        }
+
+        #loginForm {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 2;
+        }
+
+        #registerForm {
+            transform: translateX(100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .register-active #loginForm {
+            transform: translateX(-100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .register-active #registerForm {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* Animations pour les inputs */
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Animation pour les boutons */
+        .auth-button {
+            background-size: 200% auto;
+            transition: 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-button:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+        }
+
+        .auth-button:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: translateX(-100%);
+            transition: 0.7s ease;
+        }
+
+        .auth-button:hover:after {
+            transform: translateX(100%);
+        }
+
+        /* Animation pour les liens sociaux */
+        .social-link {
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Animations pour les labels et messages d'erreur */
+        .form-appear > * {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.5s forwards;
+            animation-delay: calc(var(--delay) * 0.1s);
+        }
+
+        @keyframes fadeInUp {
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -63,114 +181,175 @@
 
 <!-- Main content -->
 <main class="container max-w-6xl mx-auto mt-8 px-4 min-h-[calc(100vh-200px)] flex items-center justify-center">
-    <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden w-full max-w-md transition-colors duration-200">
+    <div class="auth-card bg-white dark:bg-dark-surface rounded-xl shadow-lg overflow-hidden w-full max-w-md transition-colors duration-200 {{if .RegisterTab}}register-active{{end}}">
         <!-- Toggle Buttons -->
-        <div class="tabs flex bg-secondary/10 dark:bg-dark-secondary/20 rounded-t-xl p-1">
-            <a href="/auth?tab=login" class="login-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if not .RegisterTab}}bg-white dark:bg-dark-surface shadow{{end}}">
-                Connexion
-            </a>
-            <a href="/auth?tab=register" class="register-tab w-1/2 py-2 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 {{if .RegisterTab}}bg-white dark:bg-dark-surface shadow{{end}}">
-                Inscription
-            </a>
+        <div class="tabs-container bg-secondary/10 dark:bg-dark-secondary/20 rounded-t-xl p-2">
+            <div class="tab-indicator"></div>
+            <div class="tabs flex relative z-10">
+                <a href="/auth?tab=login"
+                   class="login-tab w-1/2 py-2.5 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 z-10 flex justify-center items-center gap-2">
+                    <i class="fi fi-rr-user text-primary dark:text-light"></i>
+                    <span>Connexion</span>
+                </a>
+                <a href="/auth?tab=register"
+                   class="register-tab w-1/2 py-2.5 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 z-10 flex justify-center items-center gap-2">
+                    <i class="fi fi-rr-user-add text-accent dark:text-light"></i>
+                    <span>Inscription</span>
+                </a>
+            </div>
         </div>
 
-        <div class="forms p-6">
+        <div class="forms-container">
             <!-- Login Form -->
-            <form id="loginForm" action="/auth" method="POST" class="space-y-4" {{if .RegisterTab}}style="display:none"{{end}}>
-                <h2 class="text-2xl font-bold text-primary dark:text-light mb-6 text-center">Connexion</h2>
+            <form id="loginForm" action="/auth" method="POST" class="space-y-4 form-appear">
+                <div class="text-center mb-5" style="--delay: 0">
+                    <h2 class="text-2xl font-bold text-primary dark:text-light">Connexion</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Heureux de vous revoir !</p>
+                </div>
                 <input type="hidden" name="action" value="login">
 
-                <div>
-                    <input type="email"
-                           name="email"
-                           placeholder="Email"
-                           required
-                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                <div class="space-y-1" style="--delay: 1">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-envelope text-gray-400"></i>
+                        </span>
+                        <input type="email"
+                               name="email"
+                               placeholder="Email"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
                     {{if .EmailError}}
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.EmailError}}</p>
                     {{end}}
                 </div>
 
-                <div>
-                    <input type="password"
-                           name="password"
-                           placeholder="Mot de passe"
-                           required
-                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                <div class="space-y-1" style="--delay: 2">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-lock text-gray-400"></i>
+                        </span>
+                        <input type="password"
+                               name="password"
+                               placeholder="Mot de passe"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
                     {{if .PasswordError}}
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.PasswordError}}</p>
                     {{end}}
                 </div>
 
-                <button type="submit"
-                        class="w-full bg-primary text-white dark:bg-dark-primary py-2 rounded-md hover:bg-opacity-90 transition-colors">
+                <div class="flex items-center justify-between text-sm" style="--delay: 3">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary/50 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-gray-700 dark:text-gray-300">Se souvenir de moi</label>
+                    </div>
+                    <a href="#" class="text-primary dark:text-dark-primary hover:underline">Mot de passe oublié?</a>
+                </div>
+
+                <button type="submit" style="--delay: 4"
+                        class="auth-button w-full bg-gradient-to-r from-primary to-primary/80 text-white dark:from-dark-primary dark:to-dark-primary/80 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
                     Se connecter
                 </button>
             </form>
 
             <!-- Register Form -->
-            <form id="registerForm" action="/auth" method="POST" class="space-y-4" {{if not .RegisterTab}}style="display:none"{{end}}>
-                <h2 class="text-2xl font-bold text-primary dark:text-light mb-6 text-center">Inscription</h2>
+            <form id="registerForm" action="/auth" method="POST" class="space-y-4 form-appear">
+                <div class="text-center mb-5" style="--delay: 0">
+                    <h2 class="text-2xl font-bold text-accent dark:text-light">Inscription</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Rejoignez notre communauté</p>
+                </div>
                 <input type="hidden" name="action" value="register">
 
-                <div>
-                    <input type="text"
-                           name="username"
-                           placeholder="Nom d'utilisateur"
-                           required
-                           value="{{.RegisterUsername}}"
-                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                <div class="space-y-1" style="--delay: 1">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-user text-gray-400"></i>
+                        </span>
+                        <input type="text"
+                               name="username"
+                               placeholder="Nom d'utilisateur"
+                               required
+                               value="{{.RegisterUsername}}"
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
                 </div>
 
-                <div>
-                    <input type="email"
-                           name="email"
-                           placeholder="Email"
-                           required
-                           value="{{.RegisterEmail}}"
-                           onchange="this.form.elements['checkEmail'].value='true'; this.form.submit();"
-                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
-                    <input type="hidden" name="checkEmail" value="false">
+                <div class="space-y-1" style="--delay: 2">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-envelope text-gray-400"></i>
+                        </span>
+                        <input type="email"
+                               name="email"
+                               placeholder="Email"
+                               required
+                               value="{{.RegisterEmail}}"
+                               onchange="this.form.elements['checkEmail'].value='true'; this.form.submit();"
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                        <input type="hidden" name="checkEmail" value="false">
+                    </div>
                     {{if .RegisterEmailError}}
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.RegisterEmailError}}</p>
                     {{end}}
                 </div>
 
-                <div>
-                    <input type="password"
-                           name="password"
-                           placeholder="Mot de passe"
-                           required
-                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                <div class="space-y-1" style="--delay: 3">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-lock text-gray-400"></i>
+                        </span>
+                        <input type="password"
+                               name="password"
+                               placeholder="Mot de passe"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
                     {{if .RegisterPasswordError}}
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.RegisterPasswordError}}</p>
                     {{end}}
                 </div>
 
-                <div>
-                    <input type="password"
-                           name="confirm-password"
-                           placeholder="Confirmer le mot de passe"
-                           required
-                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                <div class="space-y-1" style="--delay: 4">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-shield-check text-gray-400"></i>
+                        </span>
+                        <input type="password"
+                               name="confirm-password"
+                               placeholder="Confirmer le mot de passe"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
                 </div>
 
-                <button type="submit" class="w-full bg-accent text-white dark:bg-dark-accent py-2 rounded-md hover:bg-opacity-90 transition-colors">
+                <button type="submit" style="--delay: 5"
+                        class="auth-button w-full bg-gradient-to-r from-accent to-accent/80 text-white dark:from-dark-accent dark:to-dark-accent/80 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
                     S'inscrire
                 </button>
             </form>
+        </div>
 
-            <!-- Social Login -->
-            <div class="mt-6 grid grid-cols-2 gap-3">
+        <!-- Social Login -->
+        <div class="p-6 pt-0">
+            <div class="relative flex items-center justify-center">
+                <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
+                <div class="absolute bg-white dark:bg-dark-surface px-4 text-sm text-gray-500 dark:text-gray-400">
+                    ou continuer avec
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-6">
                 <a href="/auth/google"
-                   class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-colors">
+                   class="social-link flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-all duration-300 hover:shadow-md">
                     <i class="fi fi-brands-google text-xl" style="color: #4285F4;"></i>
-                    Google
+                    <span>Google</span>
                 </a>
                 <a href="/auth/github"
-                   class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-colors">
+                   class="social-link flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-all duration-300 hover:shadow-md">
                     <i class="fi fi-brands-github text-xl"></i>
-                    GitHub
+                    <span>GitHub</span>
                 </a>
             </div>
         </div>
@@ -196,5 +375,31 @@
     </div>
 </footer>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation des éléments de formulaire avec délai séquentiel
+        const formElements = document.querySelectorAll('.form-appear > *');
+        formElements.forEach(el => {
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, parseInt(getComputedStyle(el).getPropertyValue('--delay')) * 100);
+        });
+
+        // Animation sur les champs de saisie
+        const inputs = document.querySelectorAll('.input-field');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    });
+</script>
 </body>
 </html>
