@@ -143,6 +143,7 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		data.AllCategories[i] = cat.Name
 	}
 
+	// Créer le template avec son nom exact et les fonctions avant le parsing
 	tmpl := template.New("categories.html").Funcs(funcMap)
 
 	// Parser le fichier principal
@@ -152,7 +153,7 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parser les composants en s'assurant que les fonctions sont appliquées
+	// Parser les composants
 	tmpl, err = tmpl.ParseGlob("web/templates/components/*.html")
 	if err != nil {
 		http.Error(w, "Erreur de chargement des templates de composants: "+err.Error(), http.StatusInternalServerError)
