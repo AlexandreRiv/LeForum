@@ -105,8 +105,8 @@
     </div>
 
     <!-- Liste des questions -->
-    <div class="space-y-4">
-        <!-- Question 1 -->
+    <div class="space-y-6">
+        <!-- Questions-->
         {{range .Posts}}
         <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden transition-colors duration-200">
             <div class="p-6">
@@ -146,8 +146,8 @@
                 </div>
             </div>
         </div>
+        {{end}}
     </div>
-    {{end}}
 
     <!-- Pagination -->
     <div class="flex justify-center mt-8">
