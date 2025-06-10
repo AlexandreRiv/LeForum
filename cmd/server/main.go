@@ -51,7 +51,6 @@ func main() {
     mux.HandleFunc("/toggle-theme", api.ToggleThemeHandler)
     mux.HandleFunc("/createPost", api.CreatePostHandler)
     mux.HandleFunc("/likePost", api.LikePostHandler)
-    mux.HandleFunc("/dislikePost", api.DislikePostHandler)
 
     // Authentification
     authHandler := auth.NewHandler()

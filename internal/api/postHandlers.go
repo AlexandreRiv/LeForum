@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+	"strconv"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +77,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 func LikePostHandler(w http.ResponseWriter, r *http.Request) {
 	SQLLikeRequest := "INSERT INTO liked_posts VALUES ((SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?), ?, ?);"
+	SQLDelLikeReq := "DELETE FROM liked_posts WHERE id_user = (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?) AND id_post = ?;"
 
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
@@ -93,18 +95,33 @@ func LikePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	likeType, err := strconv.Atoi(r.URL.Query().Get("like"))
+	if err != nil {
+		http.Error(w, "Like parameter is missing", http.StatusBadRequest)
+		return
+	}
+
 	_, err = storage.DB.Exec(
 		SQLLikeRequest,
 		cookie.Value,
 		id,
-		1,
+		likeType,
 	)
 	if err != nil {
-		return
+		_, err = storage.DB.Exec(
+			SQLDelLikeReq,
+			cookie.Value,
+			id,
+		)
+		if err != nil {
+			http.Error(w, "like error", http.StatusBadRequest)
+			return
+		}
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
+<<<<<<< HEAD
 }
 
 func DislikePostHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,3 +129,6 @@ func DislikePostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
 }
+=======
+}
+>>>>>>> 78dba9e (Test)
