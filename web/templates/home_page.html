@@ -108,8 +108,8 @@
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
-                        <div class="h-10 w-10 rounded-full bg-light dark:bg-dark-light flex items-center justify-center text-white font-bold">
-                            h7
+                        <div class="h-10 w-10 rounded-full bg-accent dark:bg-dark-accent flex items-center justify-center text-white font-bold">
+                            {{ index .Username 0 | printf "%c" }}
                         </div>
                         <div class="ml-3">
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{.Username}}</p>
