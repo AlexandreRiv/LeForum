@@ -117,7 +117,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{.Username}}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Il y a 1 jour</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{.CreatedAt | formatDate}}</p>
                         </div>
                     </div>
                     {{range .Categories}}
