@@ -22,12 +22,6 @@ func NewPostHandler(ps *service.PostService, ss *session.Service, ts *TemplateSe
 	}
 }
 
-func (h *PostHandler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/post", h.PostPageHandler)
-	mux.HandleFunc("/post/create", h.CreatePostHandler)
-	mux.HandleFunc("/post/like", h.LikePostHandler)
-}
-
 func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := h.sessionService.GetCurrentUser(r)
 	if err != nil {
@@ -101,5 +95,5 @@ func (h *PostHandler) LikePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, r.Header.Get("Referer"), http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

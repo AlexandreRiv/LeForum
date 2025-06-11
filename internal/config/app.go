@@ -22,6 +22,7 @@ type AppConfig struct {
 	AuthHandler     *handlers.AuthHandler
 	PostHandler     *handlers.PostHandler
 	CategoryHandler *handlers.CategoryHandler
+	CommentHandler	*handlers.CommentHandler
 }
 
 func NewAppConfig() (*AppConfig, error) {
@@ -34,11 +35,13 @@ func NewAppConfig() (*AppConfig, error) {
 	userRepo := repositories.NewUserRepository(db.DB)
 	postRepo := repositories.NewPostRepository(db.DB)
 	categoryRepo := repositories.NewCategoryRepository(db.DB)
+	commentRepo := repositories.NewCommentRepository(db.DB)
 
 	// Initialiser services
 	userService := service.NewUserService(userRepo)
 	postService := service.NewPostService(postRepo)
 	categoryService := service.NewCategoryService(categoryRepo)
+	commentService := service.NewCommentService(commentRepo)
 	sessionService := session.NewService(db.DB)
 
 	// Initialiser handlers
@@ -46,6 +49,7 @@ func NewAppConfig() (*AppConfig, error) {
 	authHandler := handlers.NewAuthHandler(userService, sessionService, templateService)
 	postHandler := handlers.NewPostHandler(postService, sessionService, templateService)
 	categoryHandler := handlers.NewCategoryHandler(categoryService, sessionService, templateService)
+	commentHandler := handlers.NewCommentHandler(commentService, sessionService, templateService)
 
 	return &AppConfig{
 		DB:                 db,
@@ -59,5 +63,6 @@ func NewAppConfig() (*AppConfig, error) {
 		AuthHandler:        authHandler,
 		PostHandler:        postHandler,
 		CategoryHandler:    categoryHandler,
+		CommentHandler:		commentHandler,
 	}, nil
 }

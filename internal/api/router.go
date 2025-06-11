@@ -40,9 +40,13 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	)
 	homeHandler.RegisterRoutes(mux)
 
+	// Création des routes pour les posts
 	mux.HandleFunc("/post/create", authMiddleware(http.HandlerFunc(appConfig.PostHandler.CreatePostHandler)).ServeHTTP)
 	mux.HandleFunc("/post/like", authMiddleware(http.HandlerFunc(appConfig.PostHandler.LikePostHandler)).ServeHTTP)
-	mux.HandleFunc("/post", authMiddleware(http.HandlerFunc(appConfig.PostHandler.PostPageHandler)).ServeHTTP)
+	mux.HandleFunc("/post", http.HandlerFunc(appConfig.PostHandler.PostPageHandler))
+
+	// Comm
+	mux.HandleFunc("/comment/create", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.CreateCommentHandler)).ServeHTTP)
 
 	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
 

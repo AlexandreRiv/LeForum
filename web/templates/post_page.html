@@ -154,9 +154,10 @@
     <!-- Write Answers -->
     <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 mb-6 transition-colors duration-200">
         <h2 class="text-xl font-semibold mb-4 text-primary dark:text-light">Répondre</h2>
-        <form>
+        <form method="post" action="/comment/create">
             <div class="mb-4">
                 <textarea
+                        name="commentContent"
                         class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent dark:bg-dark-surface dark:text-gray-200"
                         rows="5" placeholder="Commencez une phrase que vous n'allez pas..."></textarea>
             </div>

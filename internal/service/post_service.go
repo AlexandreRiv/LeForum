@@ -15,7 +15,7 @@ func NewPostService(repo *repositories.PostRepository) *PostService {
 }
 
 func (s *PostService) CreatePost(title, content, sessionID, category string) error {
-	return s.repo.CreatePost(title, content, sessionID, category, time.Now())
+	return s.repo.CreatePost(title, content, sessionID, category, time.Now().Add(2*time.Hour))
 }
 
 func (s *PostService) GetPosts() ([]domain.Post, error) {
