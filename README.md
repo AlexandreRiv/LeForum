@@ -164,9 +164,6 @@ To use OAuth authentication:
 1. **GitHub** : Set up an OAuth App in your GitHub settings
 2. **Google** : Create a project in Google Cloud Console and enable the OAuth API
 
-
-## 📝 Contributors
-
 ## 📝 Contributors
 
 - **Loic** - [![GitHub][github-badge]](https://github.com/Zeteox/Zeteox)
