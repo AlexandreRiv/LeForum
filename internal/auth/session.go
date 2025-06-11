@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -55,14 +56,24 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 	manager.users[user.Email] = user
 	manager.mu.Unlock()
 
-	// Set cookie with strict settings
+	// Set cookie parameters based on environment
+	secure := true
+	domain := "forum.ynov.zeteox.fr"
+
+	// En développement, les cookies ne nécessitent pas ces restrictions
+	if os.Getenv("ENVIRONMENT") != "production" {
+		secure = false
+		domain = "" // Ne pas définir de domaine en développement
+	}
+
+	// Set cookie with environment-appropriate settings
 	cookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
 		Path:     "/",
-		Domain:   "forum.ynov.zeteox.fr",
+		Domain:   domain,
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 		Expires:  expiresAt,
 	}
@@ -118,21 +129,21 @@ func CleanExpiredSessions() {
 }
 
 func GetCurrentUser(r *http.Request) (*LoggedUser, error) {
-    session, err := GetSession(r)
-    if err != nil || session == nil {
-        return nil, err
-    }
+	session, err := GetSession(r)
+	if err != nil || session == nil {
+		return nil, err
+	}
 
-    manager.mu.RLock()
-    user, exists := manager.users[session.UserEmail]
-    manager.mu.RUnlock()
+	manager.mu.RLock()
+	user, exists := manager.users[session.UserEmail]
+	manager.mu.RUnlock()
 
-    if !exists {
-        user = LoggedUser{
-            Email: session.UserEmail,
-            Name:  session.UserEmail,
-        }
-    }
+	if !exists {
+		user = LoggedUser{
+			Email: session.UserEmail,
+			Name:  session.UserEmail,
+		}
+	}
 
-    return &user, nil
+	return &user, nil
 }

@@ -5,6 +5,7 @@ import (
 	"LeForum/internal/storage"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -88,13 +89,23 @@ func (h *Handler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Set cookie parameters based on environment
+	secure := true
+	domain := "forum.ynov.zeteox.fr"
+
+	// En développement, les cookies ne nécessitent pas ces restrictions
+	if os.Getenv("ENVIRONMENT") != "production" {
+		secure = false
+		domain = "" // Ne pas définir de domaine en développement
+	}
+
 	expiredCookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
-		Domain:   "forum.ynov.zeteox.fr",
+		Secure:   secure,
+		Domain:   domain,
 		Expires:  time.Now().Add(-24 * time.Hour),
 	}
 	http.SetCookie(w, expiredCookie)
