@@ -38,15 +38,18 @@
     <!-- Filtres et recherche -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div class="flex gap-2">
-            <button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">
+            <a href="?filter=newest"><button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">
                 Récentes
-            </button>
-            <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
+            </button></a>
+            <a href="?filter=oldest"><button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">
+                Ancien
+            </button></a>
+            <a href="?filter=popular"><button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
                 Populaires
-            </button>
-            <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
+            </button></a>
+            <a href="?filter=noresponse"><button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
                 Sans réponse
-            </button>
+            </button></a>
             <button onclick="document.getElementById('modal').classList.remove('hidden')"
                     class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors cursor-pointer">
                 Créer un post

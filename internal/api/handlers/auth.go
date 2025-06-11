@@ -246,6 +246,11 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	// Logique pour récupérer les statistiques utilisateur
 	// À implémenter dans un service approprié
 
+	PostNb,RespNb,Likes,_ := h.userService.GetUserStats(loggedUser.Email)
+	data.Likes = Likes
+	data.PostNumber = PostNb
+	data.ResponseNb = RespNb
+
 	err = h.templateService.RenderTemplate(w, "user.html", data)
 	if err != nil {
 		log.Printf("Erreur rendering user template: %v\n", err)
