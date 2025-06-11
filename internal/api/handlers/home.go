@@ -1,12 +1,32 @@
 package handlers
 
 import (
-	"LeForum/internal/auth"
-	"LeForum/internal/domain"
-	"LeForum/internal/storage"
-	"html/template"
+	"LeForum/internal/auth/session"
+	"LeForum/internal/service"
+	"log"
 	"net/http"
 )
+
+type HomeHandler struct {
+	postService     *service.PostService
+	categoryService *service.CategoryService
+	sessionService  *session.Service
+	templateService *TemplateService
+}
+
+func NewHomeHandler(ps *service.PostService, cs *service.CategoryService, ss *session.Service, ts *TemplateService) *HomeHandler {
+	return &HomeHandler{
+		postService:     ps,
+		categoryService: cs,
+		sessionService:  ss,
+		templateService: ts,
+	}
+}
+
+func (h *HomeHandler) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/", h.HomePageHandler)
+	mux.HandleFunc("/theme", h.ToggleThemeHandler)
+}
 
 func getDarkModeFromCookie(r *http.Request) bool {
 	cookie, err := r.Cookie("darkMode")
@@ -16,47 +36,73 @@ func getDarkModeFromCookie(r *http.Request) bool {
 	return false
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	// Get current user if logged in
-	user, _ := auth.GetCurrentUser(r)
+func (h *HomeHandler) HomePageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
 
-	// check if the dark mode cookie exists
+	// Get current user if logged in
+	user, err := h.sessionService.GetCurrentUser(r)
+	if err != nil {
+		log.Printf("Error getting current user: %v", err)
+	}
+
+	// Get dark mode preference
 	darkMode := getDarkModeFromCookie(r)
 
 	// Récupération des catégories
-	categories, err := storage.GetCategories()
+	categories, err := h.categoryService.GetCategories()
 	if err != nil {
 		http.Error(w, "Failed to fetch categories", http.StatusInternalServerError)
 		return
 	}
 
 	// Récupération des posts
-	posts, err := storage.GetPosts()
+	posts, err := h.postService.GetPosts()
 	if err != nil {
 		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
 		return
 	}
 
-	data := struct {
-		DarkMode      bool
-		CurrentPage   string
-		User          *auth.LoggedUser
-		AllCategories []string
-		Posts         []domain.Post
-	}{
-		DarkMode:      darkMode,
-		CurrentPage:   "home",
-		User:          user,
-		AllCategories: categories,
-		Posts:         posts,
+	data := map[string]interface{}{
+		"DarkMode":      darkMode,
+		"CurrentPage":   "home",
+		"User":          user,
+		"AllCategories": categories,
+		"Posts":         posts,
 	}
 
-	tmpl := template.Must(template.ParseFiles("web/templates/home_page.html"))
-	template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
-
-	err = tmpl.Execute(w, data)
+	err = h.templateService.RenderTemplate(w, "home_page.html", data)
 	if err != nil {
 		http.Error(w, "Erreur d'affichage du template: "+err.Error(), http.StatusInternalServerError)
-		return
 	}
+}
+
+func (h *HomeHandler) ToggleThemeHandler(w http.ResponseWriter, r *http.Request) {
+	darkMode := getDarkModeFromCookie(r)
+	darkMode = !darkMode
+
+	cookieValue := "false"
+	if darkMode {
+		cookieValue = "true"
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "darkMode",
+		Value:    cookieValue,
+		Path:     "/",
+		Domain:   "forum.ynov.zeteox.fr",
+		MaxAge:   365 * 24 * 60 * 60, // 1 an
+		HttpOnly: false,              // Accessible par JavaScript
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	// Rediriger vers la page d'origine
+	referer := r.Header.Get("Referer")
+	if referer == "" {
+		referer = "/"
+	}
+	http.Redirect(w, r, referer, http.StatusSeeOther)
 }

@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Session struct {
-	ID        string
-	UserEmail string
-	ExpiresAt time.Time
+	ID        string    `json:"id"`
+	UserEmail string    `json:"user_email"`
+	ExpiresAt time.Time `json:"expires_at"`
 }

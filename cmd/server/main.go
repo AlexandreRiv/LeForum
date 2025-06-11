@@ -2,8 +2,7 @@ package main
 
 import (
 	"LeForum/internal/api"
-	"LeForum/internal/auth"
-	"LeForum/internal/storage"
+	"LeForum/internal/config"
 	"log"
 	"net/http"
 	"time"
@@ -18,19 +17,20 @@ func init() {
 }
 
 func main() {
-	// Initialisation de la base de données
-	if err := storage.InitDB(); err != nil {
-		log.Fatalf("Erreur lors de l'initialisation de la base de données: %v", err)
+	// Chargement de la configuration
+	appConfig, err := config.NewAppConfig()
+	if err != nil {
+		log.Fatalf("Erreur lors de l'initialisation de la configuration: %v", err)
 	}
 
-	// Configuration du routeur
-	mux := api.SetupRouter()
+	// Configuration du routeur avec la configuration de l'application
+	mux := api.SetupRouter(appConfig)
 
 	// Nettoyage des sessions expirées périodiquement
 	go func() {
 		ticker := time.NewTicker(1 * time.Hour)
 		for range ticker.C {
-			auth.CleanExpiredSessions()
+			appConfig.SessionService.CleanExpiredSessions()
 		}
 	}()
 

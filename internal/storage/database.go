@@ -9,7 +9,11 @@ import (
 
 var DB *sql.DB
 
-func InitDB() error {
+type Database struct {
+	*sql.DB
+}
+
+func InitDB() (*Database, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWD_USER"),
@@ -21,7 +25,12 @@ func InitDB() error {
 	var err error
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return DB.Ping()
+
+	if err = DB.Ping(); err != nil {
+		return nil, err
+	}
+
+	return &Database{DB}, nil
 }

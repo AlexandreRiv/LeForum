@@ -3,28 +3,49 @@ package api
 import (
 	"LeForum/internal/api/handlers"
 	"LeForum/internal/api/middleware"
-	"LeForum/internal/auth"
+	"LeForum/internal/auth/oauth"
+	"LeForum/internal/config"
 	"net/http"
 )
 
-func SetupRouter() *http.ServeMux {
+func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	// Serveur de fichiers statiques
-	fs := http.FileServer(http.Dir("web/static"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	// Middlewares
+	authMiddleware := middleware.AuthMiddleware(appConfig.SessionService)
 
-	// Routes principales
-	mux.HandleFunc("/", handlers.HomeHandler)
-	mux.HandleFunc("/categories", handlers.CategoriesHandler)
-	mux.HandleFunc("/post", handlers.PostHandler)
-	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
-	mux.HandleFunc("/createPost", handlers.CreatePostHandler)
-	mux.HandleFunc("/likePost", handlers.LikePostHandler)
+	// Fichiers statiques
+	fileServer := http.FileServer(http.Dir("./web/static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
-	// Routes d'authentification
-	authHandler := auth.NewHandler()
-	authHandler.RegisterRoutes(mux)
+	// Initialisation des handlers OAuth
+	githubHandler := oauth.NewGithubHandler(appConfig.UserService, appConfig.SessionService)
+	googleHandler := oauth.NewGoogleHandler(appConfig.UserService, appConfig.SessionService)
+
+	// Routes OAuth
+	mux.HandleFunc("/auth/github", githubHandler.LoginHandler)
+	mux.HandleFunc("/auth/github/callback", githubHandler.CallbackHandler)
+	mux.HandleFunc("/auth/google", googleHandler.LoginHandler)
+	mux.HandleFunc("/auth/google/callback", googleHandler.CallbackHandler)
+
+	// Enregistrer les routes des handlers
+	appConfig.AuthHandler.RegisterRoutes(mux)
+	appConfig.PostHandler.RegisterRoutes(mux)
+	appConfig.CategoryHandler.RegisterRoutes(mux)
+
+	// Créer et enregistrer les routes de la page d'accueil
+	homeHandler := handlers.NewHomeHandler(
+		appConfig.PostService,
+		appConfig.CategoryService,
+		appConfig.SessionService,
+		handlers.NewTemplateService(),
+	)
+	homeHandler.RegisterRoutes(mux)
+
+	// Routes protégées par l'authentification
+	postPageMux := http.NewServeMux()
+	postPageMux.HandleFunc("/post", appConfig.PostHandler.PostPageHandler)
+	mux.Handle("/post", authMiddleware(postPageMux))
 
 	return mux
 }

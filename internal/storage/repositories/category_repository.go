@@ -1,9 +1,20 @@
-package storage
+package repositories
 
-import "LeForum/internal/domain"
+import (
+	"LeForum/internal/domain"
+	"database/sql"
+)
 
-func GetCategories() ([]string, error) {
-	rows, err := DB.Query("SELECT name FROM categories;")
+type CategoryRepository struct {
+	db *sql.DB
+}
+
+func NewCategoryRepository(db *sql.DB) *CategoryRepository {
+	return &CategoryRepository{db: db}
+}
+
+func (r *CategoryRepository) GetCategories() ([]string, error) {
+	rows, err := r.db.Query("SELECT name FROM categories;")
 	if err != nil {
 		return nil, err
 	}
@@ -21,8 +32,8 @@ func GetCategories() ([]string, error) {
 	return categories, nil
 }
 
-func GetCategoryPosts(categoryName string) ([]domain.Post, error) {
-	postRows, err := DB.Query(`
+func (r *CategoryRepository) GetCategoryPosts(categoryName string) ([]domain.Post, error) {
+	postRows, err := r.db.Query(`
         SELECT p.id, p.title, p.content, u.username,
                SUM(CASE WHEN lp.liked = 1 THEN 1 ELSE 0 END) AS likes,
                SUM(CASE WHEN lp.liked = 0 THEN 1 ELSE 0 END) AS dislikes,
