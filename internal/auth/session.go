@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -56,24 +55,14 @@ func CreateSession(w http.ResponseWriter, user LoggedUser) error {
 	manager.users[user.Email] = user
 	manager.mu.Unlock()
 
-	// Set cookie parameters based on environment
-	secure := true
-	domain := "forum.ynov.zeteox.fr"
-
-	// En développement, les cookies ne nécessitent pas ces restrictions
-	if os.Getenv("ENVIRONMENT") != "production" {
-		secure = false
-		domain = "" // Ne pas définir de domaine en développement
-	}
-
-	// Set cookie with environment-appropriate settings
+	// Set cookie with strict settings
 	cookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
 		Path:     "/",
-		Domain:   domain,
+		Domain:   "forum.ynov.zeteox.fr",
 		HttpOnly: true,
-		Secure:   secure,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 		Expires:  expiresAt,
 	}

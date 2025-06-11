@@ -5,7 +5,6 @@ import (
 	"LeForum/internal/storage"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -83,20 +82,10 @@ func (h *Handler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
-		_, err = storage.DB.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
+		_, err = storage.DB.Exec("DELETE FROM sAdmessions WHERE id = ?", cookie.Value)
 		if err != nil {
 			log.Printf("Error deleting session: %v", err)
 		}
-	}
-
-	// Set cookie parameters based on environment
-	secure := true
-	domain := "forum.ynov.zeteox.fr"
-
-	// En développement, les cookies ne nécessitent pas ces restrictions
-	if os.Getenv("ENVIRONMENT") != "production" {
-		secure = false
-		domain = "" // Ne pas définir de domaine en développement
 	}
 
 	expiredCookie := &http.Cookie{
@@ -104,22 +93,11 @@ func (h *Handler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   secure,
-		Domain:   domain,
+		Secure:   true,
+		Domain:   "forum.ynov.zeteox.fr",
 		Expires:  time.Now().Add(-24 * time.Hour),
 	}
 	http.SetCookie(w, expiredCookie)
 
 	http.Redirect(w, r, "/auth", http.StatusSeeOther)
-}
-
-// AdminHandler gère l'accès à la page d'administration
-func AdminHandler(w http.ResponseWriter, r *http.Request) {
-	user, err := GetCurrentUser(r)
-	if err != nil || user == nil {
-		http.Redirect(w, r, "/auth", http.StatusSeeOther)
-		return
-	}
-
-	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }

@@ -5,62 +5,40 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/github"
+	"golang.org/x/oauth2/google"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"sync"
 	"time"
-
-	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/github"
-	"golang.org/x/oauth2/google"
 )
 
-// Déterminer l'URL de base dynamiquement
-func getBaseURL(r *http.Request) string {
-	// En production
-	if os.Getenv("ENVIRONMENT") == "production" {
-		return "https://forum.ynov.zeteox.fr"
-	}
-
-	// En développement, utiliser l'URL de la requête
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
-
-	return fmt.Sprintf("%s://%s", scheme, r.Host)
+// Configuration OAuth pour Google
+var googleOauthConfig = &oauth2.Config{
+	ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+	ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+	RedirectURL:  "https://forum.ynov.zeteox.fr/auth/google/callback",
+	Scopes: []string{
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+	},
+	Endpoint: google.Endpoint,
 }
 
-// Configuration OAuth pour Google avec URL dynamique
-func getGoogleOauthConfig(r *http.Request) *oauth2.Config {
-	baseURL := getBaseURL(r)
-	return &oauth2.Config{
-		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
-		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
-		RedirectURL:  baseURL + "/auth/google/callback",
-		Scopes: []string{
-			"https://www.googleapis.com/auth/userinfo.email",
-			"https://www.googleapis.com/auth/userinfo.profile",
-		},
-		Endpoint: google.Endpoint,
-	}
-}
-
-// Configuration OAuth pour GitHub avec URL dynamique
-func getGithubOauthConfig(r *http.Request) *oauth2.Config {
-	baseURL := getBaseURL(r)
-	return &oauth2.Config{
-		ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
-		ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
-		RedirectURL:  baseURL + "/auth/github/callback",
-		Scopes: []string{
-			"user:email",
-			"read:user",
-		},
-		Endpoint: github.Endpoint,
-	}
+// Configuration OAuth pour GitHub
+var githubOauthConfig = &oauth2.Config{
+	ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+	ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+	RedirectURL:  "https://forum.ynov.zeteox.fr/auth/github/callback",
+	Scopes: []string{
+		"user:email",
+		"read:user",
+	},
+	Endpoint: github.Endpoint,
 }
 
 var oauthStateString = "random"
@@ -92,27 +70,24 @@ func GetUsers() []LoggedUser {
 }
 
 func GoogleLoginHandler(w http.ResponseWriter, r *http.Request) {
-	config := getGoogleOauthConfig(r)
-	url := config.AuthCodeURL(oauthStateString)
+	url := googleOauthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	config := getGoogleOauthConfig(r)
-
 	if r.FormValue("state") != oauthStateString {
 		http.Error(w, "État invalide", http.StatusBadRequest)
 		return
 	}
 
-	token, err := config.Exchange(context.Background(), r.FormValue("code"))
+	token, err := googleOauthConfig.Exchange(context.Background(), r.FormValue("code"))
 	if err != nil {
 		log.Printf("Erreur échange code: %v", err)
 		http.Error(w, "Impossible d'échanger le code", http.StatusInternalServerError)
 		return
 	}
 
-	client := config.Client(context.Background(), token)
+	client := googleOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
 		log.Printf("Erreur récupération infos: %v", err)
@@ -153,31 +128,33 @@ func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Store user in manager
+	manager.mu.Lock()
+	manager.users[email] = user
+	manager.mu.Unlock()
+
 	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
 func GithubLoginHandler(w http.ResponseWriter, r *http.Request) {
-	config := getGithubOauthConfig(r)
-	url := config.AuthCodeURL(oauthStateString)
+	url := githubOauthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
-	config := getGithubOauthConfig(r)
-
 	if r.FormValue("state") != oauthStateString {
 		http.Error(w, "État invalide", http.StatusBadRequest)
 		return
 	}
 
-	token, err := config.Exchange(context.Background(), r.FormValue("code"))
+	token, err := githubOauthConfig.Exchange(context.Background(), r.FormValue("code"))
 	if err != nil {
 		log.Printf("GitHub OAuth exchange error: %v", err)
 		http.Error(w, "Impossible d'échanger le code", http.StatusInternalServerError)
 		return
 	}
 
-	client := config.Client(context.Background(), token)
+	client := githubOauthConfig.Client(context.Background(), token)
 	resp, err := client.Get("https://api.github.com/user")
 	if err != nil {
 		log.Printf("GitHub API error: %v", err)
@@ -248,7 +225,12 @@ func GithubCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/users", http.StatusSeeOther)
+	// Store in manager
+	manager.mu.Lock()
+	manager.users[user.Email] = user
+	manager.mu.Unlock()
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func getGithubEmails(client *http.Client) ([]string, error) {
@@ -276,4 +258,16 @@ func getGithubEmails(client *http.Client) ([]string, error) {
 	}
 
 	return nil, fmt.Errorf("no primary verified email found")
+}
+
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
+	users := GetUsers()
+	tmpl := template.Must(template.ParseFiles("web/templates/admin.html"))
+	err := tmpl.Execute(w, map[string]interface{}{
+		"Users": users,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
