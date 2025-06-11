@@ -16,7 +16,7 @@ func NewTemplateService() *TemplateService {
 		templates: make(map[string]*template.Template),
 	}
 
-	funcMap := template.FuncMap{
+	_ = template.FuncMap{
 		"formatDate": formatRelativeTime,
 	}
 
@@ -52,7 +52,7 @@ func (s *TemplateService) RenderTemplate(w http.ResponseWriter, name string, dat
 	tmpl, exists := s.templates[name]
 	if !exists {
 
-		funcMap := template.FuncMap{
+		_ = template.FuncMap{
 			"formatDate": formatRelativeTime,
 		}
 
