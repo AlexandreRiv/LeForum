@@ -4,7 +4,6 @@ import (
 	"LeForum/internal/auth/session"
 	"LeForum/internal/domain"
 	"LeForum/internal/service"
-	"LeForum/internal/storage"
 	"log"
 	"net/http"
 	"regexp"
@@ -255,24 +254,27 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Récupérer le cookie de session
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
-		_, err = storage.DB.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
+		// Utiliser une requête SQL directement car le service session n'expose pas de méthode DeleteSession
+		_, err = h.sessionService.DeleteSession(cookie.Value)
 		if err != nil {
-			log.Printf("Error deleting session: %v", err)
+			log.Printf("Erreur lors de la suppression de la session: %v", err)
+			// Continuer malgré l'erreur pour expirer le cookie côté client
 		}
 	}
 
+	// Créer un cookie expiré avec les mêmes propriétés que celui utilisé à la création
 	expiredCookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
-		Domain:   "forum.ynov.zeteox.fr",
-		Expires:  time.Now().Add(-24 * time.Hour),
+		Secure:   r.TLS != nil,
+		MaxAge:   -1, // Expire immédiatement
 	}
-	http.SetCookie(w, expiredCookie)
 
+	http.SetCookie(w, expiredCookie)
 	http.Redirect(w, r, "/auth", http.StatusSeeOther)
 }

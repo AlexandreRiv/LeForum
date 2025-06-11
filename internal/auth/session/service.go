@@ -122,3 +122,7 @@ func (s *Service) GenerateSessionID() string {
 	rand.Read(b)
 	return fmt.Sprintf("%x", b)
 }
+
+func (s *Service) DeleteSession(sessionID string) (sql.Result, error) {
+	return s.db.Exec("DELETE FROM sessions WHERE id = ?", sessionID)
+}
