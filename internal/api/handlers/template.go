@@ -16,7 +16,7 @@ func NewTemplateService() *TemplateService {
 		templates: make(map[string]*template.Template),
 	}
 
-	_ = template.FuncMap{
+	funcMap := template.FuncMap{
 		"formatDate": formatRelativeTime,
 	}
 
@@ -30,8 +30,9 @@ func NewTemplateService() *TemplateService {
 	}
 
 	for _, file := range templateFiles {
-		tmpl := template.New(file)
-		tmpl, err := tmpl.ParseFiles("web/templates/" + file)
+		tmpl := template.New(file).Funcs(funcMap)
+		var err error
+		tmpl, err = tmpl.ParseFiles("web/templates/" + file)
 		if err != nil {
 			continue
 		}
@@ -51,12 +52,11 @@ func NewTemplateService() *TemplateService {
 func (s *TemplateService) RenderTemplate(w http.ResponseWriter, name string, data interface{}) error {
 	tmpl, exists := s.templates[name]
 	if !exists {
-
-		_ = template.FuncMap{
+		funcMap := template.FuncMap{
 			"formatDate": formatRelativeTime,
 		}
 
-		tmpl = template.New(name)
+		tmpl = template.New(name).Funcs(funcMap)
 		var err error
 
 		tmpl, err = tmpl.ParseFiles("web/templates/" + name)
