@@ -50,7 +50,7 @@ LeForum is a modern web forum application built with Go, offering an efficient p
 - **MySQL** - Database
 - **Session Management** - Custom session handling
 ### Frontend
-![tailwind-badge] ![javascript-badge]
+![tailwind-badge] ![javascript-badge] ![html-badge]
 
 - **HTML Templates** - Server-side rendering
 - **Tailwind CSS** - CSS framework
@@ -182,3 +182,4 @@ To use OAuth authentication:
 [tailwind-badge]: https://img.shields.io/badge/-TailwindCSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white
 [mysql-badge]: https://img.shields.io/badge/-MySQL-4479A1?style=flat&logo=mysql&logoColor=white
 [oauth-badge]: https://img.shields.io/badge/-OAuth-000000?style=flat&logo=oauth&logoColor=white
+[html-badge]: https://img.shields.io/badge/-HTML-E34F26?style=flat&logo=html5&logoColor=white
