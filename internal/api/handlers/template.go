@@ -85,23 +85,45 @@ func formatRelativeTime(dateStr string) string {
 	// Calculer la différence entre maintenant et la date donnée
 	diff := time.Since(t)
 
-	// Calculer en heures
+	// Convertir en différentes unités de temps
+	seconds := int(diff.Seconds())
+	minutes := int(diff.Minutes())
 	hours := int(diff.Hours())
+	days := hours / 24
 
-	if hours < 24 {
-		// Moins de 24 heures: afficher en heures
-		if hours < 1 {
-			return "Il y a moins d'une heure"
-		} else if hours == 1 {
+	switch {
+	case seconds < 60:
+		// Moins d'une minute
+		if seconds < 5 {
+			return "À l'instant"
+		} else if seconds == 1 {
+			return "Il y a 1 seconde"
+		}
+		return "Il y a " + strconv.Itoa(seconds) + " secondes"
+
+	case minutes < 60:
+		// Moins d'une heure
+		if minutes == 1 {
+			return "Il y a 1 minute"
+		}
+		return "Il y a " + strconv.Itoa(minutes) + " minutes"
+
+	case hours < 24:
+		// Moins d'un jour
+		if hours == 1 {
 			return "Il y a 1 heure"
 		}
 		return "Il y a " + strconv.Itoa(hours) + " heures"
-	} else {
-		// Plus de 24 heures: afficher en jours
-		days := hours / 24
+
+	case days < 30:
+		// Moins d'un mois
 		if days == 1 {
 			return "Il y a 1 jour"
 		}
 		return "Il y a " + strconv.Itoa(days) + " jours"
+
+	default:
+		// Plus d'un mois, afficher la date formatée
+		return t.Format("02/01/2006")
 	}
 }
