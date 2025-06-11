@@ -154,11 +154,26 @@
     <!-- Write Answers -->
     <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 mb-6 transition-colors duration-200">
         <h2 class="text-xl font-semibold mb-4 text-primary dark:text-light">Répondre</h2>
-        <form>
+        <form method="POST" action="/post/reply" enctype="multipart/form-data">
+            <input type="hidden" name="post_id" value="{{.Post.Id}}">
             <div class="mb-4">
-                <textarea
-                        class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent dark:bg-dark-surface dark:text-gray-200"
-                        rows="5" placeholder="Commencez une phrase que vous n'allez pas..."></textarea>
+            <textarea
+                    name="content"
+                    class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent dark:bg-dark-surface dark:text-gray-200"
+                    rows="5" placeholder="Commencez une phrase que vous n'allez pas..."></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Ajouter une image (optionnel)
+                </label>
+                <div class="flex items-center space-x-2">
+                    <label class="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md cursor-pointer hover:bg-gray-50 dark:hover:bg-opacity-10">
+                        <i class="fi fi-rr-picture text-gray-500 dark:text-gray-400"></i>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Choisir une image</span>
+                        <input type="file" name="image" id="image" accept="image/*" class="hidden">
+                    </label>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">JPG, PNG, GIF (max 5 MB)</span>
+                </div>
             </div>
             <div class="flex justify-end">
                 <button type="submit"
