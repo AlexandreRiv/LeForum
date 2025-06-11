@@ -112,3 +112,14 @@ func (h *Handler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/auth", http.StatusSeeOther)
 }
+
+// AdminHandler gère l'accès à la page d'administration
+func AdminHandler(w http.ResponseWriter, r *http.Request) {
+	user, err := GetCurrentUser(r)
+	if err != nil || user == nil {
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return
+	}
+
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
+}
