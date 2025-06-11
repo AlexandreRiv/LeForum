@@ -46,5 +46,7 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	mux.HandleFunc("/post/like", authMiddleware(http.HandlerFunc(appConfig.PostHandler.LikePostHandler)).ServeHTTP)
 	mux.HandleFunc("/post", authMiddleware(http.HandlerFunc(appConfig.PostHandler.PostPageHandler)).ServeHTTP)
 
+	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
+
 	return mux
 }
