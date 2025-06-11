@@ -28,12 +28,25 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error getting user: %v", err)
 	}
 
+	PotsIDStr := r.URL.Query().Get("id")
+	PostID, err := strconv.Atoi(PotsIDStr)
+	if err != nil {
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
+		return
+	}
+
+	post,_ := h.postService.GetPostByID(PostID)
+
+	comments, _ := h.postService.GetCommentsByPostID(PostID)
+
 	darkMode := getDarkModeFromCookie(r)
 
 	data := map[string]interface{}{
 		"DarkMode":    darkMode,
 		"CurrentPage": "post",
 		"User":        user,
+		"Post":	   	   post,
+		"Comments":	   comments,
 	}
 
 	err = h.templateService.RenderTemplate(w, "post_page.html", data)

@@ -22,6 +22,14 @@ func (s *PostService) GetPosts() ([]domain.Post, error) {
 	return s.repo.GetPosts()
 }
 
+func (s *PostService) GetPostByID(id int) (domain.Post, error) {
+	return s.repo.GetPostByID(id)
+}
+
+func (s *PostService) GetCommentsByPostID(id int) ([]domain.Comment, error) {
+	return s.repo.GetCommentsByPostID(id)
+}
+
 func (s *PostService) LikePost(sessionID string, postID string, likeType int) error {
 	return s.repo.LikePost(sessionID, postID, likeType)
 }

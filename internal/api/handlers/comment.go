@@ -4,6 +4,7 @@ import (
 	"LeForum/internal/auth/session"
 	"LeForum/internal/service"
 	"net/http"
+	"strconv"
 )
 
 type CommentHandler struct {
@@ -32,12 +33,17 @@ func (h *CommentHandler) CreateCommentHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	postID := 1
+	PotsIDStr := r.URL.Query().Get("id")
+	PostID, err := strconv.Atoi(PotsIDStr)
+	if err != nil {
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
+		return
+	}
 
 	err = h.commentService.CreateComment(
 		r.FormValue("commentContent"),
 		session.ID,
-		postID,
+		PostID,
 	)
 
 	if err != nil {
