@@ -257,7 +257,7 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err == nil {
-		_, err = storage.DB.Exec("DELETE FROM sAdmessions WHERE id = ?", cookie.Value)
+		_, err = storage.DB.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
 		if err != nil {
 			log.Printf("Error deleting session: %v", err)
 		}

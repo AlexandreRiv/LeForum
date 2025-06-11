@@ -58,13 +58,22 @@ func (s *Service) GetSession(r *http.Request) (*domain.Session, error) {
 	}
 
 	var session domain.Session
+	var expiresAtStr string
+
 	err = s.db.QueryRow(
 		"SELECT id, user_email, expires_at FROM sessions WHERE id = ?",
 		cookie.Value,
-	).Scan(&session.ID, &session.UserEmail, &session.ExpiresAt)
+	).Scan(&session.ID, &session.UserEmail, &expiresAtStr)
 	if err != nil {
 		return nil, err
 	}
+
+	// Conversion de la chaîne en time.Time
+	expiresAt, err := time.Parse("2006-01-02 15:04:05", expiresAtStr)
+	if err != nil {
+		return nil, fmt.Errorf("impossible de parser la date d'expiration: %w", err)
+	}
+	session.ExpiresAt = expiresAt
 
 	return &session, nil
 }
