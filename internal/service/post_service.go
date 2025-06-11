@@ -18,8 +18,8 @@ func (s *PostService) CreatePost(title, content, sessionID, category string) err
 	return s.repo.CreatePost(title, content, sessionID, category, time.Now().Add(2*time.Hour))
 }
 
-func (s *PostService) GetPosts() ([]domain.Post, error) {
-	return s.repo.GetPosts()
+func (s *PostService) GetPosts(order string) ([]domain.Post, error) {
+	return s.repo.GetPosts(order string)
 }
 
 func (s *PostService) GetPostByID(id int) (domain.Post, error) {

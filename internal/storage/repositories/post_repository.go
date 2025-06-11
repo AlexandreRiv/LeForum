@@ -54,7 +54,7 @@ func (r *PostRepository) CreatePost(title, content, sessionID, category string, 
 	return tx.Commit()
 }
 
-func (r *PostRepository) GetPosts() ([]domain.Post, error) {
+func (r *PostRepository) GetPosts(order string) ([]domain.Post, error) {
 	rows, err := r.db.Query(`
 		SELECT 
 			posts.id, 
