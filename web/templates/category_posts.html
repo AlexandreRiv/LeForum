@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark" {{end}}>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{{.CategoryName}} - PhrasInachev</title>
+
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <!-- Google Fonts - Roboto Condensed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <!-- CDN Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/tailwind.config.js"></script>
+
+    <!-- Ajout de Flaticon -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
+    <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+    <a href="/categories" class="text-accent dark:text-dark-accent hover:underline">Catégories</a> &gt;
+    <span class="text-gray-600 dark:text-gray-400">{{.CategoryName}}</span>
+</div>
+
+<!-- Main content -->
+<main class="container max-w-6xl mx-auto mt-8 px-4">
+    <!-- Header de la catégorie -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-8 mb-8 text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div class="relative z-10">
+            <i class="fi fi-rr-book text-white text-4xl mb-4"></i>
+            <h1 class="text-3xl font-bold text-white mb-2">{{.CategoryName}}</h1>
+            <p class="text-white text-opacity-80">Tous les posts de cette catégorie</p>
+        </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div class="flex gap-2">
+            <button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">
+                Récentes
+            </button>
+            <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
+                Populaires
+            </button>
+            <button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
+                Sans réponse
+            </button>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')"
+                    class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors cursor-pointer">
+                Créer un post
+            </button>
+        </div>
+        <div class="w-full md:w-auto">
+            <input type="text" placeholder="Rechercher dans {{.CategoryName}}..."
+                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+        </div>
+    </div>
+
+    <!-- Modal pour création de post - Utilisant un peu de JavaScript inline -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white dark:bg-dark-surface rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-primary dark:text-light">Créer un post dans {{.CategoryName}}</h3>
+                    <button onclick="document.getElementById('modal').classList.add('hidden')" class="cursor-pointer">
+                        <i class="fi fi-rr-cross w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"></i>
+                    </button>
+                </div>
+                <form method="POST" action="/post/create">
+                    <div class="mb-4">
+                        <label for="title"
+                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
+                        <input type="text" id="title" name="title"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200"
+                               placeholder="Entrez le titre de votre post...">
+                    </div>
+                    <input type="hidden" name="category" value="{{.CategoryName}}">
+                    <div class="mb-6">
+                        <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu</label>
+                        <textarea id="content" rows="5" name="content"
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200"
+                                  placeholder="Écrivez votre post ici..."></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="document.getElementById('modal').classList.add('hidden')"
+                                class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">Annuler</button>
+                        <button type="submit"
+                                class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
+                            Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des posts dans la catégorie -->
+    <div class="space-y-6">
+        <!-- Posts-->
+        {{if .Posts}}
+        {{range .Posts}}
+        <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden transition-colors duration-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-accent dark:bg-dark-accent flex items-center justify-center text-white font-bold">
+                            {{ index .Username 0 | printf "%c" }}
+                        </div>
+                        <div class="ml-3">
+                            <p class="font-medium text-gray-800 dark:text-gray-200">{{.Username}}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{.CreatedAt | formatDate}}</p>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="text-xl font-semibold text-primary dark:text-light mb-2">{{.Title}}</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">{{.Content}}</p>
+                <div class="flex justify-between items-center">
+                    <div class="flex space-x-4 text-gray-500 dark:text-gray-400">
+                        <a href="/post/like?id={{.Id}}&like=1"><button class="flex items-center gap-1 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-up text-lg"></i>
+                            <span>{{ .Likes }}</span>
+                        </button></a>
+                        <a href="/post/like?id={{.Id}}&like=0"><button class="flex items-center gap-1 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-down text-lg"></i>
+                            <span>{{ .Dislikes }}</span>
+                        </button></a>
+                        <span class="flex items-center gap-1">
+                                <i class="fi fi-rr-comments w-5 h-5"></i>{{ .Comments }}
+                            </span>
+                    </div>
+                    <a href="/post?id={{.Id}}" class="text-secondary dark:text-accent hover:underline">Voir plus</a>
+                </div>
+            </div>
+        </div>
+        {{end}}
+        {{else}}
+        <div class="bg-white dark:bg-dark-surface rounded-xl shadow-md p-8 text-center">
+            <i class="fi fi-rr-info-circle text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+            <h3 class="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">Aucun post dans cette catégorie</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-4">Soyez le premier à créer un post dans la catégorie {{.CategoryName}}.</p>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')"
+                    class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
+                Créer un post
+            </button>
+        </div>
+        {{end}}
+    </div>
+
+    <!-- Pagination (si nécessaire) -->
+    {{if .ShowPagination}}
+    <div class="flex justify-center mt-8">
+        <nav class="inline-flex rounded-md shadow">
+            <a href="/category/{{.CategoryNameLower}}?page={{.PrevPage}}"
+               class="py-2 px-4 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-l-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10">Précédent</a>
+            {{range .PaginationLinks}}
+            {{if eq .Active true}}
+            <a href="/category/{{$.CategoryNameLower}}?page={{.Page}}"
+               class="py-2 px-4 bg-primary text-white dark:bg-dark-primary border border-primary dark:border-dark-primary">{{.Page}}</a>
+            {{else}}
+            <a href="/category/{{$.CategoryNameLower}}?page={{.Page}}"
+               class="py-2 px-4 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10">{{.Page}}</a>
+            {{end}}
+            {{end}}
+            <a href="/category/{{.CategoryNameLower}}?page={{.NextPage}}"
+               class="py-2 px-4 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-r-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10">Suivant</a>
+        </nav>
+    </div>
+    {{end}}
+</main>
+
+{{template "footer" .}}
+
+</body>
+</html>

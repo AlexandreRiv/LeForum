@@ -85,6 +85,9 @@ func formatRelativeTime(dateStr string) string {
 	// Calculer la différence entre maintenant et la date donnée
 	diff := time.Since(t)
 
+	// Ajouter deux heures à la différence
+	diff = diff + 2*time.Hour
+
 	// Convertir en différentes unités de temps
 	seconds := int(diff.Seconds())
 	minutes := int(diff.Minutes())

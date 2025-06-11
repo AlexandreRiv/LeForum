@@ -20,3 +20,7 @@ func (s *CategoryService) GetCategories() ([]string, error) {
 func (s *CategoryService) GetCategoryPosts(categoryName string) ([]domain.Post, error) {
 	return s.repo.GetCategoryPosts(categoryName)
 }
+
+func (s *CategoryService) GetAllCategoryPosts(categoryName string, limit, offset int) ([]domain.Post, int, error) {
+	return s.repo.GetAllCategoryPosts(categoryName, limit, offset)
+}

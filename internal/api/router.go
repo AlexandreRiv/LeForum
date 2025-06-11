@@ -28,9 +28,7 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	mux.HandleFunc("/auth/google", googleHandler.LoginHandler)
 	mux.HandleFunc("/auth/google/callback", googleHandler.CallbackHandler)
 
-	// Enregistrer les routes des handlers (sauf PostHandler qui sera géré différemment)
 	appConfig.AuthHandler.RegisterRoutes(mux)
-	// appConfig.PostHandler.RegisterRoutes(mux) - NE PAS ENREGISTRER ICI
 	appConfig.CategoryHandler.RegisterRoutes(mux)
 
 	// Créer et enregistrer les routes de la page d'accueil
