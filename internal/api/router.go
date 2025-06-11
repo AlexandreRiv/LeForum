@@ -28,9 +28,9 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	mux.HandleFunc("/auth/google", googleHandler.LoginHandler)
 	mux.HandleFunc("/auth/google/callback", googleHandler.CallbackHandler)
 
-	// Enregistrer les routes des handlers
+	// Enregistrer les routes des handlers (sauf PostHandler qui sera géré différemment)
 	appConfig.AuthHandler.RegisterRoutes(mux)
-	appConfig.PostHandler.RegisterRoutes(mux)
+	// appConfig.PostHandler.RegisterRoutes(mux) - NE PAS ENREGISTRER ICI
 	appConfig.CategoryHandler.RegisterRoutes(mux)
 
 	// Créer et enregistrer les routes de la page d'accueil
@@ -42,10 +42,9 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	)
 	homeHandler.RegisterRoutes(mux)
 
-	// Routes protégées par l'authentification - CORRECTION ICI
-	postPageMux := http.NewServeMux()
-	postPageMux.HandleFunc("/post", appConfig.PostHandler.PostPageHandler)
-	mux.Handle("/post", authMiddleware(postPageMux))
+	mux.HandleFunc("/post/create", authMiddleware(http.HandlerFunc(appConfig.PostHandler.CreatePostHandler)).ServeHTTP)
+	mux.HandleFunc("/post/like", authMiddleware(http.HandlerFunc(appConfig.PostHandler.LikePostHandler)).ServeHTTP)
+	mux.HandleFunc("/post", authMiddleware(http.HandlerFunc(appConfig.PostHandler.PostPageHandler)).ServeHTTP)
 
 	return mux
 }
