@@ -42,7 +42,7 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	)
 	homeHandler.RegisterRoutes(mux)
 
-	// Routes protégées par l'authentification
+	// Routes protégées par l'authentification - CORRECTION ICI
 	postPageMux := http.NewServeMux()
 	postPageMux.HandleFunc("/post", appConfig.PostHandler.PostPageHandler)
 	mux.Handle("/post", authMiddleware(postPageMux))
