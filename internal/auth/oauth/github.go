@@ -122,19 +122,6 @@ func (h *GithubHandler) CallbackHandler(w http.ResponseWriter, r *http.Request) 
 		LoginTime: time.Now(),
 	}
 
-	// Create session
-	cookie := &http.Cookie{
-		Name:     "session_id",
-		Value:    h.sessionService.GenerateSessionID(),
-		Path:     "/",
-		Domain:   "forum.ynov.zeteox.fr",
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-		Expires:  time.Now().Add(5 * time.Hour),
-	}
-	http.SetCookie(w, cookie)
-
 	if err := h.sessionService.CreateSession(w, user); err != nil {
 		log.Printf("Session creation error: %v", err)
 		http.Error(w, "Erreur création session", http.StatusInternalServerError)
