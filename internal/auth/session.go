@@ -118,21 +118,21 @@ func CleanExpiredSessions() {
 }
 
 func GetCurrentUser(r *http.Request) (*LoggedUser, error) {
-    session, err := GetSession(r)
-    if err != nil || session == nil {
-        return nil, err
-    }
+	session, err := GetSession(r)
+	if err != nil || session == nil {
+		return nil, err
+	}
 
-    manager.mu.RLock()
-    user, exists := manager.users[session.UserEmail]
-    manager.mu.RUnlock()
+	manager.mu.RLock()
+	user, exists := manager.users[session.UserEmail]
+	manager.mu.RUnlock()
 
-    if !exists {
-        user = LoggedUser{
-            Email: session.UserEmail,
-            Name:  session.UserEmail,
-        }
-    }
+	if !exists {
+		user = LoggedUser{
+			Email: session.UserEmail,
+			Name:  session.UserEmail,
+		}
+	}
 
-    return &user, nil
+	return &user, nil
 }
