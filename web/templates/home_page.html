@@ -73,34 +73,39 @@
                         <i class="fi fi-rr-cross w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"></i>
                     </button>
                 </div>
-                <form method="POST" action="/post/create" >
+                <form method="POST" action="/post/create" enctype="multipart/form-data">
                     <div class="mb-4">
-                        <label for="title"
-                               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
-                        <input type="text" id="title" name="title"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200"
-                               placeholder="Entrez le titre de votre post...">
+                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
+                        <input type="text" id="title" name="title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200" placeholder="Entrez le titre de votre post...">
                     </div>
                     <div class="mb-4">
                         <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
-                        <select id="category" name="category"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                        <select id="category" name="category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                             {{range .AllCategories}}
                             <option>{{.}}</option>
                             {{end}}
                         </select>
                     </div>
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu</label>
-                        <textarea id="content" rows="5" name="content"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200"
-                                  placeholder="Écrivez votre post ici..."></textarea>
+                        <textarea id="content" rows="5" name="content" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200" placeholder="Écrivez votre post ici..."></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="post-image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Ajouter une image (optionnel)
+                        </label>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md cursor-pointer hover:bg-gray-50 dark:hover:bg-opacity-10">
+                                <i class="fi fi-rr-picture text-gray-500 dark:text-gray-400"></i>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Choisir une image</span>
+                                <input type="file" name="image" id="post-image" accept="image/*" class="hidden">
+                            </label>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">JPG, PNG, GIF (max 5 MB)</span>
+                        </div>
                     </div>
                     <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="document.getElementById('modal').classList.add('hidden')"
-                                class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">Annuler</button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
+                        <button type="button" onclick="document.getElementById('modal').classList.add('hidden')" class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">Annuler</button>
+                        <button type="submit" class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
                             Publier
                         </button>
                     </div>
