@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"LeForum/internal/api/middleware"
 	"LeForum/internal/domain"
 	"database/sql"
 	"log"
@@ -79,7 +78,7 @@ func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
 		if err != nil {
 			return nil, err
 		}
-		user.Role = middleware.RoleType(roleStr)
+		user.Role = domain.RoleType(roleStr)
 		users = append(users, user)
 	}
 	return users, nil
@@ -94,7 +93,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
 		log.Printf("Erreur lors de la récupération de l'utilisateur: %v", err)
 		return nil, err
 	}
-	user.Role = middleware.RoleType(roleStr)
+	user.Role = domain.RoleType(roleStr)
 	return &user, nil
 }
 
@@ -106,6 +105,6 @@ func (r *UserRepository) GetUserByID(id int) (*domain.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	user.Role = middleware.RoleType(roleStr)
+	user.Role = domain.RoleType(roleStr)
 	return &user, nil
 }

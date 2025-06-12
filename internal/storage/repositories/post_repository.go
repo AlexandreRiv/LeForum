@@ -3,10 +3,10 @@ package repositories
 import (
 	"LeForum/internal/domain"
 	"database/sql"
-	"time"
 	"encoding/base64"
-	"net/http"
 	"fmt"
+	"net/http"
+	"time"
 )
 
 type PostRepository struct {
@@ -59,7 +59,7 @@ func (r *PostRepository) CreatePost(title, content, sessionID, category string, 
 }
 
 func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
-	var Request string 
+	var Request string
 	BaseRequest := `
 		SELECT 
 			posts.id, 
@@ -93,7 +93,7 @@ func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
 		) AS comment_stats ON comment_stats.id_post = posts.id`
 
 	if search == "" {
-		switch order { 
+		switch order {
 		case "oldest":
 			Request = BaseRequest + " ORDER BY posts.created_at ASC;"
 		case "popular":
@@ -106,7 +106,6 @@ func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
 	} else {
 		Request = BaseRequest + " WHERE posts.title LIKE '%" + search + "%' ORDER BY posts.created_at ASC;"
 	}
-	
 
 	rows, err := r.db.Query(Request)
 	if err != nil {
@@ -204,7 +203,7 @@ func (r *PostRepository) GetPostByID(id int) (domain.Post, error) {
 		if postImage != nil && len(postImage) > 0 {
 			encoded := base64.StdEncoding.EncodeToString(postImage)
 			mimeType := http.DetectContentType(postImage)
-			post.ImageURL = fmt.Sprintf("data:%s;base64,%s", mimeType, encoded)
+			post.Image = fmt.Sprintf("data:%s;base64,%s", mimeType, encoded)
 		}
 
 		post.CreatedAt = createdAt

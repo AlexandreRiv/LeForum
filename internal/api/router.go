@@ -5,6 +5,7 @@ import (
 	"LeForum/internal/api/middleware"
 	"LeForum/internal/auth/oauth"
 	"LeForum/internal/config"
+	"LeForum/internal/domain"
 	"net/http"
 )
 
@@ -54,7 +55,7 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	adminProtectedHandler := middleware.RoleMiddleware(
 		appConfig.SessionService,
 		appConfig.UserService,
-		middleware.RoleAdmin)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		domain.RoleAdmin)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Extraction du chemin restant après /admin/
 		path := r.URL.Path[6:] // Supprimer "/admin"
 

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"LeForum/internal/api/middleware"
 	"LeForum/internal/auth/session"
+	"LeForum/internal/domain"
 	"LeForum/internal/service"
 	"net/http"
 	"strconv"
@@ -56,7 +56,7 @@ func (h *AdminHandler) ManageUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Vérifier que l'utilisateur a le rôle d'administrateur
-	if middleware.RoleType(currentUser.Role) != middleware.RoleAdmin {
+	if domain.RoleType(currentUser.Role) != domain.RoleAdmin {
 		http.Error(w, "Accès refusé", http.StatusForbidden)
 		return
 	}
@@ -95,14 +95,14 @@ func (h *AdminHandler) ChangeUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if role != string(middleware.RoleUser) &&
-		role != string(middleware.RoleModerator) &&
-		role != string(middleware.RoleAdmin) {
+	if role != string(domain.RoleUser) &&
+		role != string(domain.RoleModerator) &&
+		role != string(domain.RoleAdmin) {
 		http.Error(w, "Rôle invalide", http.StatusBadRequest)
 		return
 	}
 
-	err = h.userService.UpdateUserRole(userID, middleware.RoleType(role))
+	err = h.userService.UpdateUserRole(userID, domain.RoleType(role))
 	if err != nil {
 		http.Error(w, "Erreur lors de la mise à jour du rôle", http.StatusInternalServerError)
 		return
