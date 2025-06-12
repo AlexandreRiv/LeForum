@@ -3,10 +3,10 @@ package handlers
 import (
 	"LeForum/internal/auth/session"
 	"LeForum/internal/service"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
-	"io"
 )
 
 type PostHandler struct {
@@ -38,7 +38,11 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	post,_ := h.postService.GetPostByID(PostID)
 
-	comments, _ := h.postService.GetCommentsByPostID(PostID)
+	comments, err := h.postService.GetCommentsByPostID(PostID)
+	if err != nil {
+		log.Printf("Erreur lors de la récupération des commentaires du post %d: %v", PostID, err)
+		comments = nil
+	}
 
 	darkMode := getDarkModeFromCookie(r)
 
@@ -46,8 +50,8 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		"DarkMode":    darkMode,
 		"CurrentPage": "post",
 		"User":        user,
-		"Post":	   	   post,
-		"Comments":	   comments,
+		"Post":        post,
+		"Comments":    comments,
 	}
 
 	err = h.templateService.RenderTemplate(w, "post_page.html", data)
@@ -82,7 +86,6 @@ func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) 
 	err = h.postService.CreatePost(
 		r.FormValue("title"),
 		r.FormValue("content"),
-		session.ID,
 		r.FormValue("category"),
 		imageBytes,
 	)

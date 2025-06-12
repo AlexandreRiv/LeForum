@@ -3,7 +3,6 @@ package repositories
 import (
 	"LeForum/internal/domain"
 	"database/sql"
-	"time"
 	"encoding/base64"
 	"html/template"
 )
@@ -58,7 +57,7 @@ func (r *PostRepository) CreatePost(title, content, sessionID, category string, 
 }
 
 func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
-	var Request string 
+	var Request string
 	BaseRequest := `
 		SELECT 
 			posts.id, 
@@ -92,7 +91,7 @@ func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
 		) AS comment_stats ON comment_stats.id_post = posts.id`
 
 	if search == "" {
-		switch order { 
+		switch order {
 		case "oldest":
 			Request = BaseRequest + " ORDER BY posts.created_at ASC;"
 		case "popular":
@@ -105,7 +104,6 @@ func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
 	} else {
 		Request = BaseRequest + " WHERE posts.title LIKE '%" + search + "%' ORDER BY posts.created_at ASC;"
 	}
-	
 
 	rows, err := r.db.Query(Request)
 	if err != nil {
