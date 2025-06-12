@@ -60,9 +60,14 @@
                 <div class="flex-1 p-4">
                     <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
                         <span>Posté le {{.Post.CreatedAt}}</span>
-                        <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="bg-secondary dark:bg-dark-secondary text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
-                            <i class="fi fi-rr-edit mr-1"></i>Modifier
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="bg-secondary dark:bg-dark-secondary text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
+                                <i class="fi fi-rr-edit mr-1"></i>Modifier
+                            </button>
+                            <button onclick="document.getElementById('deleteModal').classList.remove('hidden')" class="bg-red-500 dark:bg-red-600 text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
+                                <i class="fi fi-rr-trash mr-1"></i>Supprimer
+                            </button>
+                        </div>
                     </div>
                     <div class="prose dark:prose-invert max-w-none">
                         <p>{{.Post.Content}}</p>
@@ -95,14 +100,18 @@
 
                 <!-- Answer content -->
                 <div class="flex-1 p-4">
-                    <a href="/comment/like?id={{.Id}}&like=1&postId={{$postId}}"><button class="flex items-center gap-1 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors">
-                        <i class="fi fi-sr-thumbs-up text-lg"></i>
-                        <span>{{ .Likes }}</span>
-                    </button></a>
-                    <a href="/comment/like?id={{.Id}}&like=0&postId={{$postId}}"><button class="flex items-center gap-1 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
-                        <i class="fi fi-sr-thumbs-down text-lg"></i>
-                        <span>{{ .Dislikes }}</span>
-                    </button></a>
+                    <a href="/comment/like?id={{.Id}}&like=1&postId={{$postId}}">
+                        <button class="flex items-center gap-1 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-up text-lg"></i>
+                            <span>{{ .Likes }}</span>
+                        </button>
+                    </a>
+                    <a href="/comment/like?id={{.Id}}&like=0&postId={{$postId}}">
+                        <button class="flex items-center gap-1 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-down text-lg"></i>
+                            <span>{{ .Dislikes }}</span>
+                        </button>
+                    </a>
                     <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
                         <span>Posté le {{.CreatedAt}}</span>
                     </div>
@@ -151,7 +160,7 @@
     </div>
 </main>
 
-<!-- Modal pour modification de post -->
+<!-- Edit post pop-up -->
 <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
     <div class="bg-white dark:bg-dark-surface rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
         <div class="p-6">
@@ -163,7 +172,8 @@
             </div>
             <form method="POST" action="/post/update?id={{.Post.Id}}">
                 <div class="mb-4">
-                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
+                    <label for="title"
+                           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
                     <input type="text" id="title" name="title" value="{{.Post.Title}}"
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
                 </div>
@@ -177,19 +187,50 @@
                     </select>
                 </div>
                 <div class="mb-6">
-                    <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu</label>
+                    <label for="content"
+                           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu</label>
                     <textarea id="content" rows="5" name="content"
                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">{{.Post.Content}}</textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')"
-                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">Annuler</button>
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">
+                        Annuler
+                    </button>
                     <button type="submit"
                             class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
                         Enregistrer
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete post pop-up -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-dark-surface rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-red-500 dark:text-red-400">Supprimer le post</h3>
+                <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="cursor-pointer">
+                    <i class="fi fi-rr-cross w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-700 dark:text-gray-300">Êtes-vous sûr de vouloir supprimer ce post ? Cette action
+                    est irréversible.</p>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('deleteModal').classList.add('hidden')"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">
+                    Annuler
+                </button>
+                <a href="/post/delete?id={{.Post.Id}}"
+                   class="px-4 py-2 bg-red-500 text-white dark:bg-red-600 rounded-md hover:bg-opacity-90 transition-colors">
+                    Confirmer
+                </a>
+            </div>
         </div>
     </div>
 </div>
