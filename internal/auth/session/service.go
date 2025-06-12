@@ -1,7 +1,6 @@
 package session
 
 import (
-	"LeForum/internal/api/middleware"
 	"LeForum/internal/domain"
 	"crypto/rand"
 	"database/sql"
@@ -113,7 +112,7 @@ func (s *Service) GetCurrentUser(r *http.Request) (*domain.LoggedUser, error) {
 		Email:     session.UserEmail,
 		Name:      username,
 		LoginTime: time.Now(),
-		Role:      middleware.RoleType(roleStr),
+		Role:      domain.RoleType(roleStr),
 	}
 
 	return user, nil

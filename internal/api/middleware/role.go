@@ -2,20 +2,12 @@ package middleware
 
 import (
 	"LeForum/internal/auth/session"
+	"LeForum/internal/domain"
 	"LeForum/internal/service"
 	"net/http"
 )
 
-// RoleType définit un type pour les rôles utilisateur
-type RoleType string
-
-const (
-	RoleUser      RoleType = "user"
-	RoleModerator RoleType = "moderator"
-	RoleAdmin     RoleType = "admin"
-)
-
-func RoleMiddleware(sessionService *session.Service, userService *service.UserService, requiredRole RoleType) func(http.Handler) http.Handler {
+func RoleMiddleware(sessionService *session.Service, userService *service.UserService, requiredRole domain.RoleType) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Vérifier la session
@@ -44,13 +36,13 @@ func RoleMiddleware(sessionService *session.Service, userService *service.UserSe
 }
 
 // hasRequiredRole vérifie si le rôle de l'utilisateur a les permissions nécessaires
-func hasRequiredRole(userRole RoleType, requiredRole RoleType) bool {
-	if userRole == RoleAdmin {
+func hasRequiredRole(userRole domain.RoleType, requiredRole domain.RoleType) bool {
+	if userRole == domain.RoleAdmin {
 		// L'administrateur a tous les droits
 		return true
 	}
 
-	if userRole == RoleModerator && requiredRole == RoleUser {
+	if userRole == domain.RoleModerator && requiredRole == domain.RoleUser {
 		// Le modérateur a les droits d'utilisateur
 		return true
 	}
