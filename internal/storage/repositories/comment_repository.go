@@ -54,3 +54,20 @@ func (r *CommentRepository) LikeComment(sessionID string, commentID string, like
 
 	return err
 }
+
+func (r *CommentRepository) DeleteComment(commentID int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Insérer le post
+	_, err = tx.Exec(
+		"DELETE FROM comments WHERE id = ?;", commentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}

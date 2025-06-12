@@ -35,8 +35,8 @@ func (h *CommentHandler) CreateCommentHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	PotsIDStr := r.URL.Query().Get("id")
-	PostID, err := strconv.Atoi(PotsIDStr)
+	PostIDStr := r.URL.Query().Get("id")
+	PostID, err := strconv.Atoi(PostIDStr)
 	if err != nil {
 		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
 		return
@@ -69,7 +69,7 @@ func (h *CommentHandler) CreateCommentHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	http.Redirect(w, r, "/post?id="+PotsIDStr, http.StatusSeeOther)
+	http.Redirect(w, r, "/post?id="+PostIDStr, http.StatusSeeOther)
 }
 
 func (h *CommentHandler) LikeCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -101,4 +101,19 @@ func (h *CommentHandler) LikeCommentHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	http.Redirect(w, r, "/post?id="+PostID, http.StatusSeeOther)
+}
+
+func (h *CommentHandler) DeleteCommentHandler(w http.ResponseWriter, r *http.Request) {
+	CommentIDStr := r.URL.Query().Get("id")
+	CommentID, err := strconv.Atoi(CommentIDStr)
+	if err != nil {
+		http.Error(w, "Id parameter is invalid", http.StatusBadRequest)
+		return
+	}
+
+	PostIDStr := r.URL.Query().Get("postId")
+
+	err = h.commentService.DeleteComment(CommentID)
+
+	http.Redirect(w, r, "/post?id="+PostIDStr, http.StatusSeeOther)
 }

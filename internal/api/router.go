@@ -51,6 +51,7 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	// Comm
 	mux.HandleFunc("/comment/create", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.CreateCommentHandler)).ServeHTTP)
 	mux.HandleFunc("/comment/like", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.LikeCommentHandler)).ServeHTTP)
+	mux.HandleFunc("/comment/delete", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.DeleteCommentHandler)).ServeHTTP)
 
 	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
 

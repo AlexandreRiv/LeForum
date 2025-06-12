@@ -117,6 +117,9 @@
                         <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
                             <span>Posté le {{.CreatedAt}}</span>
                         </div>
+                        <a href="/comment/delete?id={{.Id}}&postId={{$postId}}"><button class="bg-red-500 dark:bg-red-600 text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
+                            <i class="fi fi-rr-trash mr-1"></i>Supprimer
+                        </button></a>
                         <div class="prose dark:prose-invert max-w-none">
                             <p>{{.Content}}</p>
                             {{if .Image}}
