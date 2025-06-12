@@ -64,7 +64,7 @@ func (r *UserRepository) UpdateUserRole(userID int, role string) error {
 	return err
 }
 
-func (r *UserRepository) GetAllUsers() ([]models.User, error) {
+func (r *UserRepository) GetAllUsers() ([]domain.User, error) {
 	query := "SELECT id, username, email, user_role FROM users"
 	rows, err := r.db.Query(query)
 	if err != nil {
@@ -72,9 +72,9 @@ func (r *UserRepository) GetAllUsers() ([]models.User, error) {
 	}
 	defer rows.Close()
 
-	var users []models.User
+	var users []domain.User
 	for rows.Next() {
-		var user models.User
+		var user domain.User
 		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Role); err != nil {
 			return nil, err
 		}
