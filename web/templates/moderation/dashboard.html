@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark"{{end}}>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Modération - PhrasInachev</title>
+
+  <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
+  <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+  <span class="text-gray-600 dark:text-gray-400">Modération</span>
+</div>
+
+<!-- Main content -->
+<main class="max-w-6xl mx-auto p-4">
+  <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden mb-6">
+    <div class="bg-secondary dark:bg-dark-secondary text-white p-4 flex justify-between items-center">
+      <h2 class="text-xl font-bold">Tableau de bord de modération</h2>
+    </div>
+
+    <div class="p-6">
+      <!-- Statistiques -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-secondary/10 dark:bg-dark-secondary/20 rounded-lg p-6 text-center">
+          <p class="text-3xl font-bold text-secondary dark:text-light">{{len .Reports}}</p>
+          <p class="text-gray-600 dark:text-gray-400">Signalements en attente</p>
+        </div>
+        <div class="bg-primary/10 dark:bg-dark-primary/20 rounded-lg p-6 text-center">
+          <p class="text-3xl font-bold text-primary dark:text-light">0</p>
+          <p class="text-gray-600 dark:text-gray-400">Posts supprimés</p>
+        </div>
+        <div class="bg-accent/10 dark:bg-dark-accent/20 rounded-lg p-6 text-center">
+          <p class="text-3xl font-bold text-accent dark:text-light">0</p>
+          <p class="text-gray-600 dark:text-gray-400">Commentaires modérés</p>
+        </div>
+      </div>
+
+      <!-- Signalements en attente -->
+      <h3 class="text-lg font-bold mb-4">Signalements récents</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white dark:bg-dark-surface rounded-lg overflow-hidden">
+          <thead class="bg-gray-100 dark:bg-dark-surface/80 text-left">
+          <tr>
+            <th class="py-3 px-4 font-semibold">ID</th>
+            <th class="py-3 px-4 font-semibold">Type</th>
+            <th class="py-3 px-4 font-semibold">Contenu</th>
+            <th class="py-3 px-4 font-semibold">Date</th>
+            <th class="py-3 px-4 font-semibold">Raison</th>
+            <th class="py-3 px-4 font-semibold">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          {{if .Reports}}
+          {{range .Reports}}
+          <tr>
+            <td class="py-3 px-4">{{.ID}}</td>
+            <td class="py-3 px-4">
+              {{if .CommentID}}
+              <span class="text-blue-600 dark:text-blue-400">Commentaire</span>
+              {{else}}
+              <span class="text-green-600 dark:text-green-400">Post</span>
+              {{end}}
+            </td>
+            <td class="py-3 px-4">
+              <a href="/post?id={{.PostID}}{{if .CommentID}}#comment-{{.CommentID}}{{end}}"
+                 class="text-accent dark:text-dark-accent hover:underline">
+                Voir le contenu
+              </a>
+            </td>
+            <td class="py-3 px-4">{{.CreatedAt.Format "02/01/2006 15:04"}}</td>
+            <td class="py-3 px-4">{{.Reason}}</td>
+            <td class="py-3 px-4">
+              <div class="flex space-x-2">
+                {{if .CommentID}}
+                <form action="/moderation/delete-comment" method="POST">
+                  <input type="hidden" name="comment_id" value="{{.CommentID}}">
+                  <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
+                    Supprimer
+                  </button>
+                </form>
+                {{else}}
+                <form action="/moderation/delete-post" method="POST">
+                  <input type="hidden" name="post_id" value="{{.PostID}}">
+                  <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm">
+                    Supprimer
+                  </button>
+                </form>
+                {{end}}
+                <form action="/admin/resolve-report" method="POST">
+                  <input type="hidden" name="report_id" value="{{.ID}}">
+                  <input type="hidden" name="status" value="dismissed">
+                  <button type="submit" class="bg-gray-400 hover:bg-gray-500 text-white px-2 py-1 rounded text-sm">
+                    Ignorer
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{end}}
+          {{else}}
+          <tr>
+            <td colspan="6" class="py-8 px-4 text-center text-gray-500 dark:text-gray-400">
+              Aucun signalement en attente.
+            </td>
+          </tr>
+          {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+{{template "footer" .}}
+
+</body>
+</html>

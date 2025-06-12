@@ -64,6 +64,16 @@ func (r *CommentRepository) DeleteComment(commentID int) error {
 	// Insérer le post
 	_, err = tx.Exec(
 		"DELETE FROM comments WHERE id = ?;", commentID)
+
+	// Suppression des likes associés au commentaire
+	_, err = tx.Exec("DELETE FROM liked_comments WHERE id_comment = ?", commentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Suppression du commentaire
+	_, err = tx.Exec("DELETE FROM comments WHERE id = ?", commentID)
 	if err != nil {
 		tx.Rollback()
 		return err

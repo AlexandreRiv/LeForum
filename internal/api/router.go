@@ -6,28 +6,31 @@ import (
 	"LeForum/internal/auth/oauth"
 	"LeForum/internal/config"
 	"LeForum/internal/domain"
+	"LeForum/internal/service"
+	"LeForum/internal/storage/repositories"
 	"net/http"
 )
 
-func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
+func SetupRouter(config *config.AppConfig, reportService *service.ReportService) http.Handler {
 	mux := http.NewServeMux()
 
 	// Middlewares
-	authMiddleware := middleware.AuthMiddleware(appConfig.SessionService)
+	authMiddleware := middleware.AuthMiddleware(config.SessionService)
+	adminMiddleware := middleware.RoleMiddleware(config.SessionService, config.UserService, domain.RoleAdmin)
+	moderatorMiddleware := middleware.RoleMiddleware(config.SessionService, config.UserService, domain.RoleModerator)
 
 	// Fichiers statiques
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
-	// Initialisation des handlers OAuth
-	githubHandler := oauth.NewGithubHandler(appConfig.UserService, appConfig.SessionService)
-	googleHandler := oauth.NewGoogleHandler(appConfig.UserService, appConfig.SessionService)
+	// OAuth Handlers
+	googleHandler := oauth.NewGoogleHandler(config.UserService, config.SessionService)
+	githubHandler := oauth.NewGithubHandler(config.UserService, config.SessionService)
 
-	// Routes OAuth
-	mux.HandleFunc("/auth/github", githubHandler.LoginHandler)
-	mux.HandleFunc("/auth/github/callback", githubHandler.CallbackHandler)
+	// Routes publiques
 	mux.HandleFunc("/auth/google", googleHandler.LoginHandler)
 	mux.HandleFunc("/auth/google/callback", googleHandler.CallbackHandler)
+<<<<<<< HEAD
 
 	appConfig.AuthHandler.RegisterRoutes(mux)
 	appConfig.CategoryHandler.RegisterRoutes(mux)
@@ -53,33 +56,52 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	mux.HandleFunc("/comment/like", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.LikeCommentHandler)).ServeHTTP)
 	mux.HandleFunc("/comment/delete", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.DeleteCommentHandler)).ServeHTTP)
 
+=======
+	mux.HandleFunc("/auth/github", githubHandler.LoginHandler)
+	mux.HandleFunc("/auth/github/callback", githubHandler.CallbackHandler)
+>>>>>>> 7043820b9564e186d18d03566273385bd8966258
 	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
 
-	adminProtectedHandler := middleware.RoleMiddleware(
-		appConfig.SessionService,
-		appConfig.UserService,
-		domain.RoleAdmin)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Extraction du chemin restant après /admin ou /admin/
-path := r.URL.Path
-if len(path) >= 6 && path[:6] == "/admin" {
-    path = path[6:]
-    if path == "" {
-        path = "/"
-    }
-}
+	// Enregistrement des routes pour chaque gestionnaire
+	config.AuthHandler.RegisterRoutes(mux)
+	config.CategoryHandler.RegisterRoutes(mux)
 
-// Créer une nouvelle requête avec le chemin modifié
-r2 := new(http.Request)
-*r2 = *r
-r2.URL.Path = path
+	// Commentaire routes
+	mux.HandleFunc("/comment/create", config.CommentHandler.CreateCommentHandler)
+	mux.HandleFunc("/comment/like", config.CommentHandler.LikeCommentHandler)
 
-// Servir via le AdminHandler
-appConfig.AdminHandler.ServeHTTP(w, r2)
-	}))
+	// Routes protégées par authentification
+	mux.Handle("/create-post", authMiddleware(http.HandlerFunc(config.PostHandler.CreatePostHandler)))
+	mux.Handle("/edit-post", authMiddleware(http.HandlerFunc(config.PostHandler.EditPostHandler)))
+	mux.Handle("/like-post", authMiddleware(http.HandlerFunc(config.PostHandler.LikePostHandler)))
 
-	// Enregistrer le handler protégé pour toutes les routes commençant par /admin/
-	mux.Handle("/admin/", adminProtectedHandler)
-	mux.Handle("/admin", adminProtectedHandler)
+	// Gestionnaire de modération avec routes protégées par rôle de modérateur
+	moderationHandler := handlers.NewModerationHandler(
+		reportService,
+		config.SessionService,
+		config.PostService,
+		service.NewCommentService(repositories.NewCommentRepository(config.DB.DB)),
+		handlers.NewTemplateService(),
+	)
 
-	return mux
+	// Routes pour modérateurs
+	mux.Handle("/moderation", moderatorMiddleware(http.HandlerFunc(moderationHandler.ModerationDashboard)))
+	mux.Handle("/moderation/report", authMiddleware(http.HandlerFunc(moderationHandler.ReportContentHandler))) // Tout utilisateur peut signaler
+	mux.Handle("/moderation/delete-post", moderatorMiddleware(http.HandlerFunc(moderationHandler.DeletePostHandler)))
+	mux.Handle("/moderation/delete-comment", moderatorMiddleware(http.HandlerFunc(moderationHandler.DeleteCommentHandler)))
+
+	// Routes pour administrateurs
+	mux.Handle("/admin", adminMiddleware(http.HandlerFunc(config.AdminHandler.AdminDashboardHandler)))
+	mux.Handle("/admin/users", adminMiddleware(http.HandlerFunc(config.AdminHandler.ManageUsersHandler)))
+	mux.Handle("/admin/change-role", adminMiddleware(http.HandlerFunc(config.AdminHandler.ChangeUserRoleHandler)))
+	mux.Handle("/admin/categories", adminMiddleware(http.HandlerFunc(config.AdminHandler.ManageCategoriesHandler)))
+	mux.Handle("/admin/add-category", adminMiddleware(http.HandlerFunc(config.AdminHandler.AddCategoryHandler)))
+	mux.Handle("/admin/delete-category", adminMiddleware(http.HandlerFunc(config.AdminHandler.DeleteCategoryHandler)))
+	mux.Handle("/admin/reports", adminMiddleware(http.HandlerFunc(config.AdminHandler.ManageReportsHandler)))
+	mux.Handle("/admin/resolve-report", adminMiddleware(http.HandlerFunc(config.AdminHandler.ResolveReportHandler)))
+
+	// Appliquer les middlewares globaux
+	finalHandler := middleware.ThemeMiddleware(mux)
+
+	return finalHandler
 }

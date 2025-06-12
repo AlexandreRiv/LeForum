@@ -256,6 +256,57 @@
     </div>
 </div>
 
+<!-- Formulaire de signalement pour post (à inclure dans post_page.html) -->
+<div class="report-form hidden bg-white dark:bg-dark-surface shadow-md rounded p-4 mt-2" id="report-form-post-{{.Post.Id}}">
+    <h3 class="font-bold mb-2">Signaler ce contenu</h3>
+    <form action="/moderation/report" method="POST">
+        <input type="hidden" name="post_id" value="{{.Post.Id}}">
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Motif</label>
+            <select name="type" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white">
+                <option value="inappropriate">Contenu inapproprié</option>
+                <option value="spam">Spam</option>
+                <option value="harassment">Harcèlement</option>
+                <option value="other">Autre</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea name="reason" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white" rows="2" required></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" onclick="toggleReportForm('post-{{.Post.Id}}')" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded">Annuler</button>
+            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded">Envoyer</button>
+        </div>
+    </form>
+</div>
+
+<!-- Formulaire de signalement pour commentaire (à inclure dans la boucle des commentaires) -->
+<div class="report-form hidden bg-white dark:bg-dark-surface shadow-md rounded p-4 mt-2" id="report-form-comment-{{.Id}}">
+    <h3 class="font-bold mb-2">Signaler ce commentaire</h3>
+    <form action="/moderation/report" method="POST">
+        <input type="hidden" name="post_id" value="{{$.Post.Id}}">
+        <input type="hidden" name="comment_id" value="{{.Id}}">
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Motif</label>
+            <select name="type" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white">
+                <option value="inappropriate">Contenu inapproprié</option>
+                <option value="spam">Spam</option>
+                <option value="harassment">Harcèlement</option>
+                <option value="other">Autre</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea name="reason" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white" rows="2" required></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" onclick="toggleReportForm('comment-{{.Id}}')" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded">Annuler</button>
+            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded">Envoyer</button>
+        </div>
+    </form>
+</div>
+
 {{template "footer" .}}
 
 </body>

@@ -23,4 +23,8 @@ func (s *CommentService) LikeComment(sessionID string, commentID string, likeTyp
 
 func (s *CommentService) DeleteComment(commentID int) error {
 	return s.repo.DeleteComment(commentID)
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7043820b9564e186d18d03566273385bd8966258
