@@ -1,7 +1,6 @@
 package service
 
 import (
-	"LeForum/internal/api/middleware"
 	"LeForum/internal/domain"
 	"LeForum/internal/storage/repositories"
 	"golang.org/x/crypto/bcrypt"
@@ -45,7 +44,7 @@ func (s *UserService) GetUserStats(email string) (postCount, responseCount, like
 	return s.repo.GetUserStats(email)
 }
 
-func (s *UserService) UpdateUserRole(userID int, role middleware.RoleType) error {
+func (s *UserService) UpdateUserRole(userID int, role domain.RoleType) error {
 	return s.repo.UpdateUserRole(userID, string(role))
 }
 

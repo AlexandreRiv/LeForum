@@ -3,10 +3,10 @@ package handlers
 import (
 	"LeForum/internal/auth/session"
 	"LeForum/internal/service"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
-	"io"
 )
 
 type PostHandler struct {
@@ -46,7 +46,7 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	comments, err := h.postService.GetCommentsByPostID(PostID)
 	if err != nil {
 		log.Printf("Erreur lors de la récupération des commentaires du post %d: %v", PostID, err)
-		comments = nil 
+		comments = nil
 	}
 
 	darkMode := getDarkModeFromCookie(r)
@@ -55,8 +55,8 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		"DarkMode":    darkMode,
 		"CurrentPage": "post",
 		"User":        user,
-		"Post":	   	   post,
-		"Comments":	   comments,
+		"Post":        post,
+		"Comments":    comments,
 	}
 
 	err = h.templateService.RenderTemplate(w, "post_page.html", data)
@@ -79,25 +79,20 @@ func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) 
 
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Erreur lors de la lecture du fichier image",  http.StatusMethodNotAllowed)
+		http.Error(w, "Erreur lors de la lecture du fichier image", http.StatusMethodNotAllowed)
 	}
 	defer file.Close()
 
 	imageBytes, err := io.ReadAll(file)
 	if err != nil {
-		http.Error(w, "Erreur lors de la lecture des bytes de l'image",  http.StatusMethodNotAllowed)
+		http.Error(w, "Erreur lors de la lecture des bytes de l'image", http.StatusMethodNotAllowed)
 	}
 
 	err = h.postService.CreatePost(
 		r.FormValue("title"),
 		r.FormValue("content"),
-		session.ID,
 		r.FormValue("category"),
-<<<<<<< Updated upstream
-		imageBytes,
-=======
 		r.FormValue("image"),
->>>>>>> Stashed changes
 	)
 
 	if err != nil {
