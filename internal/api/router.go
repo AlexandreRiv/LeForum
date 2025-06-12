@@ -44,6 +44,8 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 	// Création des routes pour les posts
 	mux.HandleFunc("/post/create", authMiddleware(http.HandlerFunc(appConfig.PostHandler.CreatePostHandler)).ServeHTTP)
 	mux.HandleFunc("/post/like", authMiddleware(http.HandlerFunc(appConfig.PostHandler.LikePostHandler)).ServeHTTP)
+	mux.HandleFunc("/post/update", authMiddleware(http.HandlerFunc(appConfig.PostHandler.UpdatePostHandler)).ServeHTTP)
+	mux.HandleFunc("/post/delete", authMiddleware(http.HandlerFunc(appConfig.PostHandler.DeletePostHandler)).ServeHTTP)
 	mux.HandleFunc("/post", http.HandlerFunc(appConfig.PostHandler.PostPageHandler))
 
 	// Comm

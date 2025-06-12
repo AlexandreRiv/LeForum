@@ -71,6 +71,9 @@
                     </div>
                     <div class="prose dark:prose-invert max-w-none">
                         <p>{{.Post.Content}}</p>
+                        {{if .Post.Image}}
+                            <img src="{{ .Post.Image }}" alt="Image du post" style="max-width: 400px;"/>
+                        {{end}}
                     </div>
                 </div>
             </div>
@@ -116,7 +119,9 @@
                         </div>
                         <div class="prose dark:prose-invert max-w-none">
                             <p>{{.Content}}</p>
-                            <p>{{.Image}}</p>
+                            {{if .Image}}
+                                <img src="{{ .Image }}" alt="Image du commentaire" style="max-width: 400px;"/>
+                            {{end}}
                         </div>
                     </div>
                 </div>
@@ -144,7 +149,7 @@
     <!-- Write Answers -->
     <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 mb-6 transition-colors duration-200">
         <h2 class="text-xl font-semibold mb-4 text-primary dark:text-light">Répondre</h2>
-        <form method="post" action="/comment/create?id={{.Post.Id}}">
+        <form method="post" action="/comment/create?id={{.Post.Id}}" enctype="multipart/form-data">
             <div class="mb-4">
                 <textarea
                         name="commentContent"

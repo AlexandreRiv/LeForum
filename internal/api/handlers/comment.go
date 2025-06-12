@@ -5,6 +5,8 @@ import (
 	"LeForum/internal/service"
 	"net/http"
 	"strconv"
+	"io"
+	"fmt"
 )
 
 type CommentHandler struct {
@@ -40,13 +42,29 @@ func (h *CommentHandler) CreateCommentHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	var imageBytes []byte
+	file, _, err := r.FormFile("image")
+	if err == nil {
+		defer file.Close()
+		imageBytes, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(w, "Erreur lors de la lecture des bytes de l'image", http.StatusInternalServerError)
+			return
+		}
+	} else if err != http.ErrMissingFile {
+		http.Error(w, "Erreur lors de la lecture du fichier image", http.StatusInternalServerError)
+		return
+	}
+
 	err = h.commentService.CreateComment(
 		r.FormValue("commentContent"),
 		session.ID,
 		PostID,
+		imageBytes,
 	)
 
 	if err != nil {
+		fmt.Printf("Erreur lors de la création du commentaire : %v\n", err)
 		http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
 		return
 	}

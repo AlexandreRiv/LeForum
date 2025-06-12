@@ -11,13 +11,15 @@ import (
 
 type PostHandler struct {
 	postService     *service.PostService
+	categoryService *service.CategoryService
 	sessionService  *session.Service
 	templateService *TemplateService
 }
 
-func NewPostHandler(ps *service.PostService, ss *session.Service, ts *TemplateService) *PostHandler {
+func NewPostHandler(ps *service.PostService, cs *service.CategoryService, ss *session.Service, ts *TemplateService) *PostHandler {
 	return &PostHandler{
 		postService:     ps,
+		categoryService: cs,
 		sessionService:  ss,
 		templateService: ts,
 	}
@@ -44,11 +46,19 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		comments = nil
 	}
 
+	// Récupération des catégories
+	categories, err := h.categoryService.GetCategories()
+	if err != nil {
+		http.Error(w, "Failed to fetch categories", http.StatusInternalServerError)
+		return
+	}
+
 	darkMode := getDarkModeFromCookie(r)
 
 	data := map[string]interface{}{
 		"DarkMode":    darkMode,
 		"CurrentPage": "post",
+		"AllCategories": categories,
 		"User":        user,
 		"Post":        post,
 		"Comments":    comments,
@@ -72,20 +82,24 @@ func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	var imageBytes []byte
 	file, _, err := r.FormFile("image")
-	if err != nil {
-    	http.Error(w, "Erreur lors de la lecture du fichier image", http.StatusInternalServerError)
-	}
-	defer file.Close()
-
-	imageBytes, err := io.ReadAll(file)
-	if err != nil {
-		http.Error(w, "Erreur lors de la lecture des bytes de l'image", http.StatusInternalServerError)
+	if err == nil {
+		defer file.Close()
+		imageBytes, err = io.ReadAll(file)
+		if err != nil {
+			http.Error(w, "Erreur lors de la lecture des bytes de l'image", http.StatusInternalServerError)
+			return
+		}
+	} else if err != http.ErrMissingFile {
+		http.Error(w, "Erreur lors de la lecture du fichier image", http.StatusInternalServerError)
+		return
 	}
 
 	err = h.postService.CreatePost(
 		r.FormValue("title"),
 		r.FormValue("content"),
+		session.ID,
 		r.FormValue("category"),
 		imageBytes,
 	)
@@ -123,6 +137,48 @@ func (h *PostHandler) LikePostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Like error", http.StatusInternalServerError)
 		return
 	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h *PostHandler) UpdatePostHandler(w http.ResponseWriter, r *http.Request) {
+	PotsIDStr := r.URL.Query().Get("id")
+	PostID, err := strconv.Atoi(PotsIDStr)
+	if err != nil {
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
+		return
+	}
+
+	session, err := h.sessionService.GetSession(r)
+	if err != nil || session == nil {
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return
+	}
+
+	err = h.postService.UpdatePost(
+		PostID,
+		r.FormValue("title"),
+		r.FormValue("content"),
+		r.FormValue("category"),
+	)
+
+	if err != nil {
+		http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/post?id="+PotsIDStr, http.StatusSeeOther)
+}
+
+func (h *PostHandler) DeletePostHandler(w http.ResponseWriter, r *http.Request) {
+	PotsIDStr := r.URL.Query().Get("id")
+	PostID, err := strconv.Atoi(PotsIDStr)
+	if err != nil {
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
+		return
+	}
+
+	err = h.postService.DeletePost(PostID)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

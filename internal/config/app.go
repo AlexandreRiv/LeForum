@@ -48,7 +48,7 @@ func NewAppConfig() (*AppConfig, error) {
 	// Initialiser handlers
 	templateService := handlers.NewTemplateService()
 	authHandler := handlers.NewAuthHandler(userService, sessionService, templateService)
-	postHandler := handlers.NewPostHandler(postService, sessionService, templateService)
+	postHandler := handlers.NewPostHandler(postService, categoryService, sessionService, templateService)
 	categoryHandler := handlers.NewCategoryHandler(categoryService, sessionService, templateService)
 	commentHandler := handlers.NewCommentHandler(commentService, sessionService, templateService)
 	adminHandler := handlers.NewAdminHandler(userService, sessionService, templateService)

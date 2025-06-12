@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"html/template"
+	"time"
+	"net/http"
 )
 
 type PostRepository struct {
@@ -200,7 +202,9 @@ func (r *PostRepository) GetPostByID(id int) (domain.Post, error) {
 		post.CreatedAt = createdAt
 
 		if len(imageBytes) > 0 {
-			post.Image = template.URL("data:image/png;base64," + base64.StdEncoding.EncodeToString(imageBytes))
+			mimeType := http.DetectContentType(imageBytes)
+			base64Image := base64.StdEncoding.EncodeToString(imageBytes)
+			post.Image = template.URL("data:" + mimeType + ";base64," + base64Image)
 		} else {
 			post.Image = ""
 		}
@@ -235,6 +239,7 @@ func (r *PostRepository) GetCommentsByPostID(id int) ([]domain.Comment, error) {
 		SELECT 
 			comments.id,
 			comments.content,
+			comments.image,
 			users.username,
 			SUM(CASE WHEN liked_comments.liked = 1 THEN 1 ELSE 0 END) AS likes,
 			SUM(CASE WHEN liked_comments.liked = 0 THEN 1 ELSE 0 END) AS dislikes,
@@ -254,11 +259,20 @@ func (r *PostRepository) GetCommentsByPostID(id int) ([]domain.Comment, error) {
 	for rows.Next() {
 		var comment domain.Comment
 		var createdAt string
-		if err := rows.Scan(&comment.Id, &comment.Content, &comment.Username,
+		var imageBytes []byte
+		if err := rows.Scan(&comment.Id, &comment.Content, &imageBytes, &comment.Username,
 			&comment.Likes, &comment.Dislikes, &createdAt); err != nil {
 			return nil, err
 		}
 		comment.CreatedAt = createdAt
+
+		if len(imageBytes) > 0 {
+			mimeType := http.DetectContentType(imageBytes)
+			base64Image := base64.StdEncoding.EncodeToString(imageBytes)
+			comment.Image = template.URL("data:" + mimeType + ";base64," + base64Image)
+		} else {
+			comment.Image = ""
+		}
 
 		comments = append(comments, comment)
 	}
@@ -283,4 +297,53 @@ func (r *PostRepository) LikePost(sessionID string, postID string, likeType int)
 	}
 
 	return err
+}
+
+func (r *PostRepository) UpdatePost(postID int, title, content, category string) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Insérer le post
+	_, err = tx.Exec(
+		"UPDATE posts SET title = ?, content = ? WHERE id = ?;",
+		title,
+		content,
+		postID,
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Associer le post à la catégorie
+	_, err = tx.Exec(
+		"UPDATE affectation SET id_category = (SELECT id FROM categories WHERE name = ?) WHERE id_post = ?;",
+		category,
+		postID,
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (r *PostRepository) UpdatePost(postID int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Insérer le post
+	_, err = tx.Exec(
+		"DELETE FROM posts WHERE id = ?;", postID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }

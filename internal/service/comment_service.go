@@ -13,8 +13,8 @@ func NewCommentService(repo *repositories.CommentRepository) *CommentService {
 	return &CommentService{repo: repo}
 }
 
-func (s *CommentService) CreateComment(content, sessionID string, postID int) error {
-	return s.repo.CreateComment(content, sessionID, postID, time.Now().Add(2*time.Hour))
+func (s *CommentService) CreateComment(content, sessionID string, postID int, image []byte) error {
+	return s.repo.CreateComment(content, sessionID, postID, image, time.Now().Add(2*time.Hour))
 }
 
 func (s *CommentService) LikeComment(sessionID string, commentID string, likeType int) error {

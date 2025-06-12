@@ -33,3 +33,11 @@ func (s *PostService) GetCommentsByPostID(id int) ([]domain.Comment, error) {
 func (s *PostService) LikePost(sessionID string, postID string, likeType int) error {
 	return s.repo.LikePost(sessionID, postID, likeType)
 }
+
+func (s *PostService) UpdatePost(postID int, title, content, category string) error {
+	return s.repo.UpdatePost(postID, title, content, category)
+}
+
+func (s *PostService) DeletePost(postID int) error {
+	return s.repo.DeletePost(postID)
+}
