@@ -24,6 +24,10 @@ type AppConfig struct {
 	CategoryHandler *handlers.CategoryHandler
 	CommentHandler  *handlers.CommentHandler
 	AdminHandler    *handlers.AdminHandler
+
+	ReportRepository  *repositories.ReportRepository
+	ReportService     *service.ReportService
+	ModerationHandler *handlers.ModerationHandler
 }
 
 func NewAppConfig() (*AppConfig, error) {
@@ -38,6 +42,10 @@ func NewAppConfig() (*AppConfig, error) {
 	categoryRepo := repositories.NewCategoryRepository(db.DB)
 	commentRepo := repositories.NewCommentRepository(db.DB)
 
+	// Initialiser le repository et service pour les rapports
+	reportRepo := repositories.NewReportRepository(db.DB)
+	reportService := service.NewReportService(reportRepo)
+
 	// Initialiser services
 	userService := service.NewUserService(userRepo)
 	postService := service.NewPostService(postRepo)
@@ -51,7 +59,8 @@ func NewAppConfig() (*AppConfig, error) {
 	postHandler := handlers.NewPostHandler(postService, categoryService, sessionService, templateService)
 	categoryHandler := handlers.NewCategoryHandler(categoryService, sessionService, templateService)
 	commentHandler := handlers.NewCommentHandler(commentService, sessionService, templateService)
-	adminHandler := handlers.NewAdminHandler(userService, sessionService, templateService)
+	adminHandler := handlers.NewAdminHandler(userService, categoryService, reportService, sessionService, templateService)
+	moderationHandler := handlers.NewModerationHandler(reportService, sessionService, postService, commentService, templateService)
 
 	return &AppConfig{
 		DB:                 db,
@@ -67,5 +76,8 @@ func NewAppConfig() (*AppConfig, error) {
 		CategoryHandler:    categoryHandler,
 		CommentHandler:     commentHandler,
 		AdminHandler:       adminHandler,
+		ReportRepository:   reportRepo,
+		ReportService:      reportService,
+		ModerationHandler:  moderationHandler,
 	}, nil
 }

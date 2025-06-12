@@ -20,3 +20,7 @@ func (s *CommentService) CreateComment(content, sessionID string, postID int, im
 func (s *CommentService) LikeComment(sessionID string, commentID string, likeType int) error {
 	return s.repo.LikeComment(sessionID, commentID, likeType)
 }
+
+func (s *CommentService) DeleteComment(commentID int) error {
+	return s.repo.DeleteComment(commentID)
+}

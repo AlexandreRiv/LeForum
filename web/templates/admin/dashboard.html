@@ -1,3 +1,4 @@
+<!-- web/templates/admin/dashboard.html -->
 <!DOCTYPE html>
 <html lang="fr" {{if .DarkMode}}class="dark"{{end}}>
 <head>
@@ -5,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Administration - PhrasInachev</title>
 
-  <!-- Styles similaires à vos autres pages -->
   <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,33 +27,50 @@
 <!-- Main content -->
 <main class="max-w-6xl mx-auto p-4">
   <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden mb-6">
-    <div class="bg-secondary dark:bg-dark-secondary text-white p-4">
+    <div class="bg-primary dark:bg-dark-primary text-white p-4">
       <h2 class="text-xl font-bold">Tableau de bord d'administration</h2>
     </div>
-    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <a href="/admin/users" class="bg-primary/10 dark:bg-primary/20 p-4 rounded-lg hover:shadow-lg transition-all flex flex-col items-center">
-        <i class="fi fi-rr-users text-4xl mb-2 text-primary dark:text-light"></i>
-        <h3 class="text-lg font-semibold">Gérer les utilisateurs</h3>
-        <p class="text-sm text-center text-gray-600 dark:text-gray-400">
-          Modifier les rôles, supprimer des comptes
-        </p>
-      </a>
 
-      <a href="/admin/categories" class="bg-accent/10 dark:bg-accent/20 p-4 rounded-lg hover:shadow-lg transition-all flex flex-col items-center">
-        <i class="fi fi-rr-apps text-4xl mb-2 text-accent dark:text-light"></i>
-        <h3 class="text-lg font-semibold">Gérer les catégories</h3>
-        <p class="text-sm text-center text-gray-600 dark:text-gray-400">
-          Ajouter ou supprimer des catégories
-        </p>
-      </a>
+    <div class="p-6">
+      <!-- Menu d'admin -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <a href="/admin/users" class="bg-blue-100 dark:bg-dark-surface border dark:border-gray-700 rounded-lg p-6 text-center hover:bg-blue-200 dark:hover:bg-gray-800 transition-all">
+          <div class="text-3xl mb-2 text-blue-600 dark:text-blue-400"><i class="fi fi-rr-users"></i></div>
+          <h3 class="font-bold text-lg">Gestion des utilisateurs</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">Gérer les rôles et les permissions</p>
+        </a>
+        <a href="/admin/categories" class="bg-green-100 dark:bg-dark-surface border dark:border-gray-700 rounded-lg p-6 text-center hover:bg-green-200 dark:hover:bg-gray-800 transition-all">
+          <div class="text-3xl mb-2 text-green-600 dark:text-green-400"><i class="fi fi-rr-apps"></i></div>
+          <h3 class="font-bold text-lg">Gestion des catégories</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">Ajouter ou supprimer des catégories</p>
+        </a>
+        <a href="/admin/reports" class="bg-red-100 dark:bg-dark-surface border dark:border-gray-700 rounded-lg p-6 text-center hover:bg-red-200 dark:hover:bg-gray-800 transition-all">
+          <div class="text-3xl mb-2 text-red-600 dark:text-red-400"><i class="fi fi-rr-flag"></i></div>
+          <h3 class="font-bold text-lg">Signalements</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">Traiter les signalements d'utilisateurs</p>
+        </a>
+      </div>
 
-      <a href="/admin/reports" class="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg hover:shadow-lg transition-all flex flex-col items-center">
-        <i class="fi fi-rr-flag text-4xl mb-2 text-red-500 dark:text-red-400"></i>
-        <h3 class="text-lg font-semibold">Signalements</h3>
-        <p class="text-sm text-center text-gray-600 dark:text-gray-400">
-          Gérer les contenus signalés
-        </p>
-      </a>
+      <!-- Statistiques -->
+      <h3 class="text-lg font-bold mb-4">Statistiques du forum</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-indigo-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{.UserCount}}</p>
+          <p class="text-gray-600 dark:text-gray-400">Utilisateurs</p>
+        </div>
+        <div class="bg-purple-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{.PostCount}}</p>
+          <p class="text-gray-600 dark:text-gray-400">Posts</p>
+        </div>
+        <div class="bg-pink-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-pink-600 dark:text-pink-400">{{.CommentCount}}</p>
+          <p class="text-gray-600 dark:text-gray-400">Commentaires</p>
+        </div>
+        <div class="bg-amber-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{.CategoryCount}}</p>
+          <p class="text-gray-600 dark:text-gray-400">Catégories</p>
+        </div>
+      </div>
     </div>
   </div>
 </main>

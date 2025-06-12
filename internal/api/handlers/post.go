@@ -38,7 +38,7 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post,_ := h.postService.GetPostByID(PostID)
+	post, _ := h.postService.GetPostByID(PostID)
 
 	comments, err := h.postService.GetCommentsByPostID(PostID)
 	if err != nil {
@@ -56,12 +56,12 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 	darkMode := getDarkModeFromCookie(r)
 
 	data := map[string]interface{}{
-		"DarkMode":    darkMode,
-		"CurrentPage": "post",
+		"DarkMode":      darkMode,
+		"CurrentPage":   "post",
 		"AllCategories": categories,
-		"User":        user,
-		"Post":        post,
-		"Comments":    comments,
+		"User":          user,
+		"Post":          post,
+		"Comments":      comments,
 	}
 
 	err = h.templateService.RenderTemplate(w, "post_page.html", data)
@@ -181,4 +181,50 @@ func (h *PostHandler) DeletePostHandler(w http.ResponseWriter, r *http.Request) 
 	err = h.postService.DeletePost(PostID)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h *PostHandler) EditPostHandler(w http.ResponseWriter, r *http.Request) {
+	// Récupérer l'ID du post à éditer
+	postIDStr := r.URL.Query().Get("id")
+	postID, err := strconv.Atoi(postIDStr)
+	if err != nil {
+		http.Error(w, "ID de post invalide", http.StatusBadRequest)
+		return
+	}
+
+	// Récupérer l'utilisateur actuel
+	user, err := h.sessionService.GetCurrentUser(r)
+	if err != nil {
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return
+	}
+
+	// Récupérer les informations du post
+	post, err := h.postService.GetPostByID(postID)
+	if err != nil {
+		http.Error(w, "Impossible de récupérer les informations du post", http.StatusInternalServerError)
+		return
+	}
+
+	// Récupérer les catégories disponibles
+	categories, err := h.categoryService.GetCategories()
+	if err != nil {
+		http.Error(w, "Impossible de récupérer les catégories", http.StatusInternalServerError)
+		return
+	}
+
+	darkMode := getDarkModeFromCookie(r)
+
+	data := map[string]interface{}{
+		"User":          user,
+		"Post":          post,
+		"AllCategories": categories,
+		"DarkMode":      darkMode,
+		"PageTitle":     "Modifier le post",
+	}
+
+	err = h.templateService.RenderTemplate(w, "edit_post.html", data)
+	if err != nil {
+		http.Error(w, "Erreur de rendu du template: "+err.Error(), http.StatusInternalServerError)
+	}
 }

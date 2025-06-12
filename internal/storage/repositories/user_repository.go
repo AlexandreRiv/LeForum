@@ -59,26 +59,25 @@ func (r *UserRepository) GetUserStats(email string) (postCount, responseCount, l
 }
 
 func (r *UserRepository) UpdateUserRole(userID int, role string) error {
-	_, err := r.db.Exec("UPDATE users SET user_role = ? WHERE id = ?", role, userID)
+	query := "UPDATE users SET user_role = ? WHERE id = ?"
+	_, err := r.db.Exec(query, role, userID)
 	return err
 }
 
-func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
-	rows, err := r.db.Query("SELECT id, username, mail, password, user_role FROM users")
+func (r *UserRepository) GetAllUsers() ([]models.User, error) {
+	query := "SELECT id, username, email, user_role FROM users"
+	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	users := []*domain.User{}
+	var users []models.User
 	for rows.Next() {
-		user := &domain.User{}
-		var roleStr string
-		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &roleStr)
-		if err != nil {
+		var user models.User
+		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Role); err != nil {
 			return nil, err
 		}
-		user.Role = domain.RoleType(roleStr)
 		users = append(users, user)
 	}
 	return users, nil

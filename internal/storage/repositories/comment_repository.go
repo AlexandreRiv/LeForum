@@ -54,3 +54,26 @@ func (r *CommentRepository) LikeComment(sessionID string, commentID string, like
 
 	return err
 }
+
+func (r *CommentRepository) DeleteComment(commentID int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Suppression des likes associés au commentaire
+	_, err = tx.Exec("DELETE FROM liked_comments WHERE id_comment = ?", commentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Suppression du commentaire
+	_, err = tx.Exec("DELETE FROM comments WHERE id = ?", commentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
+}
