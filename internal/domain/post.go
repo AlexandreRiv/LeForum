@@ -4,8 +4,7 @@ type Post struct {
 	Id         int
 	Title      string
 	Content    string
-	ImageURL   string
-	Image      []byte
+	Image	   []byte
 	Username   string
 	Categories []string
 	Likes      int

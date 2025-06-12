@@ -14,6 +14,7 @@ func NewPostService(repo *repositories.PostRepository) *PostService {
 	return &PostService{repo: repo}
 }
 
+<<<<<<< Updated upstream
 func (s *PostService) CreatePost(title, content, sessionID, category string, image []byte) error {
 	return s.repo.CreatePost(title, content, sessionID, category, image, time.Now().Add(2*time.Hour))
 }
