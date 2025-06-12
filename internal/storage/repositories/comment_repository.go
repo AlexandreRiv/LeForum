@@ -3,7 +3,6 @@ package repositories
 import (
 	"database/sql"
 	"time"
-	"fmt"
 )
 
 type CommentRepository struct {
@@ -21,7 +20,6 @@ func (r *CommentRepository) CreateComment(content, sessionID string, postID int,
 	}
 
 	// Insérer le post
-	fmt.Println(content,sessionID,postID,createdAt)
 	_, err = tx.Exec(
 		"INSERT INTO comments (content, id_user, id_post, created_at) VALUES (?, (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?), ?, ?);",
 		content,
