@@ -51,5 +51,36 @@ func (h *CommentHandler) CreateCommentHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/post?id="+PotsIDStr, http.StatusSeeOther)
+}
+
+func (h *CommentHandler) LikeCommentHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := h.sessionService.GetSession(r)
+	if err != nil || session == nil {
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return
+	}
+
+	commentID := r.URL.Query().Get("id")
+	if commentID == "" {
+		http.Error(w, "Id parameter is missing", http.StatusBadRequest)
+		return
+	}
+
+	likeTypeStr := r.URL.Query().Get("like")
+	likeType, err := strconv.Atoi(likeTypeStr)
+	if err != nil {
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
+		return
+	}
+
+	PostID := r.URL.Query().Get("postId")
+
+	err = h.commentService.LikeComment(session.ID, commentID, likeType)
+	if err != nil {
+		http.Error(w, "Like error", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/post?id="+PostID, http.StatusSeeOther)
 }

@@ -54,8 +54,9 @@ func (r *PostRepository) CreatePost(title, content, sessionID, category string, 
 	return tx.Commit()
 }
 
-func (r *PostRepository) GetPosts(order string) ([]domain.Post, error) {
-	rows, err := r.db.Query(`
+func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
+	var Request string 
+	BaseRequest := `
 		SELECT 
 			posts.id, 
 			posts.title, 
@@ -85,9 +86,25 @@ func (r *PostRepository) GetPosts(order string) ([]domain.Post, error) {
 				COUNT(*) AS comment_count
 			FROM comments
 			GROUP BY id_post
-		) AS comment_stats ON comment_stats.id_post = posts.id
-		ORDER BY posts.created_at DESC;
-	`)
+		) AS comment_stats ON comment_stats.id_post = posts.id`
+
+	if search == "" {
+		switch order { 
+		case "oldest":
+			Request = BaseRequest + " ORDER BY posts.created_at ASC;"
+		case "popular":
+			Request = BaseRequest + " ORDER BY like_stats.likes DESC;"
+		case "noresponse":
+			Request = BaseRequest + " WHERE COALESCE(comment_stats.comment_count, 0) = 0;"
+		default:
+			Request = BaseRequest + " ORDER BY posts.created_at DESC;"
+		}
+	} else {
+		Request = BaseRequest + " WHERE posts.title LIKE '%" + search + "%' ORDER BY posts.created_at ASC;"
+	}
+	
+
+	rows, err := r.db.Query(Request)
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +232,7 @@ func (r *PostRepository) GetCommentsByPostID(id int) ([]domain.Comment, error) {
 			comments.created_at
 		FROM comments
 		INNER JOIN users ON comments.id_user = users.id
-		LEFT JOIN liked_comments ON liked_comments.id_user = users.id
+		LEFT JOIN liked_comments ON liked_comments.id_comment = comments.id
 		WHERE comments.id_post = ?
 		GROUP BY comments.id;
 	`, id)

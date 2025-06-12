@@ -73,6 +73,7 @@
     <div class="mb-4">
         <h2 class="text-xl font-semibold mb-2 text-primary dark:text-light">Réponses</h2>
 
+        {{ $postId := .Post.Id }}
         {{range .Comments}}
             <!-- Answer -->
             <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-3 overflow-hidden transition-colors duration-200">
@@ -91,6 +92,14 @@
 
                     <!-- Answer content -->
                     <div class="flex-1 p-4">
+                        <a href="/comment/like?id={{.Id}}&like=1&postId={{$postId}}"><button class="flex items-center gap-1 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-up text-lg"></i>
+                            <span>{{ .Likes }}</span>
+                        </button></a>
+                        <a href="/comment/like?id={{.Id}}&like=0&postId={{$postId}}"><button class="flex items-center gap-1 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-down text-lg"></i>
+                            <span>{{ .Dislikes }}</span>
+                        </button></a>
                         <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
                             <span>Posté le {{.CreatedAt}}</span>
                         </div>

@@ -59,9 +59,10 @@ func (h *HomeHandler) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Récupération des posts
-	Order := r.URL.Query().Get("filter")
+	order := r.URL.Query().Get("filter")
+	search := r.URL.Query().Get("search")
 
-	posts, err := h.postService.GetPosts(Order)
+	posts, err := h.postService.GetPosts(order, search)
 	if err != nil {
 		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
 		return

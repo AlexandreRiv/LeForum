@@ -36,3 +36,22 @@ func (r *CommentRepository) CreateComment(content, sessionID string, postID int,
 
 	return tx.Commit()
 }
+
+func (r *CommentRepository) LikeComment(sessionID string, commentID string, likeType int) error {
+	_, err := r.db.Exec(
+		"INSERT INTO liked_comments VALUES ((SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?), ?, ?);",
+		sessionID,
+		commentID,
+		likeType,
+	)
+
+	if err != nil {
+		_, err = r.db.Exec(
+			"DELETE FROM liked_comments WHERE id_user = (SELECT users.id FROM users INNER JOIN sessions ON users.mail = sessions.user_email WHERE sessions.id = ?) AND id_comment = ?;",
+			sessionID,
+			commentID,
+		)
+	}
+
+	return err
+}

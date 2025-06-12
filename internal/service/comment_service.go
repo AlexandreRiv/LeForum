@@ -16,3 +16,7 @@ func NewCommentService(repo *repositories.CommentRepository) *CommentService {
 func (s *CommentService) CreateComment(content, sessionID string, postID int) error {
 	return s.repo.CreateComment(content, sessionID, postID, time.Now().Add(2*time.Hour))
 }
+
+func (s *CommentService) LikeComment(sessionID string, commentID string, likeType int) error {
+	return s.repo.LikeComment(sessionID, commentID, likeType)
+}
