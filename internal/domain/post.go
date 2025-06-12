@@ -5,8 +5,12 @@ type Post struct {
 	Title      string
 	Content    string
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	ImageURL   string
 	Image      []byte
+=======
+	Image	   []byte
+>>>>>>> Stashed changes
 =======
 	Image	   []byte
 >>>>>>> Stashed changes
