@@ -51,5 +51,25 @@ func SetupRouter(appConfig *config.AppConfig) *http.ServeMux {
 
 	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
 
+	adminProtectedHandler := middleware.RoleMiddleware(
+		appConfig.SessionService,
+		appConfig.UserService,
+		middleware.RoleAdmin)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Extraction du chemin restant après /admin/
+		path := r.URL.Path[6:] // Supprimer "/admin"
+
+		// Créer une nouvelle requête avec le chemin modifié
+		r2 := new(http.Request)
+		*r2 = *r
+		r2.URL.Path = path
+
+		// Servir via le AdminHandler
+		appConfig.AdminHandler.ServeHTTP(w, r2)
+	}))
+
+	// Enregistrer le handler protégé pour toutes les routes commençant par /admin/
+	mux.Handle("/admin/", adminProtectedHandler)
+	mux.Handle("/admin", adminProtectedHandler)
+
 	return mux
 }

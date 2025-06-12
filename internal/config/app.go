@@ -22,7 +22,8 @@ type AppConfig struct {
 	AuthHandler     *handlers.AuthHandler
 	PostHandler     *handlers.PostHandler
 	CategoryHandler *handlers.CategoryHandler
-	CommentHandler	*handlers.CommentHandler
+	CommentHandler  *handlers.CommentHandler
+	AdminHandler    *handlers.AdminHandler
 }
 
 func NewAppConfig() (*AppConfig, error) {
@@ -50,6 +51,7 @@ func NewAppConfig() (*AppConfig, error) {
 	postHandler := handlers.NewPostHandler(postService, sessionService, templateService)
 	categoryHandler := handlers.NewCategoryHandler(categoryService, sessionService, templateService)
 	commentHandler := handlers.NewCommentHandler(commentService, sessionService, templateService)
+	adminHandler := handlers.NewAdminHandler(userService, sessionService, templateService)
 
 	return &AppConfig{
 		DB:                 db,
@@ -63,6 +65,7 @@ func NewAppConfig() (*AppConfig, error) {
 		AuthHandler:        authHandler,
 		PostHandler:        postHandler,
 		CategoryHandler:    categoryHandler,
-		CommentHandler:		commentHandler,
+		CommentHandler:     commentHandler,
+		AdminHandler:       adminHandler,
 	}, nil
 }

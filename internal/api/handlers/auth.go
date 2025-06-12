@@ -246,7 +246,7 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 	// Logique pour récupérer les statistiques utilisateur
 	// À implémenter dans un service approprié
 
-	PostNb,RespNb,Likes,_ := h.userService.GetUserStats(loggedUser.Email)
+	PostNb, RespNb, Likes, _ := h.userService.GetUserStats(loggedUser.Email)
 	data.Likes = Likes
 	data.PostNumber = PostNb
 	data.ResponseNb = RespNb
