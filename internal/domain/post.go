@@ -1,10 +1,12 @@
 package domain
 
+import "html/template"
+
 type Post struct {
 	Id         int
 	Title      string
 	Content    string
-	Image	   []byte
+	Image	   template.URL
 	Username   string
 	Categories []string
 	Likes      int

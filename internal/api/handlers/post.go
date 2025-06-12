@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"io"
 )
 
 type PostHandler struct {
@@ -67,12 +68,23 @@ func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	file, _, err := r.FormFile("image")
+	if err != nil {
+    	http.Error(w, "Erreur lors de la lecture du fichier image", http.StatusInternalServerError)
+	}
+	defer file.Close()
+
+	imageBytes, err := io.ReadAll(file)
+	if err != nil {
+		http.Error(w, "Erreur lors de la lecture des bytes de l'image", http.StatusInternalServerError)
+	}
+
 	err = h.postService.CreatePost(
 		r.FormValue("title"),
 		r.FormValue("content"),
 		session.ID,
 		r.FormValue("category"),
-		r.FormValue("image"),
+		imageBytes,
 	)
 
 	if err != nil {

@@ -4,6 +4,8 @@ import (
 	"LeForum/internal/domain"
 	"database/sql"
 	"time"
+	"encoding/base64"
+	"html/template"
 )
 
 type PostRepository struct {
@@ -14,7 +16,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 	return &PostRepository{db: db}
 }
 
-func (r *PostRepository) CreatePost(title, content, sessionID, category string, image string, createdAt time.Time) error {
+func (r *PostRepository) CreatePost(title, content, sessionID, category string, image []byte, createdAt time.Time) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -156,6 +158,7 @@ func (r *PostRepository) GetPostByID(id int) (domain.Post, error) {
 			posts.id, 
 			posts.title, 
 			posts.content, 
+			posts.image,
 			users.username,
 			COALESCE(like_stats.likes, 0) AS likes,
 			COALESCE(like_stats.dislikes, 0) AS dislikes,
@@ -191,11 +194,18 @@ func (r *PostRepository) GetPostByID(id int) (domain.Post, error) {
 	var post domain.Post
 	for rows.Next() {
 		var createdAt string
-		if err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Username,
+		var imageBytes []byte
+		if err := rows.Scan(&post.Id, &post.Title, &post.Content, &imageBytes, &post.Username,
 			&post.Likes, &post.Dislikes, &post.Comments, &createdAt); err != nil {
 			return errorPost, err
 		}
 		post.CreatedAt = createdAt
+
+		if len(imageBytes) > 0 {
+			post.Image = template.URL("data:image/png;base64," + base64.StdEncoding.EncodeToString(imageBytes))
+		} else {
+			post.Image = ""
+		}
 
 		// Récupérer les catégories pour ce post
 		catRows, err := r.db.Query(`
