@@ -4,9 +4,6 @@ import (
 	"LeForum/internal/domain"
 	"database/sql"
 	"time"
-	"encoding/base64"
-	"net/http"
-	"fmt"
 )
 
 type PostRepository struct {
@@ -17,7 +14,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 	return &PostRepository{db: db}
 }
 
-func (r *PostRepository) CreatePost(title, content, sessionID, category string, image []byte, createdAt time.Time) error {
+func (r *PostRepository) CreatePost(title, content, sessionID, category string, image string, createdAt time.Time) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
@@ -64,7 +61,7 @@ func (r *PostRepository) GetPosts(order, search string) ([]domain.Post, error) {
 		SELECT 
 			posts.id, 
 			posts.title, 
-			posts.content,
+			posts.content, 
 			users.username,
 			COALESCE(like_stats.likes, 0) AS likes,
 			COALESCE(like_stats.dislikes, 0) AS dislikes,
@@ -159,7 +156,6 @@ func (r *PostRepository) GetPostByID(id int) (domain.Post, error) {
 			posts.id, 
 			posts.title, 
 			posts.content, 
-			posts.Image,
 			users.username,
 			COALESCE(like_stats.likes, 0) AS likes,
 			COALESCE(like_stats.dislikes, 0) AS dislikes,
@@ -195,18 +191,10 @@ func (r *PostRepository) GetPostByID(id int) (domain.Post, error) {
 	var post domain.Post
 	for rows.Next() {
 		var createdAt string
-		var postImage []byte
-		if err := rows.Scan(&post.Id, &post.Title, &post.Content, &postImage, &post.Username,
+		if err := rows.Scan(&post.Id, &post.Title, &post.Content, &post.Username,
 			&post.Likes, &post.Dislikes, &post.Comments, &createdAt); err != nil {
 			return errorPost, err
 		}
-
-		if postImage != nil && len(postImage) > 0 {
-			encoded := base64.StdEncoding.EncodeToString(postImage)
-			mimeType := http.DetectContentType(postImage)
-			post.ImageURL = fmt.Sprintf("data:%s;base64,%s", mimeType, encoded)
-		}
-
 		post.CreatedAt = createdAt
 
 		// Récupérer les catégories pour ce post

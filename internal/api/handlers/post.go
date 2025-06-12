@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"io"
 )
 
 type PostHandler struct {
@@ -36,18 +35,9 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := h.postService.GetPostByID(PostID)
-	if err != nil {
-		log.Printf("Erreur lors de la récupération du post %d: %v", PostID, err)
-		http.Error(w, "Post introuvable", http.StatusNotFound)
-		return
-	}
+	post,_ := h.postService.GetPostByID(PostID)
 
-	comments, err := h.postService.GetCommentsByPostID(PostID)
-	if err != nil {
-		log.Printf("Erreur lors de la récupération des commentaires du post %d: %v", PostID, err)
-		comments = nil 
-	}
+	comments, _ := h.postService.GetCommentsByPostID(PostID)
 
 	darkMode := getDarkModeFromCookie(r)
 
@@ -77,27 +67,12 @@ func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	file, _, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, "Erreur lors de la lecture du fichier image",  http.StatusMethodNotAllowed)
-	}
-	defer file.Close()
-
-	imageBytes, err := io.ReadAll(file)
-	if err != nil {
-		http.Error(w, "Erreur lors de la lecture des bytes de l'image",  http.StatusMethodNotAllowed)
-	}
-
 	err = h.postService.CreatePost(
 		r.FormValue("title"),
 		r.FormValue("content"),
 		session.ID,
 		r.FormValue("category"),
-<<<<<<< Updated upstream
-		imageBytes,
-=======
 		r.FormValue("image"),
->>>>>>> Stashed changes
 	)
 
 	if err != nil {
