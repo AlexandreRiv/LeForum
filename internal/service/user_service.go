@@ -1,6 +1,7 @@
 package service
 
 import (
+	"LeForum/internal/api/middleware"
 	"LeForum/internal/domain"
 	"LeForum/internal/storage/repositories"
 	"golang.org/x/crypto/bcrypt"
@@ -42,4 +43,21 @@ func (s *UserService) hashPassword(password string) (string, error) {
 
 func (s *UserService) GetUserStats(email string) (postCount, responseCount, likeCount int, err error) {
 	return s.repo.GetUserStats(email)
+}
+
+func (s *UserService) UpdateUserRole(userID int, role middleware.RoleType) error {
+	return s.repo.UpdateUserRole(userID, string(role))
+}
+
+func (s *UserService) GetAllUsers() ([]*domain.User, error) {
+	return s.repo.GetAllUsers()
+}
+
+func (s *UserService) GetUserByID(id int) (*domain.User, error) {
+	return s.repo.GetUserByID(id)
+}
+
+// Complétons le système dans GetCurrentUser pour inclure le rôle dans la session
+func (s *UserService) GetUserWithRole(email string) (*domain.User, error) {
+	return s.repo.GetUserByEmail(email)
 }

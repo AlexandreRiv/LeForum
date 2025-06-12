@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"LeForum/internal/api/middleware"
 	"LeForum/internal/domain"
 	"database/sql"
 	"log"
@@ -32,17 +33,6 @@ func (r *UserRepository) CreateUser(username, email, hashedPassword string) erro
 	return err
 }
 
-func (r *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
-	var user domain.User
-	err := r.db.QueryRow("SELECT id, username, mail, password FROM users WHERE mail = ?", email).Scan(
-		&user.ID, &user.Username, &user.Email, &user.Password)
-	if err != nil {
-		log.Printf("Erreur lors de la récupération de l'utilisateur: %v", err)
-		return nil, err
-	}
-	return &user, nil
-}
-
 func (r *UserRepository) GetUserStats(email string) (postCount, responseCount, likeCount int, err error) {
 	err = r.db.QueryRow(
 		"SELECT COUNT(*) FROM posts WHERE posts.id_user = (SELECT id FROM users WHERE mail = ?)",
@@ -67,4 +57,55 @@ func (r *UserRepository) GetUserStats(email string) (postCount, responseCount, l
 	).Scan(&likeCount)
 
 	return postCount, responseCount, likeCount, err
+}
+
+func (r *UserRepository) UpdateUserRole(userID int, role string) error {
+	_, err := r.db.Exec("UPDATE users SET user_role = ? WHERE id = ?", role, userID)
+	return err
+}
+
+func (r *UserRepository) GetAllUsers() ([]*domain.User, error) {
+	rows, err := r.db.Query("SELECT id, username, mail, password, user_role FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []*domain.User{}
+	for rows.Next() {
+		user := &domain.User{}
+		var roleStr string
+		err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &roleStr)
+		if err != nil {
+			return nil, err
+		}
+		user.Role = middleware.RoleType(roleStr)
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (r *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
+	var user domain.User
+	var roleStr string
+	err := r.db.QueryRow("SELECT id, username, mail, password, user_role FROM users WHERE mail = ?", email).Scan(
+		&user.ID, &user.Username, &user.Email, &user.Password, &roleStr)
+	if err != nil {
+		log.Printf("Erreur lors de la récupération de l'utilisateur: %v", err)
+		return nil, err
+	}
+	user.Role = middleware.RoleType(roleStr)
+	return &user, nil
+}
+
+func (r *UserRepository) GetUserByID(id int) (*domain.User, error) {
+	var user domain.User
+	var roleStr string
+	err := r.db.QueryRow("SELECT id, username, mail, password, user_role FROM users WHERE id = ?", id).Scan(
+		&user.ID, &user.Username, &user.Email, &user.Password, &roleStr)
+	if err != nil {
+		return nil, err
+	}
+	user.Role = middleware.RoleType(roleStr)
+	return &user, nil
 }

@@ -1,0 +1,86 @@
+<!-- web/templates/admin/users.html -->
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark"{{end}}>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Gestion des utilisateurs - PhrasInachev</title>
+
+  <!-- Styles similaires à vos autres pages -->
+  <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
+  <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+  <a href="/admin" class="text-accent dark:text-dark-accent hover:underline">Admin</a> &gt;
+  <span class="text-gray-600 dark:text-gray-400">Gestion des utilisateurs</span>
+</div>
+
+<!-- Main content -->
+<main class="max-w-6xl mx-auto p-4">
+  <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden mb-6">
+    <div class="bg-secondary dark:bg-dark-secondary text-white p-4">
+      <h2 class="text-xl font-bold">Gestion des utilisateurs</h2>
+    </div>
+    <div class="p-4">
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white dark:bg-dark-surface">
+          <thead>
+          <tr class="bg-gray-100 dark:bg-dark-surface/80 text-left">
+            <th class="py-3 px-4 font-semibold">ID</th>
+            <th class="py-3 px-4 font-semibold">Nom</th>
+            <th class="py-3 px-4 font-semibold">Email</th>
+            <th class="py-3 px-4 font-semibold">Rôle</th>
+            <th class="py-3 px-4 font-semibold">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          {{range .Users}}
+          <tr class="border-t border-gray-200 dark:border-gray-700">
+            <td class="py-3 px-4">{{.ID}}</td>
+            <td class="py-3 px-4">{{.Username}}</td>
+            <td class="py-3 px-4">{{.Email}}</td>
+            <td class="py-3 px-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                {{if eq .Role "admin"}}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+              {{else if eq .Role "moderator"}}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+              {{else}}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{{end}}">
+              {{.Role}}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <form action="/admin/change-role" method="POST" class="flex gap-2">
+                <input type="hidden" name="user_id" value="{{.ID}}">
+                <select name="role" class="text-sm border rounded px-2 py-1 dark:bg-dark-surface/80 dark:border-gray-700">
+                  <option value="user" {{if eq .Role "user"}}selected{{end}}>Utilisateur</option>
+                  <option value="moderator" {{if eq .Role "moderator"}}selected{{end}}>Modérateur</option>
+                  <option value="admin" {{if eq .Role "admin"}}selected{{end}}>Administrateur</option>
+                </select>
+                <button type="submit" class="bg-primary dark:bg-dark-primary text-white px-3 py-1 rounded text-sm">
+                  Modifier
+                </button>
+              </form>
+            </td>
+          </tr>
+          {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+{{template "footer" .}}
+
+</body>
+</html>
