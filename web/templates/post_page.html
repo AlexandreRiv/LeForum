@@ -30,7 +30,7 @@
 <!-- Breadcrumb -->
 <div class="max-w-6xl mx-auto px-4 py-2 text-sm">
     <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
-    <span class="text-gray-600 dark:text-gray-400">Quand je vais au supermarché je</span>
+    <span class="text-gray-600 dark:text-gray-400">{{.Post.Title}}</span>
 </div>
 
 <!-- Main section -->
@@ -38,7 +38,7 @@
     <!-- Title name -->
     <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-4 overflow-hidden transition-colors duration-200">
         <div class="bg-secondary dark:bg-dark-secondary text-white p-3">
-            <h1 class="text-xl font-bold">Quand je vais au supermarché je</h1>
+            <h1 class="text-xl font-bold">{{.Post.Title}}</h1>
         </div>
 
         <!-- Initial post -->
@@ -49,7 +49,7 @@
                     <div class="bg-pale dark:bg-dark-pale rounded-full w-20 h-20 flex items-center justify-center mb-2">
                         <span class="text-2xl font-bold text-primary dark:text-dark-primary">h7</span>
                     </div>
-                    <div class="font-semibold text-gray-800 dark:text-gray-200">henriette7</div>
+                    <div class="font-semibold text-gray-800 dark:text-gray-200">{{.Post.Username}}</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400">Membre depuis 2023</div>
                     <div class="text-xs mt-2 bg-pale dark:bg-dark-pale px-2 py-1 rounded-full text-primary dark:text-white">
                         189 messages
@@ -59,11 +59,10 @@
                 <!-- Message content -->
                 <div class="flex-1 p-4">
                     <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
-                        <span>Posté le 28/05/2024 à 14:32</span>
+                        <span>Posté le {{.Post.CreatedAt}}</span>
                     </div>
                     <div class="prose dark:prose-invert max-w-none">
-                        <p>Salut à tous ! J'adore quand je vais au supermarché et que soudainement je</p>
-                        <p class="mt-2">Vous voyez ce que je veux dire ? Parfois ça me fait tellement</p>
+                        <p>{{.Post.Content}}</p>
                     </div>
                 </div>
             </div>
@@ -74,66 +73,43 @@
     <div class="mb-4">
         <h2 class="text-xl font-semibold mb-2 text-primary dark:text-light">Réponses</h2>
 
-        <!-- Answer 1 -->
-        <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-3 overflow-hidden transition-colors duration-200">
-            <div class="flex flex-col md:flex-row">
-                <!-- User -->
-                <div class="w-full md:w-48 p-4 bg-gray-50 dark:bg-dark-surface/60 md:border-r border-gray-200 dark:border-gray-700 flex flex-col items-center text-center">
-                    <div class="bg-light dark:bg-dark-light rounded-full w-16 h-16 flex items-center justify-center mb-2">
-                        <span class="text-xl font-bold text-primary dark:text-white">kd</span>
+        {{ $postId := .Post.Id }}
+        {{range .Comments}}
+            <!-- Answer -->
+            <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-3 overflow-hidden transition-colors duration-200">
+                <div class="flex flex-col md:flex-row">
+                    <!-- User -->
+                    <div class="w-full md:w-48 p-4 bg-gray-50 dark:bg-dark-surface/60 md:border-r border-gray-200 dark:border-gray-700 flex flex-col items-center text-center">
+                        <div class="bg-light dark:bg-dark-light rounded-full w-16 h-16 flex items-center justify-center mb-2">
+                            <span class="text-xl font-bold text-primary dark:text-white">kd</span>
+                        </div>
+                        <div class="font-semibold text-gray-800 dark:text-gray-200">{{.Username}}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Membre depuis 2024</div>
+                        <div class="text-xs mt-2 bg-light dark:bg-dark-light px-2 py-1 rounded-full text-primary dark:text-white">
+                            73 messages
+                        </div>
                     </div>
-                    <div class="font-semibold text-gray-800 dark:text-gray-200">karimdopage2022</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Membre depuis 2024</div>
-                    <div class="text-xs mt-2 bg-light dark:bg-dark-light px-2 py-1 rounded-full text-primary dark:text-white">
-                        73 messages
-                    </div>
-                </div>
 
-                <!-- Answer content -->
-                <div class="flex-1 p-4">
-                    <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
-                        <span>Posté le 28/05/2024 à 15:10</span>
-                        <span>#2</span>
-                    </div>
-                    <div class="prose dark:prose-invert max-w-none">
-                        <p>Je comprends tellement ! Moi aussi quand je suis dans le rayon des céréales et que tout à
-                            coup</p>
-                        <p class="mt-2">Et franchement, les gens qui ne</p>
+                    <!-- Answer content -->
+                    <div class="flex-1 p-4">
+                        <a href="/comment/like?id={{.Id}}&like=1&postId={{$postId}}"><button class="flex items-center gap-1 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-up text-lg"></i>
+                            <span>{{ .Likes }}</span>
+                        </button></a>
+                        <a href="/comment/like?id={{.Id}}&like=0&postId={{$postId}}"><button class="flex items-center gap-1 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-down text-lg"></i>
+                            <span>{{ .Dislikes }}</span>
+                        </button></a>
+                        <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            <span>Posté le {{.CreatedAt}}</span>
+                        </div>
+                        <div class="prose dark:prose-invert max-w-none">
+                            <p>{{.Content}}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Answer 2 -->
-        <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-3 overflow-hidden transition-colors duration-200">
-            <div class="flex flex-col md:flex-row">
-                <!-- User -->
-                <div class="w-full md:w-48 p-4 bg-gray-50 dark:bg-dark-surface/60 md:border-r border-gray-200 dark:border-gray-700 flex flex-col items-center text-center">
-                    <div class="bg-accent dark:bg-dark-accent rounded-full w-16 h-16 flex items-center justify-center mb-2">
-                        <span class="text-xl font-bold text-white">KN</span>
-                    </div>
-                    <div class="font-semibold text-gray-800 dark:text-gray-200">KennyMc812</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Membre depuis 2021</div>
-                    <div class="text-xs mt-2 bg-accent dark:bg-dark-accent px-2 py-1 rounded-full text-white">520
-                        messages
-                    </div>
-                </div>
-
-                <!-- Answer content -->
-                <div class="flex-1 p-4">
-                    <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
-                        <span>Posté le 28/05/2024 à 15:45</span>
-                        <span>#3</span>
-                    </div>
-                    <div class="prose dark:prose-invert max-w-none">
-                        <p>Exactement ce que je disais l'autre jour ! C'est comme quand tu prends ton chariot et
-                            qu'il</p>
-                        <p class="mt-2">D'ailleurs, à la caisse, j'ai toujours l'impression que</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        {{end}}
 
     <!-- Pagination -->
     <div class="flex justify-center my-6">
@@ -154,9 +130,10 @@
     <!-- Write Answers -->
     <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 mb-6 transition-colors duration-200">
         <h2 class="text-xl font-semibold mb-4 text-primary dark:text-light">Répondre</h2>
-        <form>
+        <form method="post" action="/comment/create?id={{.Post.Id}}">
             <div class="mb-4">
                 <textarea
+                        name="commentContent"
                         class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent dark:bg-dark-surface dark:text-gray-200"
                         rows="5" placeholder="Commencez une phrase que vous n'allez pas..."></textarea>
             </div>

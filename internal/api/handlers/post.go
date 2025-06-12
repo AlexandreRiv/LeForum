@@ -1,48 +1,79 @@
 package handlers
 
 import (
-	"LeForum/internal/auth"
-	"LeForum/internal/storage"
-	"html/template"
+	"LeForum/internal/auth/session"
+	"LeForum/internal/service"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-func PostHandler(w http.ResponseWriter, r *http.Request) {
-	user, _ := auth.GetCurrentUser(r)
-	darkMode := getDarkModeFromCookie(r)
+type PostHandler struct {
+	postService     *service.PostService
+	sessionService  *session.Service
+	templateService *TemplateService
+}
 
-	data := struct {
-		DarkMode    bool
-		CurrentPage string
-		User        *auth.LoggedUser
-	}{
-		DarkMode:    darkMode,
-		CurrentPage: "post",
-		User:        user,
+func NewPostHandler(ps *service.PostService, ss *session.Service, ts *TemplateService) *PostHandler {
+	return &PostHandler{
+		postService:     ps,
+		sessionService:  ss,
+		templateService: ts,
+	}
+}
+
+func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
+	user, err := h.sessionService.GetCurrentUser(r)
+	if err != nil {
+		log.Printf("Error getting user: %v", err)
 	}
 
-	tmpl := template.Must(template.ParseFiles("web/templates/post_page.html"))
-	template.Must(tmpl.ParseGlob("web/templates/components/*.html"))
+	PotsIDStr := r.URL.Query().Get("id")
+	PostID, err := strconv.Atoi(PotsIDStr)
+	if err != nil {
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
+		return
+	}
 
-	if err := tmpl.Execute(w, data); err != nil {
+	post,_ := h.postService.GetPostByID(PostID)
+
+	comments, _ := h.postService.GetCommentsByPostID(PostID)
+
+	darkMode := getDarkModeFromCookie(r)
+
+	data := map[string]interface{}{
+		"DarkMode":    darkMode,
+		"CurrentPage": "post",
+		"User":        user,
+		"Post":	   	   post,
+		"Comments":	   comments,
+	}
+
+	err = h.templateService.RenderTemplate(w, "post_page.html", data)
+	if err != nil {
 		http.Error(w, "Erreur d'affichage du template: "+err.Error(), http.StatusInternalServerError)
 	}
 }
 
-func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
+func (h *PostHandler) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	session, err := h.sessionService.GetSession(r)
+	if err != nil || session == nil {
 		http.Redirect(w, r, "/auth", http.StatusSeeOther)
 		return
 	}
 
-	err = storage.CreatePost(
+	err = h.postService.CreatePost(
 		r.FormValue("title"),
 		r.FormValue("content"),
-		cookie.Value,
+		session.ID,
 		r.FormValue("category"),
 	)
+
 	if err != nil {
 		http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
 		return
@@ -51,32 +82,29 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func LikePostHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			http.Redirect(w, r, "/auth", http.StatusSeeOther)
-			return
-		}
-		http.Error(w, "Erreur lors de la lecture du cookie", http.StatusBadRequest)
+func (h *PostHandler) LikePostHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := h.sessionService.GetSession(r)
+	if err != nil || session == nil {
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
 		return
 	}
 
-	id := r.URL.Query().Get("id")
-	if id == "" {
+	postID := r.URL.Query().Get("id")
+	if postID == "" {
 		http.Error(w, "Id parameter is missing", http.StatusBadRequest)
 		return
 	}
 
-	likeType, err := strconv.Atoi(r.URL.Query().Get("like"))
+	likeTypeStr := r.URL.Query().Get("like")
+	likeType, err := strconv.Atoi(likeTypeStr)
 	if err != nil {
-		http.Error(w, "Like parameter is missing", http.StatusBadRequest)
+		http.Error(w, "Like parameter is invalid", http.StatusBadRequest)
 		return
 	}
 
-	err = storage.LikePost(cookie.Value, id, likeType)
+	err = h.postService.LikePost(session.ID, postID, likeType)
 	if err != nil {
-		http.Error(w, "like error", http.StatusInternalServerError)
+		http.Error(w, "Like error", http.StatusInternalServerError)
 		return
 	}
 

@@ -82,9 +82,9 @@
         {{range .Categories}}
         <!-- Catégorie {{.Name}} -->
         <div class="category-card bg-white dark:bg-dark-surface rounded-xl shadow-md overflow-hidden transition-colors duration-200">
-            <div class="bg-gradient-to-r {{.GradientFrom}} {{.GradientTo}} h-24 flex items-center justify-center relative">
-                <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-                <i class="{{.Icon}} category-icon text-white text-4xl relative z-10"></i>
+            <div class="bg-primary dark:bg-dark-primary h-24 flex items-center justify-center relative">
+                <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+                <i class="fi fi-rr-book category-icon text-white text-4xl relative z-10"></i>
             </div>
             <div class="p-4">
                 <h2 class="text-xl font-bold text-center mb-4 text-primary dark:text-light">{{.Name}}</h2>
@@ -96,7 +96,7 @@
                         <p class="text-sm text-gray-800 dark:text-gray-300 line-clamp-2">{{.Content}}</p>
                         <div class="flex justify-between items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
                             <span>{{.Comments}} réponses</span>
-                            <span>{{.CreatedAt}}</span>
+                            <span>{{.CreatedAt | formatDate}}</span>
                         </div>
                     </div>
                     {{end}}
@@ -108,7 +108,7 @@
                 </div>
 
                 <div class="mt-4 text-center">
-                    <a href="/category/{{.NameLower}}" class="inline-block text-accent dark:text-dark-accent hover:underline">
+                    <a href="/category/{{.NameLower}}" class="inline-block text-secondary dark:text-accent hover:underline">
                         Voir tous les posts &rarr;
                     </a>
                 </div>

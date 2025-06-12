@@ -1,20 +1,22 @@
 package middleware
 
 import (
-	"LeForum/internal/auth"
-	"context"
-	"log"
+	"LeForum/internal/auth/session"
 	"net/http"
 )
 
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, err := auth.GetCurrentUser(r)
-		if err != nil {
-			log.Printf("Erreur middleware auth: %v", err)
-		}
+func AuthMiddleware(sessionService *session.Service) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Vérifier la présence d'une session valide
+			currentUser, err := sessionService.GetCurrentUser(r)
+			if err != nil || currentUser == nil {
+				http.Redirect(w, r, "/auth", http.StatusSeeOther)
+				return
+			}
 
-		ctx := context.WithValue(r.Context(), "user", user)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+			// Utilisateur authentifié, continuer
+			next.ServeHTTP(w, r)
+		})
+	}
 }
