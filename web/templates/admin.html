@@ -30,6 +30,14 @@
                 <td class="px-6 py-4">{{.LoginTime.Format "2006-01-02 15:04:05"}}</td>
             </tr>
             {{end}}
+            {{if eq .User.Role "admin"}}
+            <li>
+                <a href="/admin" class="flex items-center {{if eq .CurrentPage "admin"}}active{{end}}">
+                <i class="fi fi-rr-shield"></i>
+                <span class="hidden sm:inline">Administration</span>
+                </a>
+            </li>
+            {{end}}
             </tbody>
         </table>
     </div>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark"{{end}}>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Administration - PhrasInachev</title>
+
+  <!-- Styles similaires à vos autres pages -->
+  <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/js/tailwind.config.js"></script>
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
+  <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+  <span class="text-gray-600 dark:text-gray-400">Administration</span>
+</div>
+
+<!-- Main content -->
+<main class="max-w-6xl mx-auto p-4">
+  <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden mb-6">
+    <div class="bg-secondary dark:bg-dark-secondary text-white p-4">
+      <h2 class="text-xl font-bold">Tableau de bord d'administration</h2>
+    </div>
+    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="/admin/users" class="bg-primary/10 dark:bg-primary/20 p-4 rounded-lg hover:shadow-lg transition-all flex flex-col items-center">
+        <i class="fi fi-rr-users text-4xl mb-2 text-primary dark:text-light"></i>
+        <h3 class="text-lg font-semibold">Gérer les utilisateurs</h3>
+        <p class="text-sm text-center text-gray-600 dark:text-gray-400">
+          Modifier les rôles, supprimer des comptes
+        </p>
+      </a>
+
+      <a href="/admin/categories" class="bg-accent/10 dark:bg-accent/20 p-4 rounded-lg hover:shadow-lg transition-all flex flex-col items-center">
+        <i class="fi fi-rr-apps text-4xl mb-2 text-accent dark:text-light"></i>
+        <h3 class="text-lg font-semibold">Gérer les catégories</h3>
+        <p class="text-sm text-center text-gray-600 dark:text-gray-400">
+          Ajouter ou supprimer des catégories
+        </p>
+      </a>
+
+      <a href="/admin/reports" class="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg hover:shadow-lg transition-all flex flex-col items-center">
+        <i class="fi fi-rr-flag text-4xl mb-2 text-red-500 dark:text-red-400"></i>
+        <h3 class="text-lg font-semibold">Signalements</h3>
+        <p class="text-sm text-center text-gray-600 dark:text-gray-400">
+          Gérer les contenus signalés
+        </p>
+      </a>
+    </div>
+  </div>
+</main>
+
+{{template "footer" .}}
+
+</body>
+</html>

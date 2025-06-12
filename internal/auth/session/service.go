@@ -1,6 +1,7 @@
 package session
 
 import (
+	"LeForum/internal/api/middleware"
 	"LeForum/internal/domain"
 	"crypto/rand"
 	"database/sql"
@@ -101,7 +102,8 @@ func (s *Service) GetCurrentUser(r *http.Request) (*domain.LoggedUser, error) {
 
 	// Si l'utilisateur n'existe pas dans le manager, essayer de le récupérer depuis la base de données
 	var username string
-	err = s.db.QueryRow("SELECT username FROM users WHERE mail = ?", session.UserEmail).Scan(&username)
+	var roleStr string
+	err = s.db.QueryRow("SELECT username, user_role FROM users WHERE mail = ?", session.UserEmail).Scan(&username, &roleStr)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +112,8 @@ func (s *Service) GetCurrentUser(r *http.Request) (*domain.LoggedUser, error) {
 	user := &domain.LoggedUser{
 		Email:     session.UserEmail,
 		Name:      username,
-		LoginTime: time.Now(), // Pas la vraie date de login, mais une approximation
+		LoginTime: time.Now(),
+		Role:      middleware.RoleType(roleStr),
 	}
 
 	return user, nil
