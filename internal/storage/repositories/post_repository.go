@@ -331,7 +331,7 @@ func (r *PostRepository) UpdatePost(postID int, title, content, category string)
 	return tx.Commit()
 }
 
-func (r *PostRepository) UpdatePost(postID int) error {
+func (r *PostRepository) DeletePost(postID int) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err
