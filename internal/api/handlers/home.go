@@ -62,6 +62,10 @@ func (h *HomeHandler) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	order := r.URL.Query().Get("filter")
 	search := r.URL.Query().Get("search")
 
+	if order == "" {
+		order = "newest" // Default order
+	}
+
 	posts, err := h.postService.GetPosts(order, search)
 	if err != nil {
 		http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
@@ -74,6 +78,7 @@ func (h *HomeHandler) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		"User":          user,
 		"AllCategories": categories,
 		"Posts":         posts,
+		"ActiveFilter":  order,
 	}
 
 	err = h.templateService.RenderTemplate(w, "home_page.html", data)

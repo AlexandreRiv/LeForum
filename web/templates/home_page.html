@@ -38,16 +38,16 @@
     <!-- Filtres et recherche -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div class="flex gap-2">
-            <a href="/?filter=newest"><button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">
+            <a href="/?filter=newest"><button class="px-4 py-2 {{ if eq .ActiveFilter "newest" }}bg-primary text-white dark:bg-dark-primary{{ else }}text-primary dark:text-light bg-transparent hover:bg-gray-100 dark:hover:bg-dark-surface{{ end }} rounded-md transition-colors">
                 Récentes
             </button></a>
-            <a href="/?filter=oldest"><button class="px-4 py-2 bg-primary text-white dark:bg-dark-primary rounded-md hover:bg-opacity-90 transition-colors">
+            <a href="/?filter=oldest"><button class="px-4 py-2 {{ if eq .ActiveFilter "oldest" }}bg-primary text-white dark:bg-dark-primary{{ else }}text-primary dark:text-light bg-transparent hover:bg-gray-100 dark:hover:bg-dark-surface{{ end }} rounded-md transition-colors">
                 Ancien
             </button></a>
-            <a href="/?filter=popular"><button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
+            <a href="/?filter=popular"><button class="px-4 py-2 {{ if eq .ActiveFilter "popular" }}bg-primary text-white dark:bg-dark-primary{{ else }}text-primary dark:text-light bg-transparent hover:bg-gray-100 dark:hover:bg-dark-surface{{ end }} rounded-md transition-colors">
                 Populaires
             </button></a>
-            <a href="/?filter=noresponse"><button class="px-4 py-2 text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-dark-surface rounded-md transition-colors">
+            <a href="/?filter=noresponse"><button class="px-4 py-2 {{ if eq .ActiveFilter "noresponse" }}bg-primary text-white dark:bg-dark-primary{{ else }}text-primary dark:text-light bg-transparent hover:bg-gray-100 dark:hover:bg-dark-surface{{ end }} rounded-md transition-colors">
                 Sans réponse
             </button></a>
             <button onclick="document.getElementById('modal').classList.remove('hidden')"
