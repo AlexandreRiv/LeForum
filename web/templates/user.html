@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark" {{end}}>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Mon profil - PhrasInachev</title>
+
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <!-- Google Fonts - Roboto Condensed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <!-- CDN Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/tailwind.config.js"></script>
+
+    <!-- Ajout de Flaticon -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
+    <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+    <span class="text-gray-600 dark:text-gray-400">Mon profil</span>
+</div>
+
+<!-- Main content -->
+<main class="max-w-6xl mx-auto p-4">
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- Left column - User info -->
+        <div class="w-full md:w-1/3">
+            <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden transition-colors duration-200">
+                <div class="bg-secondary dark:bg-dark-secondary text-white p-4 text-center">
+                    <h2 class="text-xl font-bold">Mon profil</h2>
+                </div>
+                <div class="p-6 flex flex-col items-center">
+                    <div class="h-24 w-24 rounded-full bg-accent dark:bg-dark-accent flex items-center justify-center text-white text-3xl font-bold mb-4">
+                        {{ index .Name 0 | printf "%c" }}
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary dark:text-light mb-1">{{ .Name }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">{{ .Email }}</p>
+
+                    <div class="w-full border-t border-gray-200 dark:border-gray-700 my-4 pt-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600 dark:text-gray-400">Statut:</span>
+                            <span class="font-medium text-accent dark:text-dark-accent">Actif</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600 dark:text-gray-400">Session expire:</span>
+                            <span class="font-medium">{{ .Expiry.Format "02/01/2006 15:04" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 w-full mt-4">
+                        <a href="/edit-profile" class="bg-primary hover:bg-opacity-90 dark:bg-dark-primary text-white text-center py-2 px-4 rounded-md transition-colors">
+                            Modifier mon profil
+                        </a>
+                        <a href="/logout" class="bg-red-500 hover:bg-opacity-90 text-white text-center py-2 px-4 rounded-md transition-colors">
+                            Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences panel -->
+            <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden transition-colors duration-200 mt-6">
+                <div class="bg-light dark:bg-dark-light text-white p-3">
+                    <h2 class="text-lg font-bold">Préférences</h2>
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-between py-2">
+                        <span class="text-gray-700 dark:text-gray-300">Mode sombre</span>
+                        <a href="/toggle-theme" class="relative inline-flex items-center cursor-pointer">
+                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full p-1 transition-colors {{if .DarkMode}}bg-accent dark:bg-dark-accent{{end}}">
+                                <div class="absolute w-4 h-4 bg-white rounded-full transition-transform {{if .DarkMode}}translate-x-5{{end}}"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-t border-gray-200 dark:border-gray-700">
+                        <span class="text-gray-700 dark:text-gray-300">Notifications</span>
+                        <div class="relative inline-flex items-center cursor-pointer">
+                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full p-1">
+                                <div class="absolute w-4 h-4 bg-white rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column - Activity -->
+        <div class="w-full md:w-2/3">
+            <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden transition-colors duration-200">
+                <div class="bg-secondary dark:bg-dark-secondary text-white p-4">
+                    <h2 class="text-xl font-bold">Mon activité</h2>
+                </div>
+                <div class="p-4">
+                    <div class="flex space-x-4 mb-6">
+                        <div class="flex-1 bg-primary/10 dark:bg-dark-primary/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-primary dark:text-light">{{.PostNumber}}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Posts</div>
+                        </div>
+                        <div class="flex-1 bg-secondary/10 dark:bg-dark-secondary/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-secondary dark:text-light">{{.ResponseNb}}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Réponses</div>
+                        </div>
+                        <div class="flex-1 bg-accent/10 dark:bg-dark-accent/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-accent dark:text-light">{{.Likes}}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Mentions "J'aime"</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent activity -->
+                    <h3 class="text-lg font-semibold mb-3 text-primary dark:text-light">Activité récente</h3>
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                        <p class="text-gray-600 dark:text-gray-400">Aucune activité récente à afficher</p>
+                        <a href="/" class="mt-4 inline-block text-accent dark:text-dark-accent hover:underline">
+                            Parcourir le forum pour commencer à participer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drafts section -->
+            <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden transition-colors duration-200 mt-6">
+                <div class="bg-light dark:bg-dark-light text-white p-3">
+                    <h2 class="text-lg font-bold">Mes phrases inachevées</h2>
+                </div>
+                <div class="p-4">
+                    <div class="text-center py-8">
+                        <p class="text-gray-600 dark:text-gray-400">Vous n'avez pas encore commencé de...</p>
+                        <a href="/" class="mt-2 inline-block px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
+                            Créer un post
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{template "footer" .}}
+
+</body>
+</html>

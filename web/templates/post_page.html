@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark" {{end}}>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>PhrasInachev - Le forum des phrases</title>
+
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <!-- Google Fonts - Roboto Condensed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <!-- CDN Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/tailwind.config.js"></script>
+
+    <!-- Ajout de Flaticon -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
+    <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
+    <span class="text-gray-600 dark:text-gray-400">{{.Post.Title}}</span>
+</div>
+
+<!-- Main section -->
+<main class="max-w-6xl mx-auto p-4">
+    <!-- Title name -->
+    <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-4 overflow-hidden transition-colors duration-200">
+        <div class="bg-secondary dark:bg-dark-secondary text-white p-3">
+            <h1 class="text-xl font-bold">{{.Post.Title}}</h1>
+        </div>
+
+        <!-- Initial post -->
+        <div class="border-b border-gray-200 dark:border-gray-700">
+            <div class="flex flex-col md:flex-row">
+                <!-- User -->
+                <div class="w-full md:w-48 p-4 bg-gray-50 dark:bg-dark-surface/60 md:border-r border-gray-200 dark:border-gray-700 flex flex-col items-center text-center">
+                    <div class="bg-pale dark:bg-dark-pale rounded-full w-20 h-20 flex items-center justify-center mb-2">
+                        <span class="text-2xl font-bold text-primary dark:text-dark-primary">h7</span>
+                    </div>
+                    <div class="font-semibold text-gray-800 dark:text-gray-200">{{.Post.Username}}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Membre depuis 2023</div>
+                    <div class="text-xs mt-2 bg-pale dark:bg-dark-pale px-2 py-1 rounded-full text-primary dark:text-white">
+                        189 messages
+                    </div>
+                </div>
+
+                <!-- Message content -->
+                <div class="flex-1 p-4">
+                    <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        <span>Posté le {{.Post.CreatedAt}}</span>
+                        <div class="flex gap-2">
+                            <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="bg-secondary dark:bg-dark-secondary text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
+                                <i class="fi fi-rr-edit mr-1"></i>Modifier
+                            </button>
+                            <button onclick="document.getElementById('deleteModal').classList.remove('hidden')" class="bg-red-500 dark:bg-red-600 text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
+                                <i class="fi fi-rr-trash mr-1"></i>Supprimer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prose dark:prose-invert max-w-none">
+                        <p>{{.Post.Content}}</p>
+                        {{if .Post.Image}}
+                            <img src="{{ .Post.Image }}" alt="Image du post" style="max-width: 400px;"/>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answers -->
+    <div class="mb-4">
+        <h2 class="text-xl font-semibold mb-2 text-primary dark:text-light">Réponses</h2>
+
+        {{ $postId := .Post.Id }}
+        {{range .Comments}}
+        <!-- Answer -->
+        <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md mb-3 overflow-hidden transition-colors duration-200">
+            <div class="flex flex-col md:flex-row">
+                <!-- User -->
+                <div class="w-full md:w-48 p-4 bg-gray-50 dark:bg-dark-surface/60 md:border-r border-gray-200 dark:border-gray-700 flex flex-col items-center text-center">
+                    <div class="bg-light dark:bg-dark-light rounded-full w-16 h-16 flex items-center justify-center mb-2">
+                        <span class="text-xl font-bold text-primary dark:text-white">kd</span>
+                    </div>
+                    <div class="font-semibold text-gray-800 dark:text-gray-200">{{.Username}}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Membre depuis 2024</div>
+                    <div class="text-xs mt-2 bg-light dark:bg-dark-light px-2 py-1 rounded-full text-primary dark:text-white">
+                        73 messages
+                    </div>
+                </div>
+
+                <!-- Answer content -->
+                <div class="flex-1 p-4">
+                    <a href="/comment/like?id={{.Id}}&like=1&postId={{$postId}}">
+                        <button class="flex items-center gap-1 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-up text-lg"></i>
+                            <span>{{ .Likes }}</span>
+                        </button>
+                    </a>
+                    <a href="/comment/like?id={{.Id}}&like=0&postId={{$postId}}">
+                        <button class="flex items-center gap-1 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors">
+                            <i class="fi fi-sr-thumbs-down text-lg"></i>
+                            <span>{{ .Dislikes }}</span>
+                        </button></a>
+                        <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            <span>Posté le {{.CreatedAt}}</span>
+                        </div>
+                        <a href="/comment/delete?id={{.Id}}&postId={{$postId}}"><button class="bg-red-500 dark:bg-red-600 text-white px-3 py-1 rounded-md hover:bg-opacity-90 transition-colors">
+                            <i class="fi fi-rr-trash mr-1"></i>Supprimer
+                        </button></a>
+                        <div class="prose dark:prose-invert max-w-none">
+                            <p>{{.Content}}</p>
+                            {{if .Image}}
+                                <img src="{{ .Image }}" alt="Image du commentaire" style="max-width: 400px;"/>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{end}}
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center my-6">
+        <div class="inline-flex rounded-md shadow-sm">
+            <a href="#"
+               class="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-l-md hover:bg-gray-100 dark:hover:bg-opacity-10">Précédent</a>
+            <a href="#"
+               class="px-4 py-2 text-sm font-medium text-white bg-secondary dark:bg-dark-secondary border border-secondary dark:border-dark-secondary">1</a>
+            <a href="#"
+               class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-opacity-10">2</a>
+            <a href="#"
+               class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-opacity-10">3</a>
+            <a href="#"
+               class="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-dark-surface border border-gray-300 dark:border-gray-700 rounded-r-md hover:bg-gray-100 dark:hover:bg-opacity-10">Suivant</a>
+        </div>
+    </div>
+
+    <!-- Write Answers -->
+    <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md p-4 mb-6 transition-colors duration-200">
+        <h2 class="text-xl font-semibold mb-4 text-primary dark:text-light">Répondre</h2>
+        <form method="post" action="/comment/create?id={{.Post.Id}}" enctype="multipart/form-data">
+            <div class="mb-4">
+                <textarea
+                        name="commentContent"
+                        class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent dark:bg-dark-surface dark:text-gray-200"
+                        rows="5" placeholder="Commencez une phrase que vous n'allez pas..."></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Ajouter une image (optionnel)
+                </label>
+                <div class="flex items-center space-x-2">
+                    <label class="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md cursor-pointer hover:bg-gray-50 dark:hover:bg-opacity-10">
+                        <i class="fi fi-rr-picture text-gray-500 dark:text-gray-400"></i>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Choisir une image</span>
+                        <input type="file" name="image" id="image" accept="image/*" class="hidden">
+                    </label>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">JPG, PNG, GIF (max 5 MB)</span>
+                </div>
+            <div class="flex justify-end">
+                <button type="submit"
+                        class="bg-accent hover:bg-secondary dark:bg-dark-accent dark:hover:bg-dark-secondary text-white font-medium py-2 px-6 rounded transition-colors">
+                    Envoyer
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Edit post pop-up -->
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-dark-surface rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-primary dark:text-light">Modifier le post</h3>
+                <button onclick="document.getElementById('editModal').classList.add('hidden')" class="cursor-pointer">
+                    <i class="fi fi-rr-cross w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"></i>
+                </button>
+            </div>
+            <form method="POST" action="/edit-post?id={{.Post.Id}}">
+                <div class="mb-4">
+                    <label for="title"
+                           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Titre</label>
+                    <input type="text" id="title" name="title" value="{{.Post.Title}}"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                </div>
+                <div class="mb-4">
+                    <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
+                    <select id="category" name="category"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">
+                        {{range .AllCategories}}
+                        <option {{if eq . (index $.Post.Categories 0)}}selected{{end}}>{{.}}</option>
+                        {{end}}
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label for="content"
+                           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contenu</label>
+                    <textarea id="content" rows="5" name="content"
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary dark:bg-dark-surface dark:text-gray-200">{{.Post.Content}}</textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')"
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-accent text-white dark:bg-dark-accent rounded-md hover:bg-opacity-90 transition-colors">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete post pop-up -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-dark-surface rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-red-500 dark:text-red-400">Supprimer le post</h3>
+                <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="cursor-pointer">
+                    <i class="fi fi-rr-cross w-6 h-6 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"></i>
+                </button>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-700 dark:text-gray-300">Êtes-vous sûr de vouloir supprimer ce post ? Cette action
+                    est irréversible.</p>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('deleteModal').classList.add('hidden')"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-opacity-10 cursor-pointer">
+                    Annuler
+                </button>
+                <a href="/post/delete?id={{.Post.Id}}"
+                   class="px-4 py-2 bg-red-500 text-white dark:bg-red-600 rounded-md hover:bg-opacity-90 transition-colors">
+                    Confirmer
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulaire de signalement pour post (à inclure dans post_page.html) -->
+<div class="report-form hidden bg-white dark:bg-dark-surface shadow-md rounded p-4 mt-2" id="report-form-post-{{.Post.Id}}">
+    <h3 class="font-bold mb-2">Signaler ce contenu</h3>
+    <form action="/moderation/report" method="POST">
+        <input type="hidden" name="post_id" value="{{.Post.Id}}">
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Motif</label>
+            <select name="type" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white">
+                <option value="inappropriate">Contenu inapproprié</option>
+                <option value="spam">Spam</option>
+                <option value="harassment">Harcèlement</option>
+                <option value="other">Autre</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea name="reason" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white" rows="2" required></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" onclick="toggleReportForm('post-{{.Post.Id}}')" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded">Annuler</button>
+            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded">Envoyer</button>
+        </div>
+    </form>
+</div>
+
+<!-- Formulaire de signalement pour commentaire (à inclure dans la boucle des commentaires) -->
+<div class="report-form hidden bg-white dark:bg-dark-surface shadow-md rounded p-4 mt-2" id="report-form-comment-{{.Id}}">
+    <h3 class="font-bold mb-2">Signaler ce commentaire</h3>
+    <form action="/moderation/report" method="POST">
+        <input type="hidden" name="post_id" value="{{$.Post.Id}}">
+        <input type="hidden" name="comment_id" value="{{.Id}}">
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Motif</label>
+            <select name="type" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white">
+                <option value="inappropriate">Contenu inapproprié</option>
+                <option value="spam">Spam</option>
+                <option value="harassment">Harcèlement</option>
+                <option value="other">Autre</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea name="reason" class="w-full rounded border p-2 dark:bg-dark-input dark:text-white" rows="2" required></textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+            <button type="button" onclick="toggleReportForm('comment-{{.Id}}')" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded">Annuler</button>
+            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded">Envoyer</button>
+        </div>
+    </form>
+</div>
+
+{{template "footer" .}}
+
+</body>
+</html>

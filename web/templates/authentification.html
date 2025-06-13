@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr" {{if .DarkMode}}class="dark" {{end}}>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>PhrasInachev - Authentification</title>
+
+    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <!-- Google Fonts - Roboto Condensed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CDN Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/tailwind.config.js"></script>
+
+    <!-- Ajout de Flaticon -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-logos/css/uicons-logos.css">
+
+    <style>
+        :root {
+            --dark-surface: #1e1e2e;
+            --transition-speed: 0.5s;
+        }
+
+        .auth-card {
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.1);
+        }
+
+        .tabs-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-indicator {
+            position: absolute;
+            height: 80%;
+            width: 48%;
+            background-color: white;
+            border-radius: 0.5rem;
+            transition: transform var(--transition-speed) cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 0;
+            top: 10%;
+            left: 1%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dark .tab-indicator {
+            background-color: var(--dark-surface);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .register-active .tab-indicator {
+            transform: translateX(104%);
+        }
+
+        .forms-container {
+            position: relative;
+            overflow: hidden;
+            height: 450px;
+        }
+
+        #loginForm, #registerForm {
+            position: absolute;
+            width: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity var(--transition-speed) ease;
+            top: 0;
+            left: 0;
+            padding: 1.5rem;
+        }
+
+        #loginForm {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 2;
+        }
+
+        #registerForm {
+            transform: translateX(100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .register-active #loginForm {
+            transform: translateX(-100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .register-active #registerForm {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* Animations pour les inputs */
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Animation pour les boutons */
+        .auth-button {
+            background-size: 200% auto;
+            transition: 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-button:hover {
+            background-position: right center;
+            transform: translateY(-2px);
+        }
+
+        .auth-button:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: translateX(-100%);
+            transition: 0.7s ease;
+        }
+
+        .auth-button:hover:after {
+            transform: translateX(100%);
+        }
+
+        .social-link {
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+        }
+
+        .social-link i {
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover i {
+            transform: scale(1.2);
+        }
+
+        .form-appear > * {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.5s forwards;
+            animation-delay: calc(var(--delay) * 0.1s);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+
+{{template "header" .}}
+
+<!-- Main content -->
+<main class="container max-w-6xl mx-auto mt-8 px-4 min-h-[calc(100vh-200px)] flex items-center justify-center">
+    <div class="auth-card bg-white dark:bg-dark-surface rounded-xl shadow-lg overflow-hidden w-full max-w-md transition-colors duration-200 {{if .RegisterTab}}register-active{{end}}">
+        <!-- Toggle Buttons -->
+        <div class="tabs-container bg-secondary/10 dark:bg-dark-secondary/20 rounded-t-xl p-2">
+            <div class="tab-indicator"></div>
+            <div class="tabs flex relative z-10">
+                <a href="/auth?tab=login"
+                   class="login-tab w-1/2 py-2.5 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 z-10 flex justify-center items-center gap-2 mt-2">
+                    <i class="fi fi-rr-user text-primary dark:text-light"></i>
+                    <span>Connexion</span>
+                </a>
+                <a href="/auth?tab=register"
+                   class="register-tab w-1/2 py-2.5 text-sm font-medium rounded-md text-center cursor-pointer transition-all duration-300 z-10 flex justify-center items-center gap-2">
+                    <i class="fi fi-rr-user-add text-accent dark:text-light"></i>
+                    <span>Inscription</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="forms-container">
+            <!-- Login Form -->
+            <form id="loginForm" action="/auth" method="POST" class="space-y-4 form-appear">
+                <div class="text-center mb-5" style="--delay: 0">
+                    <h2 class="text-2xl font-bold text-accent dark:text-light">Connexion</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Heureux de vous revoir !</p>
+                </div>
+                <input type="hidden" name="action" value="login">
+
+                <div class="space-y-1" style="--delay: 1">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-envelope text-gray-400"></i>
+                        </span>
+                        <input type="email"
+                               name="email"
+                               placeholder="Email"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
+                    {{if .EmailError}}
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.EmailError}}</p>
+                    {{end}}
+                </div>
+
+                <div class="space-y-1" style="--delay: 2">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-lock text-gray-400"></i>
+                        </span>
+                        <input type="password"
+                               name="password"
+                               placeholder="Mot de passe"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
+                    {{if .PasswordError}}
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.PasswordError}}</p>
+                    {{end}}
+                </div>
+
+                <div class="flex items-center justify-between text-sm" style="--delay: 3">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary/50 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-gray-700 dark:text-gray-300">Se souvenir de moi</label>
+                    </div>
+                    <a href="#" class="text-primary dark:text-dark-primary hover:underline">Mot de passe oublié?</a>
+                </div>
+
+                <button type="submit" style="--delay: 4"
+                        class="auth-button w-full bg-gradient-to-r from-accent to-accent/80 text-white dark:from-dark-accent dark:to-dark-accent/80 py-3 rounded-lg hover:shadow-lg transition-all duration-300 mb-0">
+                    Se connecter
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" action="/auth" method="POST" class="space-y-4 form-appear">
+                <div class="text-center mb-5" style="--delay: 0">
+                    <h2 class="text-2xl font-bold text-accent dark:text-light">Inscription</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Rejoignez notre communauté</p>
+                </div>
+                <input type="hidden" name="action" value="register">
+
+                <div class="space-y-1" style="--delay: 1">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-user text-gray-400"></i>
+                        </span>
+                        <input type="text"
+                               name="username"
+                               placeholder="Nom d'utilisateur"
+                               required
+                               value="{{.RegisterUsername}}"
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
+                </div>
+
+                <div class="space-y-1" style="--delay: 2">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-envelope text-gray-400"></i>
+                        </span>
+                        <input type="email"
+                               name="email"
+                               placeholder="Email"
+                               required
+                               value="{{.RegisterEmail}}"
+                               onchange="this.form.elements['checkEmail'].value='true'; this.form.submit();"
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                        <input type="hidden" name="checkEmail" value="false">
+                    </div>
+                    {{if .RegisterEmailError}}
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.RegisterEmailError}}</p>
+                    {{end}}
+                </div>
+
+                <div class="space-y-1" style="--delay: 3">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-lock text-gray-400"></i>
+                        </span>
+                        <input type="password"
+                               name="password"
+                               placeholder="Mot de passe"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
+                    {{if .RegisterPasswordError}}
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{.RegisterPasswordError}}</p>
+                    {{end}}
+                </div>
+
+                <div class="space-y-1" style="--delay: 4">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fi fi-rr-shield-check text-gray-400"></i>
+                        </span>
+                        <input type="password"
+                               name="confirm-password"
+                               placeholder="Confirmer le mot de passe"
+                               required
+                               class="input-field w-full pl-10 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 dark:bg-dark-surface dark:text-gray-200">
+                    </div>
+                </div>
+
+                <button type="submit" style="--delay: 5"
+                        class="auth-button w-full bg-gradient-to-r from-accent to-accent/80 text-white dark:from-dark-accent dark:to-dark-accent/80 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
+                    S'inscrire
+                </button>
+            </form>
+        </div>
+
+        <!-- Social Login -->
+        <div class="p-6 pt-0">
+            <div class="relative flex items-center justify-center">
+                <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
+                <div class="absolute bg-white dark:bg-dark-surface px-4 text-sm text-gray-500 dark:text-gray-400">
+                    ou continuer avec
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-6">
+                <a href="/auth/google"
+                   class="social-link flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-all duration-300 hover:shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="mr-1">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span>Google</span>
+                </a>
+                <a href="/auth/github"
+                   class="social-link flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-dark-surface/60 transition-all duration-300 hover:shadow-md">
+                    <i class="fi fi-brands-github text-xl"></i>
+                    <span>GitHub</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+{{template "footer" .}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formElements = document.querySelectorAll('.form-appear > *');
+        formElements.forEach(el => {
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, parseInt(getComputedStyle(el).getPropertyValue('--delay')) * 25);
+        });
+
+        const inputs = document.querySelectorAll('.input-field');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    });
+</script>
+</body>
+</html>

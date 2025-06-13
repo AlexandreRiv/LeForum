@@ -1,0 +1,295 @@
+{{define "header"}}
+<header class="bg-primary dark:bg-dark-primary text-white shadow p-4 transition-colors duration-200">
+    <style>
+        .dark .dark-toggle .moon {
+            display: block;
+            color: white;
+        }
+
+        .dark .dark-toggle .sun {
+            display: none;
+        }
+
+        .dark-toggle .moon {
+            display: none;
+        }
+
+        .dark-toggle .sun {
+            display: block;
+            color: white;
+        }
+
+        .dark-toggle {
+            position: relative;
+        }
+
+        .dark-toggle i {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dark-toggle div {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .dark .dark-toggle .moon,
+        .dark .dark-toggle span.moon {
+            display: block;
+            color: white;
+        }
+
+        .dark .dark-toggle .sun,
+        .dark .dark-toggle span.sun {
+            display: none;
+        }
+
+        .dark-toggle .moon,
+        .dark-toggle span.moon {
+            display: none;
+        }
+
+        .dark-toggle .sun,
+        .dark-toggle span.sun {
+            display: block;
+            color: white;
+        }
+
+        .fi {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            height: 100%;
+            position: relative;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        nav .fi {
+            font-size: 1.25rem;
+            transition: transform 0.2s ease;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        nav a:hover .fi, nav a.active .fi {
+            transform: scale(1.15);
+        }
+
+        nav a span {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        nav a:hover::after, nav a.active::after {
+            width: 80%;
+        }
+
+        nav a.active {
+            font-weight: bold;
+        }
+
+        @media (max-width: 640px) {
+            nav .fi {
+                font-size: 1.5rem;
+            }
+
+            nav ul {
+                gap: 0.5rem;
+            }
+
+            nav a {
+                padding: 0.35rem;
+            }
+        }
+
+        .notification-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .notification-popup {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: 20rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .dark .notification-popup {
+            background: var(--dark-surface);
+            border-color: #374151;
+        }
+
+        .notification-container:hover .notification-popup,
+        .notification-container:focus-within .notification-popup {
+            display: block;
+        }
+
+        .notification-bell {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            height: 100%;
+            position: relative;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            color: white;
+            background: transparent;
+            border: none;
+        }
+
+        .notification-bell:hover, .notification-bell:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        .notification-content {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+    <div class="flex justify-between items-center max-w-6xl mx-auto">
+        <h1 class="text-3xl font-semibold">PhrasInachev</h1>
+        <nav class="flex items-center">
+            <ul class="flex space-x-2 mr-4 items-center">
+                <li>
+                    <a href="/" class="flex items-center {{if eq .CurrentPage "home"}}active{{end}}">
+                    <i class="fi fi-rr-home"></i>
+                    <span class="hidden sm:inline">Accueil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/categories" class="flex items-center {{if eq .CurrentPage "categories"}}active{{end}}">
+                    <i class="fi fi-rr-apps"></i>
+                    <span class="hidden sm:inline">Catégories</span>
+                    </a>
+                </li>
+                {{if .User}}
+                <li>
+                    <a href="/users" class="flex items-center {{if eq .CurrentPage "profile"}}active{{end}}">
+                    <i class="fi fi-rr-user"></i>
+                    <span class="hidden sm:inline">Mon Profil</span>
+                    </a>
+                </li>
+                {{else}}
+                <li>
+                    <a href="/auth" class="flex items-center {{if eq .CurrentPage "auth"}}active{{end}}">
+                    <i class="fi fi-rr-user"></i>
+                    <span class="hidden sm:inline">Connexion</span>
+                    </a>
+                </li>
+                {{end}}
+
+                <li class="notification-container">
+                    <button class="notification-bell" tabindex="0">
+                        <i class="fi fi-rr-bell relative">
+                            <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">{{.NotificationNb}}</span>
+                        </i>
+                        <span class="hidden sm:inline">Notifications</span>
+                    </button>
+
+                    <div class="notification-popup">
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-dark-surface">
+                            <h3 class="font-semibold text-primary dark:text-light">Notifications</h3>
+                            <a href="#" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                <i class="fi fi-rr-check"></i>
+                                <span class="text-sm">Tout marquer comme lu</span>
+                            </a>
+                        </div>
+
+                        <div class="notification-content bg-white dark:bg-dark-surface">
+                            {{range .Notifications}}
+                            <div class="p-4 border-l-4 border-accent bg-accent/5 dark:bg-dark-accent/10 hover:bg-gray-50 dark:hover:bg-dark-surface/80 cursor-pointer">
+                                <div class="flex items-start">
+                                    <div class="h-8 w-8 rounded-full bg-accent dark:bg-dark-accent flex items-center justify-center text-white font-bold mr-3 flex-shrink-0">
+                                        U
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                            {{.Content}}
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{.CreatedAt}}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{end}}
+
+                            <div class="p-4 border-l-4 border-primary bg-primary/5 dark:bg-dark-primary/10 hover:bg-gray-50 dark:hover:bg-dark-surface/80 cursor-pointer">
+                                <div class="flex items-start">
+                                    <div class="h-8 w-8 rounded-full bg-primary dark:bg-dark-primary flex items-center justify-center text-white font-bold mr-3 flex-shrink-0">
+                                        <i class="fi fi-rr-megaphone text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                            <span class="font-semibold">Bienvenue sur PhrasInachev !</span>
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Il y a 3 jours</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="/toggle-theme" class="dark-toggle flex items-center">
+                        <div class="moon flex items-center">
+                            <i class="fi fi-rr-moon"></i>
+                            <span class="hidden sm:inline">Sombre</span>
+                        </div>
+                        <div class="sun flex items-center">
+                            <i class="fi fi-rr-sun"></i>
+                            <span class="hidden sm:inline">Clair</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+{{end}}

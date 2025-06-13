@@ -1,20 +1,46 @@
 package main
 
 import (
-	"html/template"
+	"LeForum/internal/api"
+	"LeForum/internal/config"
+	"LeForum/internal/service"
+	"LeForum/internal/storage/repositories"
+	"log"
 	"net/http"
+	"time"
+
+	"github.com/joho/godotenv"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
-	tmpl.Execute(w, nil)
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Pas de fichier .env chargé")
+	}
 }
 
 func main() {
-	fs := http.FileServer(http.Dir("web/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/", handler)
+	// Chargement de la configuration
+	appConfig, err := config.NewAppConfig()
+	if err != nil {
+		log.Fatalf("Erreur lors de l'initialisation de la configuration: %v", err)
+	}
 
-	http.ListenAndServe(":3002", nil)
+	// Configuration du routeur avec la configuration de l'application
+	reportService := service.NewReportService(repositories.NewReportRepository(appConfig.DB.DB))
+
+	mux := api.SetupRouter(appConfig, reportService)
+
+	// Nettoyage des sessions expirées périodiquement
+	go func() {
+		ticker := time.NewTicker(1 * time.Hour)
+		for range ticker.C {
+			appConfig.SessionService.CleanExpiredSessions()
+		}
+	}()
+
+	// Démarrage du serveur
+	log.Println("Serveur démarré sur http://localhost:3002")
+	if err := http.ListenAndServe(":3002", mux); err != nil {
+		log.Fatal(err)
+	}
 }
-

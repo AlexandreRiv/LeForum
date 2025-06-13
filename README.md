@@ -50,7 +50,11 @@ LeForum is a modern web forum application built with Go, offering an efficient p
 - **MySQL** - Database
 - **Session Management** - Custom session handling
 ### Frontend
+<<<<<<< HEAD
 ![tailwind-badge] ![javascript-badge]
+=======
+![tailwind-badge] ![javascript-badge] ![html-badge]
+>>>>>>> dev
 
 - **HTML Templates** - Server-side rendering
 - **Tailwind CSS** - CSS framework
@@ -164,9 +168,12 @@ To use OAuth authentication:
 1. **GitHub** : Set up an OAuth App in your GitHub settings
 2. **Google** : Create a project in Google Cloud Console and enable the OAuth API
 
+<<<<<<< HEAD
 
 ## 📝 Contributors
 
+=======
+>>>>>>> dev
 ## 📝 Contributors
 
 - **Loic** - [![GitHub][github-badge]](https://github.com/Zeteox/Zeteox)
@@ -182,3 +189,7 @@ To use OAuth authentication:
 [tailwind-badge]: https://img.shields.io/badge/-TailwindCSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white
 [mysql-badge]: https://img.shields.io/badge/-MySQL-4479A1?style=flat&logo=mysql&logoColor=white
 [oauth-badge]: https://img.shields.io/badge/-OAuth-000000?style=flat&logo=oauth&logoColor=white
+<<<<<<< HEAD
+=======
+[html-badge]: https://img.shields.io/badge/-HTML-E34F26?style=flat&logo=html5&logoColor=white
+>>>>>>> dev

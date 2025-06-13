@@ -1,0 +1,28 @@
+{define "admin/dashboard"}}
+<html>
+<head>
+  <title>{{.PageTitle}}</title>
+</head>
+<body class="bg-light dark:bg-dark-background text-dark dark:text-white transition-colors duration-200">
+
+<div class="container max-w-6xl mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Tableau de bord administrateur</h1>
+  <p>Bienvenue {{if .User}}{{.User.Email}}{{else}}administrateur{{end}}</p>
+
+  <div class="stats grid grid-cols-2 md:grid-cols-4 gap-4 my-4">
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Utilisateurs: {{.UserCount}}</div>
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Messages: {{.PostCount}}</div>
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Commentaires: {{.CommentCount}}</div>
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Catégories: {{.CategoryCount}}</div>
+  </div>
+
+  <div class="actions flex flex-wrap gap-4 mt-6">
+    <a href="/admin/users" class="px-4 py-2 bg-primary dark:bg-dark-primary text-white rounded hover:bg-primary-dark">Gérer les utilisateurs</a>
+    <a href="/admin/categories" class="px-4 py-2 bg-primary dark:bg-dark-primary text-white rounded hover:bg-primary-dark">Gérer les catégories</a>
+    <a href="/admin/reports" class="px-4 py-2 bg-primary dark:bg-dark-primary text-white rounded hover:bg-primary-dark">Gérer les signalements</a>
+  </div>
+</div>
+
+</body>
+</html>
+{{end}}
