@@ -23,7 +23,7 @@ type Report struct {
 	ID         int
 	PostID     int
 	CommentID  *int // Optionnel, peut être nil si le rapport concerne un post
-	ReporterID int  // ID de l'utilisateur qui signale
+	ReporterID string  // ID de l'utilisateur qui signale
 	Reason     string
 	Type       ReportType
 	Status     ReportStatus

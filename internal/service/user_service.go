@@ -48,7 +48,7 @@ func (s *UserService) UpdateUserRole(userID int, role domain.RoleType) error {
 	return s.repo.UpdateUserRole(userID, string(role))
 }
 
-func (s *UserService) GetAllUsers() ([]*domain.User, error) {
+func (s *UserService) GetAllUsers() ([]domain.User, error) {
 	return s.repo.GetAllUsers()
 }
 

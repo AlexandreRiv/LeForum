@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"LeForum/internal/domain"
 	"LeForum/internal/auth/session"
 	"LeForum/internal/service"
 	"log"
@@ -10,14 +11,16 @@ import (
 type HomeHandler struct {
 	postService     *service.PostService
 	categoryService *service.CategoryService
+	notificationService *service.NotificationService
 	sessionService  *session.Service
 	templateService *TemplateService
 }
 
-func NewHomeHandler(ps *service.PostService, cs *service.CategoryService, ss *session.Service, ts *TemplateService) *HomeHandler {
+func NewHomeHandler(ps *service.PostService, cs *service.CategoryService, ns *service.NotificationService, ss *session.Service, ts *TemplateService) *HomeHandler {
 	return &HomeHandler{
 		postService:     ps,
 		categoryService: cs,
+		notificationService: ns,
 		sessionService:  ss,
 		templateService: ts,
 	}
@@ -72,6 +75,17 @@ func (h *HomeHandler) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
+	var notifs []domain.Notification
+	session, err := h.sessionService.GetSession(r)
+	if err != nil {
+		http.Error(w, "Error fetching sessions", http.StatusInternalServerError)
+		return
+	}
+	if session != nil {
+		notifs, err = h.notificationService.GetNotifications(session.ID)
+	}
+
 	data := map[string]interface{}{
 		"DarkMode":      darkMode,
 		"CurrentPage":   "home",
@@ -79,6 +93,8 @@ func (h *HomeHandler) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		"AllCategories": categories,
 		"Posts":         posts,
 		"ActiveFilter":  order,
+		"Notifications": notifs,
+		"NotificationNb": len(notifs),
 	}
 
 	err = h.templateService.RenderTemplate(w, "home_page.html", data)

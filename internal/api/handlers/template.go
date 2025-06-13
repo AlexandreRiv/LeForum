@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"html/template"
+	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -20,18 +22,38 @@ func NewTemplateService() *TemplateService {
 		"formatDate": formatRelativeTime,
 	}
 
-	// Précharger les templates communs
+	// Associer les chemins de fichiers aux noms de définition
+	templateDefinitions := map[string]string{
+		"admin/dashboard.html":      "dashboard",
+		"admin/users.html":          "users",
+		"admin/categories.html":     "categories",
+		"admin/reports.html":        "reports",
+		"moderation/dashboard.html": "moderation-dashboard",
+	}
+
 	templateFiles := []string{
 		"authentification.html",
 		"categories.html",
 		"home_page.html",
 		"post_page.html",
 		"user.html",
+		"admin/dashboard.html",
+		"moderation/dashboard.html",
 	}
 
 	for _, file := range templateFiles {
-		tmpl := template.New(file).Funcs(funcMap)
+		// Créer un nouveau template avec le bon nom de définition s'il existe
+		var tmplName string
+		if defName, exists := templateDefinitions[file]; exists {
+			tmplName = defName
+		} else {
+			tmplName = file
+		}
+
+		tmpl := template.New(tmplName).Funcs(funcMap)
 		var err error
+
+		// Utiliser le chemin complet pour le parsing
 		tmpl, err = tmpl.ParseFiles("web/templates/" + file)
 		if err != nil {
 			continue
@@ -50,20 +72,39 @@ func NewTemplateService() *TemplateService {
 }
 
 func (s *TemplateService) RenderTemplate(w http.ResponseWriter, name string, data interface{}) error {
+	// Déterminer le nom de la définition du template
+	templateDefinitions := map[string]string{
+		"admin/dashboard.html":      "dashboard",
+		"admin/users.html":          "users",
+		"admin/categories.html":     "categories",
+		"admin/reports.html":        "reports",
+		"moderation/dashboard.html": "moderation-dashboard",
+	}
+
+	// Récupérer le nom de la définition
+	definitionName, exists := templateDefinitions[name]
+	if !exists {
+		definitionName = filepath.Base(name)
+	}
+
 	tmpl, exists := s.templates[name]
 	if !exists {
+		// Charger le template s'il n'existe pas déjà
 		funcMap := template.FuncMap{
 			"formatDate": formatRelativeTime,
 		}
 
-		tmpl = template.New(name).Funcs(funcMap)
+		// IMPORTANT: Créer le template avec le nom de la définition, pas le nom du fichier
+		tmpl = template.New(definitionName).Funcs(funcMap)
 		var err error
 
+		// Parser le fichier principal
 		tmpl, err = tmpl.ParseFiles("web/templates/" + name)
 		if err != nil {
 			return err
 		}
 
+		// Parser les composants
 		tmpl, err = tmpl.ParseGlob("web/templates/components/*.html")
 		if err != nil {
 			return err
@@ -72,7 +113,10 @@ func (s *TemplateService) RenderTemplate(w http.ResponseWriter, name string, dat
 		s.templates[name] = tmpl
 	}
 
-	return tmpl.Execute(w, data)
+	log.Printf("Exécution du template %s avec définition %s", name, definitionName)
+
+	// Exécuter le template avec le nom de la définition
+	return tmpl.ExecuteTemplate(w, definitionName, data)
 }
 
 func formatRelativeTime(dateStr string) string {

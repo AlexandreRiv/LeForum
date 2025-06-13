@@ -3,6 +3,8 @@ package main
 import (
 	"LeForum/internal/api"
 	"LeForum/internal/config"
+	"LeForum/internal/service"
+	"LeForum/internal/storage/repositories"
 	"log"
 	"net/http"
 	"time"
@@ -24,7 +26,9 @@ func main() {
 	}
 
 	// Configuration du routeur avec la configuration de l'application
-	mux := api.SetupRouter(appConfig)
+	reportService := service.NewReportService(repositories.NewReportRepository(appConfig.DB.DB))
+
+	mux := api.SetupRouter(appConfig, reportService)
 
 	// Nettoyage des sessions expirées périodiquement
 	go func() {

@@ -1,81 +1,28 @@
-<!-- web/templates/admin/dashboard.html -->
-<!DOCTYPE html>
-<html lang="fr" {{if .DarkMode}}class="dark"{{end}}>
+{define "admin/dashboard"}}
+<html>
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Administration - PhrasInachev</title>
-
-  <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="/static/js/tailwind.config.js"></script>
-  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+  <title>{{.PageTitle}}</title>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-dark-bg dark:text-gray-200 font-sans transition-colors duration-200">
+<body class="bg-light dark:bg-dark-background text-dark dark:text-white transition-colors duration-200">
 
-{{template "header" .}}
+<div class="container max-w-6xl mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Tableau de bord administrateur</h1>
+  <p>Bienvenue {{if .User}}{{.User.Email}}{{else}}administrateur{{end}}</p>
 
-<!-- Breadcrumb -->
-<div class="max-w-6xl mx-auto px-4 py-2 text-sm">
-  <a href="/" class="text-accent dark:text-dark-accent hover:underline">Accueil</a> &gt;
-  <span class="text-gray-600 dark:text-gray-400">Administration</span>
-</div>
-
-<!-- Main content -->
-<main class="max-w-6xl mx-auto p-4">
-  <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md overflow-hidden mb-6">
-    <div class="bg-primary dark:bg-dark-primary text-white p-4">
-      <h2 class="text-xl font-bold">Tableau de bord d'administration</h2>
-    </div>
-
-    <div class="p-6">
-      <!-- Menu d'admin -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <a href="/admin/users" class="bg-blue-100 dark:bg-dark-surface border dark:border-gray-700 rounded-lg p-6 text-center hover:bg-blue-200 dark:hover:bg-gray-800 transition-all">
-          <div class="text-3xl mb-2 text-blue-600 dark:text-blue-400"><i class="fi fi-rr-users"></i></div>
-          <h3 class="font-bold text-lg">Gestion des utilisateurs</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">Gérer les rôles et les permissions</p>
-        </a>
-        <a href="/admin/categories" class="bg-green-100 dark:bg-dark-surface border dark:border-gray-700 rounded-lg p-6 text-center hover:bg-green-200 dark:hover:bg-gray-800 transition-all">
-          <div class="text-3xl mb-2 text-green-600 dark:text-green-400"><i class="fi fi-rr-apps"></i></div>
-          <h3 class="font-bold text-lg">Gestion des catégories</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">Ajouter ou supprimer des catégories</p>
-        </a>
-        <a href="/admin/reports" class="bg-red-100 dark:bg-dark-surface border dark:border-gray-700 rounded-lg p-6 text-center hover:bg-red-200 dark:hover:bg-gray-800 transition-all">
-          <div class="text-3xl mb-2 text-red-600 dark:text-red-400"><i class="fi fi-rr-flag"></i></div>
-          <h3 class="font-bold text-lg">Signalements</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">Traiter les signalements d'utilisateurs</p>
-        </a>
-      </div>
-
-      <!-- Statistiques -->
-      <h3 class="text-lg font-bold mb-4">Statistiques du forum</h3>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-indigo-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
-          <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{.UserCount}}</p>
-          <p class="text-gray-600 dark:text-gray-400">Utilisateurs</p>
-        </div>
-        <div class="bg-purple-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
-          <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{.PostCount}}</p>
-          <p class="text-gray-600 dark:text-gray-400">Posts</p>
-        </div>
-        <div class="bg-pink-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
-          <p class="text-2xl font-bold text-pink-600 dark:text-pink-400">{{.CommentCount}}</p>
-          <p class="text-gray-600 dark:text-gray-400">Commentaires</p>
-        </div>
-        <div class="bg-amber-100 dark:bg-dark-surface/50 rounded-lg p-4 text-center">
-          <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{.CategoryCount}}</p>
-          <p class="text-gray-600 dark:text-gray-400">Catégories</p>
-        </div>
-      </div>
-    </div>
+  <div class="stats grid grid-cols-2 md:grid-cols-4 gap-4 my-4">
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Utilisateurs: {{.UserCount}}</div>
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Messages: {{.PostCount}}</div>
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Commentaires: {{.CommentCount}}</div>
+    <div class="p-3 bg-primary dark:bg-dark-primary text-white rounded">Catégories: {{.CategoryCount}}</div>
   </div>
-</main>
 
-{{template "footer" .}}
+  <div class="actions flex flex-wrap gap-4 mt-6">
+    <a href="/admin/users" class="px-4 py-2 bg-primary dark:bg-dark-primary text-white rounded hover:bg-primary-dark">Gérer les utilisateurs</a>
+    <a href="/admin/categories" class="px-4 py-2 bg-primary dark:bg-dark-primary text-white rounded hover:bg-primary-dark">Gérer les catégories</a>
+    <a href="/admin/reports" class="px-4 py-2 bg-primary dark:bg-dark-primary text-white rounded hover:bg-primary-dark">Gérer les signalements</a>
+  </div>
+</div>
 
 </body>
 </html>
+{{end}}

@@ -45,6 +45,7 @@ func (s *Service) CreateSession(w http.ResponseWriter, user domain.LoggedUser) e
 		Email:     user.Email,
 		Name:      user.Name,
 		LoginTime: user.LoginTime,
+		Role:      user.Role,
 	}
 	manager.mu.Unlock()
 
@@ -87,15 +88,17 @@ func (s *Service) GetCurrentUser(r *http.Request) (*domain.LoggedUser, error) {
 		return nil, nil
 	}
 
-	manager.mu.RLock()
-	defer manager.mu.RUnlock()
-
 	// Vérifier si l'utilisateur existe dans le manager
-	if user, exists := manager.users[session.UserEmail]; exists {
+	manager.mu.RLock()
+	user, exists := manager.users[session.UserEmail]
+	manager.mu.RUnlock()
+
+	if exists {
 		return &domain.LoggedUser{
 			Email:     user.Email,
 			Name:      user.Name,
 			LoginTime: user.LoginTime,
+			Role:      user.Role,
 		}, nil
 	}
 
@@ -104,18 +107,33 @@ func (s *Service) GetCurrentUser(r *http.Request) (*domain.LoggedUser, error) {
 	var roleStr string
 	err = s.db.QueryRow("SELECT username, user_role FROM users WHERE mail = ?", session.UserEmail).Scan(&username, &roleStr)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			// Session invalide, la supprimer
+			s.DeleteSession(session.ID)
+			return nil, nil
+		}
 		return nil, err
 	}
 
 	// Créer un nouvel utilisateur avec les informations disponibles
-	user := &domain.LoggedUser{
+	newUser := &domain.LoggedUser{
 		Email:     session.UserEmail,
 		Name:      username,
 		LoginTime: time.Now(),
 		Role:      domain.RoleType(roleStr),
 	}
 
-	return user, nil
+	// Mettre à jour le manager
+	manager.mu.Lock()
+	manager.users[session.UserEmail] = LoggedUser{
+		Email:     newUser.Email,
+		Name:      newUser.Name,
+		LoginTime: newUser.LoginTime,
+		Role:      newUser.Role,
+	}
+	manager.mu.Unlock()
+
+	return newUser, nil
 }
 
 func (s *Service) GenerateSessionID() string {

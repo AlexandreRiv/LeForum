@@ -13,11 +13,11 @@ func NewReportService(repo *repositories.ReportRepository) *ReportService {
 	return &ReportService{repo: repo}
 }
 
-func (s *ReportService) CreateReport(postID int, commentID *int, reporterID int, reason string, reportType domain.ReportType) (int, error) {
+func (s *ReportService) CreateReport(postID int, commentID *int, reporterEmail string, reason string, reportType domain.ReportType) (int, error) {
 	report := domain.Report{
 		PostID:     postID,
 		CommentID:  commentID,
-		ReporterID: reporterID,
+		ReporterID: reporterEmail,
 		Reason:     reason,
 		Type:       reportType,
 		Status:     domain.ReportPending,

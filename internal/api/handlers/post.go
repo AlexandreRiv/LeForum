@@ -3,6 +3,7 @@ package handlers
 import (
 	"LeForum/internal/auth/session"
 	"LeForum/internal/service"
+	"LeForum/internal/domain"
 	"io"
 	"log"
 	"net/http"
@@ -12,14 +13,16 @@ import (
 type PostHandler struct {
 	postService     *service.PostService
 	categoryService *service.CategoryService
+	notificationService *service.NotificationService
 	sessionService  *session.Service
 	templateService *TemplateService
 }
 
-func NewPostHandler(ps *service.PostService, cs *service.CategoryService, ss *session.Service, ts *TemplateService) *PostHandler {
+func NewPostHandler(ps *service.PostService, ns *service.NotificationService, cs *service.CategoryService, ss *session.Service, ts *TemplateService) *PostHandler {
 	return &PostHandler{
 		postService:     ps,
 		categoryService: cs,
+		notificationService: ns,
 		sessionService:  ss,
 		templateService: ts,
 	}
@@ -53,6 +56,16 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var notifs []domain.Notification
+	session, err := h.sessionService.GetSession(r)
+	if err != nil {
+		http.Error(w, "Error fetching sessions", http.StatusInternalServerError)
+		return
+	}
+	if session != nil {
+		notifs, err = h.notificationService.GetNotifications(session.ID)
+	}
+
 	darkMode := getDarkModeFromCookie(r)
 
 	data := map[string]interface{}{
@@ -62,6 +75,8 @@ func (h *PostHandler) PostPageHandler(w http.ResponseWriter, r *http.Request) {
 		"User":          user,
 		"Post":          post,
 		"Comments":      comments,
+		"Notifications": notifs,
+		"NotificationNb": len(notifs),
 	}
 
 	err = h.templateService.RenderTemplate(w, "post_page.html", data)

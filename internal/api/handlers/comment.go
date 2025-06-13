@@ -11,13 +11,15 @@ import (
 
 type CommentHandler struct {
 	commentService  *service.CommentService
+	notificationService *service.NotificationService
 	sessionService  *session.Service
 	templateService *TemplateService
 }
 
-func NewCommentHandler(cs *service.CommentService, ss *session.Service, ts *TemplateService) *CommentHandler {
+func NewCommentHandler(cs *service.CommentService, ns *service.NotificationService, ss *session.Service, ts *TemplateService) *CommentHandler {
 	return &CommentHandler{
 		commentService:  cs,
+		notificationService: ns,
 		sessionService:  ss,
 		templateService: ts,
 	}
@@ -62,10 +64,16 @@ func (h *CommentHandler) CreateCommentHandler(w http.ResponseWriter, r *http.Req
 		PostID,
 		imageBytes,
 	)
-
 	if err != nil {
 		fmt.Printf("Erreur lors de la création du commentaire : %v\n", err)
 		http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
+		return
+	}
+
+	err = h.notificationService.CreateNotification(PostID, "Nouveau commentaire")
+	if err != nil {
+		fmt.Printf("Erreur lors de la création de la notification : %v\n", err)
+		http.Error(w, "Erreur lors de la création de la notification", http.StatusInternalServerError)
 		return
 	}
 

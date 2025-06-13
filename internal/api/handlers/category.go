@@ -12,13 +12,15 @@ import (
 
 type CategoryHandler struct {
 	categoryService *service.CategoryService
+	notificationService *service.NotificationService
 	sessionService  *session.Service
 	templateService *TemplateService
 }
 
-func NewCategoryHandler(cs *service.CategoryService, ss *session.Service, ts *TemplateService) *CategoryHandler {
+func NewCategoryHandler(cs *service.CategoryService, ns *service.NotificationService, ss *session.Service, ts *TemplateService) *CategoryHandler {
 	return &CategoryHandler{
 		categoryService: cs,
+		notificationService: ns,
 		sessionService:  ss,
 		templateService: ts,
 	}
@@ -71,6 +73,16 @@ func (h *CategoryHandler) CategoriesHandler(w http.ResponseWriter, r *http.Reque
 		})
 	}
 
+	var notifs []domain.Notification
+	session, err := h.sessionService.GetSession(r)
+	if err != nil {
+		http.Error(w, "Error fetching sessions", http.StatusInternalServerError)
+		return
+	}
+	if session != nil {
+		notifs, err = h.notificationService.GetNotifications(session.ID)
+	}
+
 	// Données de la page
 	data := map[string]interface{}{
 		"DarkMode":      getDarkModeFromCookie(r),
@@ -78,6 +90,8 @@ func (h *CategoryHandler) CategoriesHandler(w http.ResponseWriter, r *http.Reque
 		"User":          user,
 		"AllCategories": categoriesNames,
 		"Categories":    categories,
+		"Notifications": notifs,
+		"NotificationNb": len(notifs),
 	}
 
 	err = h.templateService.RenderTemplate(w, "categories.html", data)
@@ -180,6 +194,16 @@ func (h *CategoryHandler) CategoryPostsHandler(w http.ResponseWriter, r *http.Re
 		})
 	}
 
+	var notifs []domain.Notification
+	session, err := h.sessionService.GetSession(r)
+	if err != nil {
+		http.Error(w, "Error fetching sessions", http.StatusInternalServerError)
+		return
+	}
+	if session != nil {
+		notifs, err = h.notificationService.GetNotifications(session.ID)
+	}
+
 	// Données de la page
 	data := map[string]interface{}{
 		"DarkMode":          getDarkModeFromCookie(r),
@@ -195,6 +219,8 @@ func (h *CategoryHandler) CategoryPostsHandler(w http.ResponseWriter, r *http.Re
 		"NextPage":          min(totalPages, page+1),
 		"ShowPagination":    showPagination,
 		"PaginationLinks":   paginationLinks,
+		"Notifications": notifs,
+		"NotificationNb": len(notifs),
 	}
 
 	err = h.templateService.RenderTemplate(w, "category_posts.html", data)

@@ -34,20 +34,48 @@ func NewAdminHandler(
 }
 
 func (h *AdminHandler) AdminDashboardHandler(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.sessionService.GetCurrentUser(r)
+	user, err := h.sessionService.GetCurrentUser(r)
+	if err != nil {
+		log.Printf("Erreur session: %v", err)
+		http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
+		return
+	}
 
-	// TODO: Ajouter des statistiques réelles ici
+	// Protection supplémentaire contre les sessions invalides
+	if user == nil {
+		http.Redirect(w, r, "/auth/login", http.StatusSeeOther)
+		return
+	}
+
+	// Ajouter cette ligne pour déboguer
+	log.Printf("Utilisateur: %s, Rôle actuel: %s, Rôle admin attendu: %s",
+		user.Email, user.Role, domain.RoleAdmin)
+
+	// Vérification que l'utilisateur est admin
+	if user.Role != domain.RoleAdmin {
+		log.Printf("Accès refusé: rôle %s != %s", user.Role, domain.RoleAdmin)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	// Récupérer les statistiques pour le tableau de bord
+	userCount := 0
+	postCount := 0
+	commentCount := 0
+	categoryCount := 0
+
 	data := map[string]interface{}{
 		"User":          user,
-		"UserCount":     0,
-		"PostCount":     0,
-		"CommentCount":  0,
-		"CategoryCount": 0,
+		"UserCount":     userCount,
+		"PostCount":     postCount,
+		"CommentCount":  commentCount,
+		"CategoryCount": categoryCount,
 		"DarkMode":      getDarkModeFromCookie(r),
 		"PageTitle":     "Administration",
 	}
 
 	if err := h.templateService.RenderTemplate(w, "admin/dashboard.html", data); err != nil {
+		log.Printf("Erreur de rendu: %v", err)
 		http.Error(w, "Erreur de rendu du template: "+err.Error(), http.StatusInternalServerError)
 	}
 }

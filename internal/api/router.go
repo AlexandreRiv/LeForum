@@ -30,50 +30,38 @@ func SetupRouter(config *config.AppConfig, reportService *service.ReportService)
 	// Routes publiques
 	mux.HandleFunc("/auth/google", googleHandler.LoginHandler)
 	mux.HandleFunc("/auth/google/callback", googleHandler.CallbackHandler)
-<<<<<<< HEAD
-
-	appConfig.AuthHandler.RegisterRoutes(mux)
-	appConfig.CategoryHandler.RegisterRoutes(mux)
-
-	// Créer et enregistrer les routes de la page d'accueil
-	homeHandler := handlers.NewHomeHandler(
-		appConfig.PostService,
-		appConfig.CategoryService,
-		appConfig.SessionService,
-		handlers.NewTemplateService(),
-	)
-	homeHandler.RegisterRoutes(mux)
-
-	// Création des routes pour les posts
-	mux.HandleFunc("/post/create", authMiddleware(http.HandlerFunc(appConfig.PostHandler.CreatePostHandler)).ServeHTTP)
-	mux.HandleFunc("/post/like", authMiddleware(http.HandlerFunc(appConfig.PostHandler.LikePostHandler)).ServeHTTP)
-	mux.HandleFunc("/post/update", authMiddleware(http.HandlerFunc(appConfig.PostHandler.UpdatePostHandler)).ServeHTTP)
-	mux.HandleFunc("/post/delete", authMiddleware(http.HandlerFunc(appConfig.PostHandler.DeletePostHandler)).ServeHTTP)
-	mux.HandleFunc("/post", http.HandlerFunc(appConfig.PostHandler.PostPageHandler))
-
-	// Comm
-	mux.HandleFunc("/comment/create", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.CreateCommentHandler)).ServeHTTP)
-	mux.HandleFunc("/comment/like", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.LikeCommentHandler)).ServeHTTP)
-	mux.HandleFunc("/comment/delete", authMiddleware(http.HandlerFunc(appConfig.CommentHandler.DeleteCommentHandler)).ServeHTTP)
-
-=======
 	mux.HandleFunc("/auth/github", githubHandler.LoginHandler)
 	mux.HandleFunc("/auth/github/callback", githubHandler.CallbackHandler)
->>>>>>> 7043820b9564e186d18d03566273385bd8966258
 	mux.HandleFunc("/toggle-theme", middleware.ToggleThemeHandler)
 
 	// Enregistrement des routes pour chaque gestionnaire
 	config.AuthHandler.RegisterRoutes(mux)
 	config.CategoryHandler.RegisterRoutes(mux)
 
+	// Créer et enregistrer les routes de la page d'accueil
+	homeHandler := handlers.NewHomeHandler(
+		config.PostService,
+		config.CategoryService,
+		config.NotificationService,
+		config.SessionService,
+		handlers.NewTemplateService(),
+	)
+	homeHandler.RegisterRoutes(mux)
+
+	// Notification routes
+	//mux.HandleFunc("/notification/create", config.NotificationHandler.CreateNotificationHandler)
+
 	// Commentaire routes
 	mux.HandleFunc("/comment/create", config.CommentHandler.CreateCommentHandler)
 	mux.HandleFunc("/comment/like", config.CommentHandler.LikeCommentHandler)
+	mux.HandleFunc("/comment/delete", authMiddleware(http.HandlerFunc(config.CommentHandler.DeleteCommentHandler)).ServeHTTP)
 
 	// Routes protégées par authentification
 	mux.Handle("/create-post", authMiddleware(http.HandlerFunc(config.PostHandler.CreatePostHandler)))
 	mux.Handle("/edit-post", authMiddleware(http.HandlerFunc(config.PostHandler.EditPostHandler)))
 	mux.Handle("/like-post", authMiddleware(http.HandlerFunc(config.PostHandler.LikePostHandler)))
+	mux.HandleFunc("/post", http.HandlerFunc(config.PostHandler.PostPageHandler))
+	mux.Handle("/post/delete", authMiddleware(http.HandlerFunc(config.PostHandler.DeletePostHandler)))
 
 	// Gestionnaire de modération avec routes protégées par rôle de modérateur
 	moderationHandler := handlers.NewModerationHandler(

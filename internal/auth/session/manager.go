@@ -11,6 +11,7 @@ type LoggedUser struct {
 	Email     string
 	Name      string
 	LoginTime time.Time
+	Role      domain.RoleType
 }
 
 type userManager struct {

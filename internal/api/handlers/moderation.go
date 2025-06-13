@@ -1,4 +1,3 @@
-// internal/api/handlers/moderation.go
 package handlers
 
 import (

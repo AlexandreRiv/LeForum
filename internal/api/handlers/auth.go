@@ -12,13 +12,15 @@ import (
 
 type AuthHandler struct {
 	userService     *service.UserService
+	notificationService *service.NotificationService
 	sessionService  *session.Service
 	templateService *TemplateService
 }
 
-func NewAuthHandler(us *service.UserService, ss *session.Service, ts *TemplateService) *AuthHandler {
+func NewAuthHandler(us *service.UserService, ns *service.NotificationService, ss *session.Service, ts *TemplateService) *AuthHandler {
 	return &AuthHandler{
 		userService:     us,
+		notificationService: ns,
 		sessionService:  ss,
 		templateService: ts,
 	}
@@ -224,6 +226,8 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		Name:  user.Username,
 	}
 
+	notifs, err := h.notificationService.GetNotifications(session.ID)
+
 	data := struct {
 		Name        string
 		Email       string
@@ -234,6 +238,8 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		Likes       int
 		PostNumber  int
 		ResponseNb  int
+		Notifications []domain.Notification
+		NotificationNb int
 	}{
 		Name:        user.Username,
 		Email:       user.Email,
@@ -241,6 +247,8 @@ func (h *AuthHandler) UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		DarkMode:    getDarkModeFromCookie(r),
 		CurrentPage: "profile",
 		User:        loggedUser,
+		Notifications: notifs,
+		NotificationNb: len(notifs),
 	}
 
 	// Logique pour récupérer les statistiques utilisateur
